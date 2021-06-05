@@ -25,7 +25,7 @@ namespace VotingPC
         public MainWindow()
         {
             InitializeComponent();
-            DialogHost.OpenDialogCommand.Execute(null, dialogHost);
+            ShowLoadingDialog();
             Init();
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

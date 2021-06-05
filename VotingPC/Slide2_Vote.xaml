@@ -34,8 +34,10 @@
                     Width="200" Height="60" Margin="50" FontSize="30"/>
         </StackPanel>
         <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-            <materialDesign:Card x:Name="voteCard" Margin="50" Width="{Binding ActualWidth, ElementName=voteStack, Mode=OneWay}" Height="{Binding ActualHeight, ElementName=voteStack, Mode=OneWay}">
-                <StackPanel x:Name="voteStack" Orientation="Vertical"/>
+            <materialDesign:Card x:Name="voteCard" Margin="50"
+                                 Width="{Binding ActualWidth, ElementName=voteStack, Mode=OneWay}"
+                                 Height="{Binding ActualHeight, ElementName=voteStack, Mode=OneWay}">
+                <StackPanel x:Name="voteStack" Orientation="Vertical" VerticalAlignment="Center"/>
             </materialDesign:Card>
         </ScrollViewer>
     </Grid>
