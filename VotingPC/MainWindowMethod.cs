@@ -1,12 +1,10 @@
-﻿using System;
-using System.Windows;
-using MaterialDesignThemes.Wpf.Transitions;
-using MaterialDesignThemes.Wpf;
+﻿using MaterialDesignThemes.Wpf.Transitions;
 using SQLite;
+using System.Collections.Generic;
+using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
-using System.IO.Ports;
-using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -14,13 +12,13 @@ namespace VotingPC
 {
     public partial class MainWindow : Window
     {
-        public static SQLiteAsyncConnection connection;
+        private static SQLiteAsyncConnection connection;
         private static SerialPort serial;
         private static bool isListening = true;
-        public static List<List<Scale>> scales = new();
-        public static List<Info> infos;
-        private static List<StackPanel> stacks = new();
-        private static int currentScaleIndex = 0;
+        private static readonly List<List<Scale>> scales = new();
+        private static List<Info> infos;
+        private static readonly List<StackPanel> stacks = new();
+        private static int currentScaleIndex;
 
         #region Functional methods
         private async void Init()
@@ -28,13 +26,19 @@ namespace VotingPC
             SQLiteConnectionString options = new(".\\database.db", storeDateTimeAsTicks: true, key: "12345678");
             connection = new SQLiteAsyncConnection(options);
             await Task.Run(GetArduinoCOMPort);
-            if (serial == null) { Close(); return; }
+            if (serial == null)
+            {
+                _ = MessageBox.Show("Không tìm thấy thiết bị Arduino. Vui lòng gọi kỹ thuật viên.", "Lỗi", MessageBoxButton.OK,
+                MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                Close();
+                return;
+            }
             await LoadDatabase();
             PopulateVoteUI();
             CloseDialog();
             WaitForSignal();
         }
-        public async void WaitForSignal()
+        private async void WaitForSignal()
         {
             if (serial == null) return;
             serial.DiscardInBuffer();
@@ -55,10 +59,10 @@ namespace VotingPC
         }
         private void GetArduinoCOMPort()
         {
-            var COMPorts = SerialPort.GetPortNames();
-            foreach (var COMPort in COMPorts)
+            string[] COMPorts = SerialPort.GetPortNames();
+            foreach (string COMPort in COMPorts)
             {
-                var serialPort = new SerialPort(COMPort, 115200);
+                SerialPort serialPort = new(COMPort, 115200);
                 serialPort.Open();
                 serialPort.Write("R");
                 for (int i = 0; i < 10; i++)
@@ -83,23 +87,21 @@ namespace VotingPC
                 }
                 serialPort.Dispose();
             }
-            MessageBox.Show("Không tìm thấy thiết bị Arduino. Vui lòng gọi kỹ thuật viên.", "Lỗi", MessageBoxButton.OK,
-                MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
         }
-        private async Task LoadDatabase()
+        private static async Task LoadDatabase()
         {
             string query = $"SELECT * FROM Info";
             infos = await connection.QueryAsync<Info>(query);
             query = $"SELECT * FROM ";
-            foreach (var scale in infos)
+            foreach (Info info in infos)
             {
-                scales.Add(await connection.QueryAsync<Scale>(query + scale.Scale));
+                scales.Add(await connection.QueryAsync<Scale>(query + info.Scale));
             }
         }
         private void PopulateVoteUI()
         {
             int index = 0;
-            foreach (var info in infos)
+            foreach (Info info in infos)
             {
                 RadioButton button = new();
                 button.Style = (Style)Application.Current.Resources["MaterialDesignTabRadioButton"];
@@ -119,8 +121,18 @@ namespace VotingPC
                     CheckBox checkBox = new();
 
                     item.Gender = item.Gender.Trim();
-                    if (item.Gender == "Bà") checkBox.Content = "Bà      " + item.Name;
-                    else checkBox.Content = item.Gender + "   " + item.Name;
+                    if (item.Gender == "Bà")
+                    {
+                        checkBox.Content = "Bà      " + item.Name;
+                    }
+                    else if (item.Gender == "Ông")
+                    {
+                        checkBox.Content = "Ông   " + item.Name;
+                    }
+                    else
+                    {
+                        checkBox.Content = item.Gender + "   " + item.Name;
+                    }
 
                     checkBox.Checked += CheckBox_Checked;
                     checkBox.IsChecked = true;
@@ -142,11 +154,14 @@ namespace VotingPC
         }
         private static void ResetCheckboxes()
         {
-            foreach (var stack in stacks)
+            foreach (StackPanel stack in stacks)
             {
                 foreach (CheckBox checkBox in stack.Children)
                 {
-                    if (!(bool)checkBox.IsChecked) checkBox.IsChecked = true;
+                    if (!(bool)checkBox.IsChecked)
+                    {
+                        checkBox.IsChecked = true;
+                    }
                 }
             }
         }
@@ -203,7 +218,8 @@ namespace VotingPC
                 }
                 CloseDialog();
 
-                ShowTextDialog("Đã nộp phiếu bầu. Chúc một ngày tốt lành.", "Đóng", () => {
+                ShowTextDialog("Đã nộp phiếu bầu. Chúc một ngày tốt lành.", "Đóng", () =>
+                {
                     PreviousPage();
                     ResetCheckboxes();
                     WaitForSignal();

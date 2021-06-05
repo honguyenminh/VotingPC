@@ -1,8 +1,7 @@
-﻿using System;
+﻿using MaterialDesignThemes.Wpf;
+using System;
 using System.Windows;
-using System.Threading.Tasks;
 using System.Windows.Controls;
-using MaterialDesignThemes.Wpf;
 using System.Windows.Media;
 
 namespace VotingPC

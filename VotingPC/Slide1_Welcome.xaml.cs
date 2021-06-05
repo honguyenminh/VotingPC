@@ -1,10 +1,4 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.IO.Ports;
-using System.Management;
-using System.Threading.Tasks;
+﻿using System.Windows.Controls;
 
 namespace VotingPC
 {

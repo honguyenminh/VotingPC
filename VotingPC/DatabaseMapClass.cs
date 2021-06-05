@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SQLite;
+﻿using SQLite;
 
 namespace VotingPC
 {
@@ -35,7 +30,7 @@ namespace VotingPC
 
         [Column("Title")]
         public string Title { get; set; }
-        
+
         [Column("Year")]
         public string Year { get; set; }
 
