@@ -31,6 +31,7 @@ namespace VotingPC
 
             _ = stackPanel.Children.Add(textBlock);
             _ = stackPanel.Children.Add(button);
+            stackPanel.LayoutTransform = new ScaleTransform(2, 2);
             _ = dialogHost.ShowDialog(stackPanel);
         }
         /// <summary>
@@ -40,7 +41,7 @@ namespace VotingPC
         /// <param name="buttonContent">Content of button</param>
         private void ShowTextDialog(string text, string buttonContent)
         {
-            StackPanel stackPanel = new() { Margin = new Thickness(16) };
+            StackPanel stackPanel = new() { Margin = new Thickness(32) };
             TextBlock textBlock = new() { Text = text, TextWrapping = TextWrapping.Wrap };
             Button button = new() { Content = buttonContent };
             button.Click += (sender, e) => CloseDialog();
@@ -48,6 +49,7 @@ namespace VotingPC
 
             _ = stackPanel.Children.Add(textBlock);
             _ = stackPanel.Children.Add(button);
+            stackPanel.LayoutTransform = new ScaleTransform(2, 2);
             _ = dialogHost.ShowDialog(stackPanel);
         }
         /// <summary>

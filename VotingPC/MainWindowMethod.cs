@@ -1,6 +1,7 @@
 ﻿using MaterialDesignThemes.Wpf.Transitions;
 using SQLite;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO.Ports;
 using System.Threading;
 using System.Threading.Tasks;
@@ -103,52 +104,67 @@ namespace VotingPC
             int index = 0;
             foreach (Info info in infos)
             {
+                // Add a button to scale chooser card on top left
                 RadioButton button = new();
                 button.Style = (Style)Application.Current.Resources["MaterialDesignTabRadioButton"];
                 button.Margin = new Thickness(4);
                 button.Content = info.Scale;
                 button.IsChecked = false;
                 button.Checked += ChangeSlide_Checked;
-                slide2.votePanel.Children.Add(button);
+                _ = slide2.votePanel.Children.Add(button);
 
+                // Add new page as StackPanel to the voteStack on right hand
                 StackPanel stackPanel = new();
-                stackPanel.Margin = new Thickness(80, 30, 80, 50);
-                stackPanel.Visibility = Visibility.Collapsed;
+                stackPanel.Margin = new Thickness(72, 40, 72, 40);
+                stackPanel.HorizontalAlignment = HorizontalAlignment.Left;
 
                 currentScaleIndex = index;
-                foreach (var item in scales[index])
+                foreach (Scale item in scales[index])
                 {
-                    CheckBox checkBox = new();
+                    TextBlock content = new();
+                    content.TextTrimming = TextTrimming.WordEllipsis;
 
                     item.Gender = item.Gender.Trim();
-                    if (item.Gender == "Bà")
+                    content.Text = item.Gender switch
                     {
-                        checkBox.Content = "Bà      " + item.Name;
-                    }
-                    else if (item.Gender == "Ông")
-                    {
-                        checkBox.Content = "Ông   " + item.Name;
-                    }
-                    else
-                    {
-                        checkBox.Content = item.Gender + "   " + item.Name;
-                    }
+                        "Bà" => "Bà      " + item.Name,
+                        "Ông" => "Ông   " + item.Name,
+                        _ => item.Gender + "   " + item.Name,
+                    };
 
+                    CheckBox checkBox = new()
+                    {
+                        Content = content,
+                        Margin = new Thickness(0, 16, 0, 16),
+                        HorizontalAlignment = HorizontalAlignment.Left,
+                        Style = (Style)Application.Current.Resources["MaterialDesignFilterChipPrimaryOutlineCheckBox"],
+                        LayoutTransform = new ScaleTransform(2, 2)
+                    };
+                    checkBox.Unchecked += CheckBox_Unchecked;
                     checkBox.Checked += CheckBox_Checked;
                     checkBox.IsChecked = true;
-                    checkBox.Unchecked += CheckBox_Unchecked;
-                    checkBox.Margin = new Thickness(0, 30, 0, 30);
-                    checkBox.HorizontalAlignment = HorizontalAlignment.Left;
-                    checkBox.Style = (Style)Application.Current.Resources["MaterialDesignFilterChipPrimaryOutlineCheckBox"];
-                    checkBox.RenderTransform = new ScaleTransform(2, 2);
 
-                    stackPanel.Children.Add(checkBox);
+                    checkBox.Loaded += (sender, e) =>
+                    {
+                        if (GetTheoreticalSize(content).Width > content.RenderSize.Width)
+                        {
+                            TextBlock textBlock = new()
+                            {
+                                TextWrapping = TextWrapping.Wrap,
+                                FontWeight = FontWeights.Normal,
+                                FontSize = 20,
+                                Text = content.Text
+                            };
+                            checkBox.ToolTip = textBlock;
+                        }
+                    };
+
+                    _ = stackPanel.Children.Add(checkBox);
                 }
                 stacks.Add(stackPanel);
-                slide2.voteStack.Children.Add(stacks[index]);
                 index++;
             }
-            currentScaleIndex = 0;
+            //currentScaleIndex = 0;
             slide2.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(infos[0].Color));
             slide2.submitButton.Click += SubmitButton_Click;
         }
@@ -164,6 +180,19 @@ namespace VotingPC
                     }
                 }
             }
+        }
+        private static Size GetTheoreticalSize(TextBlock textBlock)
+        {
+            FormattedText formattedText = new(
+                        textBlock.Text,
+                        CultureInfo.CurrentCulture,
+                        FlowDirection.LeftToRight,
+                        new Typeface(textBlock.FontFamily, textBlock.FontStyle, textBlock.FontWeight, textBlock.FontStretch),
+                        textBlock.FontSize,
+                        Brushes.Black,
+                        new NumberSubstitution(),
+                        1);
+            return new Size(formattedText.Width, formattedText.Height);
         }
         #endregion
 
@@ -185,7 +214,6 @@ namespace VotingPC
             {
                 if (infos[i].TotalVoted > infos[i].Max)
                 {
-                    // TODO: Add error to error box (somehow)
                     validate = false;
                     errors += "Số đại biểu được bầu quá số lượng tối đa tại Phiếu bầu " + infos[i].Title + "\n";
                     continue;
@@ -213,7 +241,7 @@ namespace VotingPC
                         string name = scales[i][j].Name.Replace("\'", "\'\'");
                         // Save stuff to db file
                         string query = $"UPDATE {infos[i].Scale} SET Votes = {scales[i][j].Votes} WHERE Name = '{name}';";
-                        await connection.ExecuteAsync(query);
+                        _ = await connection.ExecuteAsync(query);
                     }
                 }
                 CloseDialog();
@@ -229,14 +257,13 @@ namespace VotingPC
         private void ChangeSlide_Checked(object sender, RoutedEventArgs e)
         {
             currentScaleIndex = slide2.votePanel.Children.IndexOf((UIElement)sender);
-            for (int i = 0; i < stacks.Count; i++)
-            {
-                stacks[i].Visibility = Visibility.Collapsed;
-            }
-            stacks[currentScaleIndex].Visibility = Visibility.Visible;
+            slide2.voteStack.Children.Clear();
+            _ = slide2.voteStack.Children.Add(stacks[currentScaleIndex]);
+
             slide2.title.Text = "Đại biểu " + infos[currentScaleIndex].Title + " " + infos[currentScaleIndex].Year;
             slide2.caption.Text = "Chọn tối đa " + infos[currentScaleIndex].Max + " Trần Dần";
             slide2.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(infos[currentScaleIndex].Color));
+            slide2.voteCard.MinWidth = slide2.mainGrid.ColumnDefinitions[1].ActualWidth - 120;
         }
 
         // Transition methods

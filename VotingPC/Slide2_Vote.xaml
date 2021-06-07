@@ -5,11 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:VotingPC"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             mc:Ignorable="d" 
+             mc:Ignorable="d"
              d:DesignHeight="720" d:DesignWidth="1280">
-    <Grid>
+    <UserControl.Resources>
+        <local:AddValue x:Key="AddValue"/>
+    </UserControl.Resources>
+    <Grid x:Name="mainGrid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.9*"/>
+            <ColumnDefinition Width="0.86*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Column="0" Orientation="Vertical">
@@ -33,11 +36,13 @@
                     Style="{StaticResource MaterialDesignRaisedButton}"
                     Width="200" Height="60" Margin="50" FontSize="30"/>
         </StackPanel>
-        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-            <materialDesign:Card x:Name="voteCard" Margin="50"
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <materialDesign:Card x:Name="voteCard" Margin="50" HorizontalAlignment="Left"
                                  Width="{Binding ActualWidth, ElementName=voteStack, Mode=OneWay}"
-                                 Height="{Binding ActualHeight, ElementName=voteStack, Mode=OneWay}">
-                <StackPanel x:Name="voteStack" Orientation="Vertical" VerticalAlignment="Center"/>
+                                 Height="{Binding ActualHeight, ElementName=voteStack, Mode=OneWay}"
+                                 materialDesign:ShadowAssist.ShadowDepth="Depth4">
+                <VirtualizingStackPanel Orientation="Vertical" x:Name="voteStack" VerticalAlignment="Center"
+                                        HorizontalAlignment="Left"/>
             </materialDesign:Card>
         </ScrollViewer>
     </Grid>
