@@ -1,6 +1,6 @@
 ﻿namespace FingerGet
 {
-    partial class form
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -33,7 +33,7 @@
             this.submitButton = new System.Windows.Forms.Button();
             this.statusLabel = new System.Windows.Forms.Label();
             this.status = new System.Windows.Forms.Label();
-            this.clearButton = new System.Windows.Forms.Button();
+            this.ClearButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // serialOutput
@@ -94,24 +94,24 @@
             this.status.TabIndex = 4;
             this.status.Text = "Đang tìm Arduino...";
             // 
-            // clearButton
+            // ClearButton
             // 
-            this.clearButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.clearButton.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.clearButton.Location = new System.Drawing.Point(500, 12);
-            this.clearButton.Name = "clearButton";
-            this.clearButton.Size = new System.Drawing.Size(92, 41);
-            this.clearButton.TabIndex = 5;
-            this.clearButton.Text = "Xóa log";
-            this.clearButton.UseVisualStyleBackColor = true;
-            this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
+            this.ClearButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ClearButton.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.ClearButton.Location = new System.Drawing.Point(500, 12);
+            this.ClearButton.Name = "ClearButton";
+            this.ClearButton.Size = new System.Drawing.Size(92, 41);
+            this.ClearButton.TabIndex = 5;
+            this.ClearButton.Text = "Xóa log";
+            this.ClearButton.UseVisualStyleBackColor = true;
+            this.ClearButton.Click += new System.EventHandler(this.ClearButton_Click);
             // 
             // form
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 368);
-            this.Controls.Add(this.clearButton);
+            this.Controls.Add(this.ClearButton);
             this.Controls.Add(this.status);
             this.Controls.Add(this.statusLabel);
             this.Controls.Add(this.label1);
@@ -120,7 +120,7 @@
             this.MinimumSize = new System.Drawing.Size(700, 300);
             this.Name = "form";
             this.Text = "Nhập vân tay 2000";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.form_FormClosing);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -132,7 +132,7 @@
         private System.Windows.Forms.Button submitButton;
         private System.Windows.Forms.Label statusLabel;
         private System.Windows.Forms.Label status;
-        private System.Windows.Forms.Button clearButton;
+        private System.Windows.Forms.Button ClearButton;
     }
 }
 

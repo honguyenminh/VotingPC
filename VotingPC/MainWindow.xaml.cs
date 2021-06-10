@@ -8,7 +8,7 @@ namespace VotingPC
     /// </summary>
     public partial class MainWindow : Window
     {
-        private PasswordDialog passwordDialog;
+        private readonly PasswordDialog passwordDialog;
         public MainWindow()
         {
             InitializeComponent();

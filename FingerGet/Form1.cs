@@ -7,11 +7,11 @@ using System.Windows.Forms;
 
 namespace FingerGet
 {
-    public partial class form : Form
+    public partial class MainForm : Form
     {
         private static SerialPort serial;
-        private static bool isWaitingForSerial = false;
-        public form()
+        private static bool isWaitingForSerial;
+        public MainForm()
         {
             InitializeComponent();
             submitButton.Enabled = false;
@@ -49,7 +49,7 @@ namespace FingerGet
         private async void WaitForSerial()
         {
             await Task.Delay(100);
-            while (isWaitingForSerial && (serial.IsOpen))
+            while (isWaitingForSerial && serial.IsOpen)
             {
                 try
                 {
@@ -110,7 +110,7 @@ namespace FingerGet
             }
         }
 
-        private void form_FormClosing(object sender, FormClosingEventArgs e)
+        private void Form_FormClosing(object sender, FormClosingEventArgs e)
         {
             isWaitingForSerial = false;
             if (serial != null)
@@ -120,7 +120,7 @@ namespace FingerGet
             }
         }
 
-        private void clearButton_Click(object sender, EventArgs e)
+        private void ClearButton_Click(object sender, EventArgs e)
         {
             serialOutput.Text = "";
         }
