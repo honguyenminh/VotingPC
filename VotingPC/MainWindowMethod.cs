@@ -127,10 +127,10 @@ namespace VotingPC
         {
             string query = $"SELECT * FROM Info";
             infos = await connection.QueryAsync<Info>(query);
-            query = $"SELECT * FROM ";
+            query = $"SELECT * FROM \"";
             foreach (Info info in infos)
             {
-                scales.Add(await connection.QueryAsync<Scale>(query + info.Scale));
+                scales.Add(await connection.QueryAsync<Scale>(query + info.Scale + "\""));
             }
         }
         private void PopulateVoteUI()
@@ -246,10 +246,10 @@ namespace VotingPC
             bool validate = true; string errors = "";
             for (int i = 0; i < infos.Count; i++)
             {
-                if (infos[i].TotalVoted > infos[i].Max)
+                if (infos[i].TotalVoted != infos[i].Max)
                 {
                     validate = false;
-                    errors += "Số đại biểu được bầu quá số lượng tối đa tại Phiếu bầu " + infos[i].Title + "\n";
+                    errors += "Số đại biểu được bầu khác số lượng yêu cầu tại Phiếu bầu " + infos[i].Title + "\n";
                     continue;
                 }
                 for (int j = 0; j < scales[i].Count; j++)
@@ -274,7 +274,7 @@ namespace VotingPC
                     {
                         string name = scales[i][j].Name.Replace("\'", "\'\'");
                         // Save stuff to db file
-                        string query = $"UPDATE {infos[i].Scale} SET Votes = {scales[i][j].Votes} WHERE Name = '{name}';";
+                        string query = $"UPDATE \"{infos[i].Scale}\" SET Votes = {scales[i][j].Votes} WHERE Name = '{name}';";
                         _ = await connection.ExecuteAsync(query);
                     }
                 }
@@ -295,7 +295,7 @@ namespace VotingPC
             _ = slide2.voteStack.Children.Add(stacks[currentScaleIndex]);
 
             slide2.title.Text = "Đại biểu " + infos[currentScaleIndex].Title + " " + infos[currentScaleIndex].Year;
-            slide2.caption.Text = "Chọn tối đa " + infos[currentScaleIndex].Max + " Trần Dần";
+            slide2.caption.Text = "Chọn đúng " + infos[currentScaleIndex].Max + " Trần Dần";
             slide2.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(infos[currentScaleIndex].Color));
             slide2.voteCard.MinWidth = slide2.mainGrid.ColumnDefinitions[1].ActualWidth - 120;
         }

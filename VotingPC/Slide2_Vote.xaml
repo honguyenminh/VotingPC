@@ -15,27 +15,30 @@
             <ColumnDefinition Width="0.86*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel Grid.Column="0" Orientation="Vertical">
-            <materialDesign:Card Height="56" Margin="50 40 50 80" Width="{Binding ActualWidth, ElementName=votePanel, Mode=OneWay}">
-                <StackPanel x:Name="votePanel"
-                    Orientation="Horizontal"
-                    Margin="10 4" HorizontalAlignment="Center"/>
-            </materialDesign:Card>
-            <TextBlock Text="PHIẾU BẦU CỬ"
-                   HorizontalAlignment="Center"
-                   FontSize="64" FontWeight="Bold"/>
-            <TextBlock TextWrapping="Wrap" TextAlignment="Center"
-                       Text="Cấp Vũ trụ Trần Dần" Margin="25 40 25 25"
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel Grid.Column="0" Orientation="Vertical">
+                <ScrollViewer Margin="40 30 40 50" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+                    <materialDesign:Card Margin="10" Height="56" Width="{Binding ActualWidth, ElementName=votePanel, Mode=OneWay}">
+                        <StackPanel x:Name="votePanel" Orientation="Horizontal"
+                                Margin="10 4" HorizontalAlignment="Center"/>
+                    </materialDesign:Card>
+                </ScrollViewer>
+                <TextBlock Text="PHIẾU BẦU CỬ"
                        HorizontalAlignment="Center"
-                       FontSize="56" x:Name="title"/>
-            <TextBlock Text="Chọn tối đa n người" HorizontalAlignment="Center" 
-                   FontSize="50" FontWeight="Normal" x:Name="caption" Margin="15 0 15 15"/>
-            <Button x:Name="submitButton" Content="Hoàn tất"
+                       FontSize="64" FontWeight="Bold"/>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center"
+                       Text="Cấp Vũ trụ Trần Dần" Margin="25 32 25 10"
+                       HorizontalAlignment="Center"
+                        FontSize="56" x:Name="title"/>
+                <TextBlock Text="Chọn n người" HorizontalAlignment="Center" 
+                       FontSize="50" FontWeight="Normal" x:Name="caption" Margin="15 0 15 15"/>
+                <Button x:Name="submitButton" Content="Hoàn tất"
                     materialDesign:ShadowAssist.ShadowDepth="Depth2"
                     Background="#C02F1D" BorderBrush="#C02F1D"
                     Style="{StaticResource MaterialDesignRaisedButton}"
                     Width="200" Height="60" Margin="50" FontSize="30"/>
-        </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
         <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <materialDesign:Card x:Name="voteCard" Margin="50" HorizontalAlignment="Left"
                                  Width="{Binding ActualWidth, ElementName=voteStack, Mode=OneWay}"
