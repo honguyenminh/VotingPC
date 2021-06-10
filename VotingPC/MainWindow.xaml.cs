@@ -1,19 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using MaterialDesignThemes.Wpf;
-using System.Threading;
 
 namespace VotingPC
 {
@@ -22,15 +8,16 @@ namespace VotingPC
     /// </summary>
     public partial class MainWindow : Window
     {
+        private PasswordDialog passwordDialog;
         public MainWindow()
         {
             InitializeComponent();
-            ShowLoadingDialog();
-            Init();
+            passwordDialog = new("Nhập mật khẩu cơ sở dữ liệu:", "Mật khẩu không chính xác, vui lòng nhập lại:", "Hoàn tất", PasswordDialogButton_Click);
+            ShowPasswordDialog();
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            connection.CloseAsync();
+            if (connection != null) _ = connection.CloseAsync();
             isListening = false;
             Thread.Sleep(800);
             if (serial != null)

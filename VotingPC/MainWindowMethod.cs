@@ -22,11 +22,42 @@ namespace VotingPC
         private static int currentScaleIndex;
 
         #region Functional methods
+        /// <summary>
+        /// Click handler for the Password Dialog button.
+        /// </summary>
+        private async void PasswordDialogButton_Click(object sender, RoutedEventArgs e)
+        {
+            CloseDialog();
+            ShowLoadingDialog();
+            // Create new SQLite database connection
+            SQLiteConnectionString options = new(".\\database.db", storeDateTimeAsTicks: true, passwordDialog.Password);
+            connection = new SQLiteAsyncConnection(options);
+
+            try
+            {
+                //This will try to query the SQLite Schema Database, if the key is correct then no error is raised
+                _ = await connection.QueryAsync<int>("SELECT count(*) FROM sqlite_master");
+            }
+            catch (SQLiteException) // Wrong password
+            {
+                CloseDialog();
+                await connection.CloseAsync();
+                // Request password from user again, don't run init code
+                ShowPasswordDialog(true);
+                return;
+            }
+
+            // If thing goes well aka correct password, run the init code
+            Init();
+        }
+        /// <summary>
+        /// Initialize application. With a loading dialog :))
+        /// </summary>
         private async void Init()
         {
-            SQLiteConnectionString options = new(".\\database.db", storeDateTimeAsTicks: true, key: "12345678");
-            connection = new SQLiteAsyncConnection(options);
-            await Task.Run(GetArduinoCOMPort);
+            // Get serial port
+            serial = await Task.Run(GetArduinoCOMPort);
+            // When no serial port is found aka is null, dump error message box, then quit
             if (serial == null)
             {
                 _ = MessageBox.Show("Không tìm thấy thiết bị Arduino. Vui lòng gọi kỹ thuật viên.", "Lỗi", MessageBoxButton.OK,
@@ -36,9 +67,12 @@ namespace VotingPC
             }
             await LoadDatabase();
             PopulateVoteUI();
-            CloseDialog();
-            WaitForSignal();
+            CloseDialog();      // Close loading dialog opened above
+            WaitForSignal();    // Wait for serial signal from Arduino
         }
+        /// <summary>
+        /// Asynchronously check for signal from serial port in the background. NEVER await for this.
+        /// </summary>
         private async void WaitForSignal()
         {
             if (serial == null) return;
@@ -58,7 +92,7 @@ namespace VotingPC
                 }
             }
         }
-        private void GetArduinoCOMPort()
+        private SerialPort GetArduinoCOMPort()
         {
             string[] COMPorts = SerialPort.GetPortNames();
             foreach (string COMPort in COMPorts)
@@ -83,11 +117,11 @@ namespace VotingPC
                 int response = serialPort.ReadByte();
                 if (response == 'K')
                 {
-                    serial = serialPort;
-                    return;
+                    return serialPort;
                 }
                 serialPort.Dispose();
             }
+            return null;
         }
         private static async Task LoadDatabase()
         {

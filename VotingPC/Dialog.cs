@@ -2,6 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 
 namespace VotingPC
@@ -67,10 +68,14 @@ namespace VotingPC
                 RenderTransform = new ScaleTransform(2, 2),
                 RenderTransformOrigin = new Point(0.5, 0.5)
             };
-            //dialogHost.DialogContent = progressBar;
-
             _ = dialogHost.ShowDialog(progressBar);
         }
+        private void ShowPasswordDialog(bool falsePassword = false)
+        {
+            passwordDialog.falsePassword = falsePassword;
+            _ = dialogHost.ShowDialog(passwordDialog.Dialog);
+        }
+
         /// <summary>
         /// Close whatever dialog is currently showing. Even if there's none.
         /// </summary>
