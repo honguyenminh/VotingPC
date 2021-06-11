@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.serialOutput = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.submitButton = new System.Windows.Forms.Button();
@@ -106,7 +107,7 @@
             this.ClearButton.UseVisualStyleBackColor = true;
             this.ClearButton.Click += new System.EventHandler(this.ClearButton_Click);
             // 
-            // form
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -117,9 +118,10 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.serialOutput);
             this.Controls.Add(this.submitButton);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(700, 300);
-            this.Name = "form";
-            this.Text = "Nhập vân tay 2000";
+            this.Name = "MainForm";
+            this.Text = "FingerGet - Nhập vân tay";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_FormClosing);
             this.ResumeLayout(false);
             this.PerformLayout();
