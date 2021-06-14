@@ -30,7 +30,7 @@ namespace VotingPC
             CloseDialog();
             ShowLoadingDialog();
             // Create new SQLite database connection
-            SQLiteConnectionString options = new(".\\database.db", storeDateTimeAsTicks: true, passwordDialog.Password);
+            SQLiteConnectionString options = new(databasePath, storeDateTimeAsTicks: true, passwordDialog.Password);
             connection = new SQLiteAsyncConnection(options);
 
             try

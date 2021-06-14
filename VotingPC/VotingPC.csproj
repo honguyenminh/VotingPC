@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>Assets\vpc-icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Assets\vpc-icon.ico" />
     <Content Include="database.db">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -30,6 +32,11 @@
 
   <ItemGroup>
     <Resource Include="Assets\Emblem_of_Vietnam.png" />
+    <Resource Include="Assets\Quicksand-Bold.ttf" />
+    <Resource Include="Assets\Quicksand-Medium.ttf" />
+    <Resource Include="Assets\Quicksand-Light.ttf" />
+    <Resource Include="Assets\Quicksand-Regular.ttf" />
+    <Resource Include="Assets\Quicksand-SemiBold.ttf" />
   </ItemGroup>
 
 </Project>

@@ -15,13 +15,25 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_17C48F95E31E4986B9AEC44F8906BF58"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_21129D3D9C1844038C526AA9ED776B87"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_7314C04E591E4C01857165B01E7FA1FA"
+        "MsmKey" = "8:_950246C9A6974F68875D3502F406E596"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_9D55EAAAA2BE424496106A539DFC4FB9"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -33,7 +45,13 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_EB116324409947DA9A330A01C416B29C"
+        "MsmKey" = "8:_DE1310109B6A4C3A941DB1CBA9038BA4"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_F6499D3BF0624B81B55D7D3D39A1EECF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -96,10 +114,15 @@
             "ComponentsUrl" = "8:"
                 "Items"
                 {
-                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.DesktopRuntime.5.0.x64"
                     {
-                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
-                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    "Name" = "8:.NET Desktop Runtime 5.0.7 (x64)"
+                    "ProductCode" = "8:Microsoft.NetCore.DesktopRuntime.5.0.x64"
+                    }
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.Visual.C++.14.0.x64"
+                    {
+                    "Name" = "8:Visual C++ \"14\" Runtime Libraries (x64)"
+                    "ProductCode" = "8:Microsoft.Visual.C++.14.0.x64"
                     }
                 }
             }
@@ -134,6 +157,26 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_17C48F95E31E4986B9AEC44F8906BF58"
+            {
+            "SourcePath" = "8:..\\VotingPC\\bin\\Release\\net5.0-windows\\publish\\e_sqlcipher.dll"
+            "TargetName" = "8:e_sqlcipher.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_A7309E6742664709BAFFCA3731607F1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_21129D3D9C1844038C526AA9ED776B87"
             {
             "SourcePath" = "8:..\\VotingPC\\Assets\\vpc-icon.ico"
@@ -154,10 +197,90 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_950246C9A6974F68875D3502F406E596"
+            {
+            "SourcePath" = "8:..\\VotingPC\\bin\\Release\\net5.0-windows\\publish\\VotingPC.exe"
+            "TargetName" = "8:VotingPC.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_A7309E6742664709BAFFCA3731607F1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9D55EAAAA2BE424496106A539DFC4FB9"
+            {
+            "SourcePath" = "8:..\\FingerGet\\bin\\Release\\net5.0-windows\\publish\\FingerGet.exe"
+            "TargetName" = "8:FingerGet.exe"
+            "Tag" = "8:"
+            "Folder" = "8:_A7309E6742664709BAFFCA3731607F1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D902E4395EA945058D416B8571E0DA1C"
             {
             "SourcePath" = "8:..\\FingerGet\\fgg-icon.ico"
             "TargetName" = "8:fgg-icon.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_A7309E6742664709BAFFCA3731607F1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DE1310109B6A4C3A941DB1CBA9038BA4"
+            {
+            "SourcePath" = "8:appFolder-ico.ico"
+            "TargetName" = "8:appFolder-ico.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_A7309E6742664709BAFFCA3731607F1E"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F6499D3BF0624B81B55D7D3D39A1EECF"
+            {
+            "SourcePath" = "8:..\\VotingPC\\bin\\Release\\net5.0-windows\\publish\\database.db"
+            "TargetName" = "8:database.db"
             "Tag" = "8:"
             "Folder" = "8:_A7309E6742664709BAFFCA3731607F1E"
             "Condition" = "8:"
@@ -206,7 +329,7 @@
             {
             "DefaultLocation" = "8:[ProgramFiles64Folder][Manufacturer]\\[ProductName]"
             "Name" = "8:#1925"
-            "AlwaysCreate" = "11:FALSE"
+            "AlwaysCreate" = "11:TRUE"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Property" = "8:TARGETDIR"
@@ -242,7 +365,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:VotingPCBundle"
         "ProductCode" = "8:{0CAD5264-BA4D-476D-9524-51E9589B720F}"
-        "PackageCode" = "8:{70390118-0786-4AFB-9DE8-F694DEA62343}"
+        "PackageCode" = "8:{EDD083CA-63B6-4231-B48A-C09EDAEE303B}"
         "UpgradeCode" = "8:{F3B54F5F-883C-4528-9E4B-ED74268D4C3E}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
@@ -362,60 +485,88 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_0427E9209F9546DEB35D27816108C7DA"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_3E8F0AD7A79947CE9840AC148B07D779"
             {
             "Name" = "8:FingerGet"
             "Arguments" = "8:"
-            "Description" = "8:"
+            "Description" = "8:Nhập vân tay"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_7314C04E591E4C01857165B01E7FA1FA"
+            "Target" = "8:_9D55EAAAA2BE424496106A539DFC4FB9"
             "Folder" = "8:_B7A58ED76C0A4B328039E8780B1E6588"
             "WorkingFolder" = "8:_A7309E6742664709BAFFCA3731607F1E"
             "Icon" = "8:_D902E4395EA945058D416B8571E0DA1C"
             "Feature" = "8:"
             }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_20A9722F560145EEB5567589FC514019"
-            {
-            "Name" = "8:FingerGet"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_7314C04E591E4C01857165B01E7FA1FA"
-            "Folder" = "8:_FE9265CD38BB464BB22FD271252D6674"
-            "WorkingFolder" = "8:_A7309E6742664709BAFFCA3731607F1E"
-            "Icon" = "8:_D902E4395EA945058D416B8571E0DA1C"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_B890929D4FEF4366994DB721BCBC5E7F"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_541107F7454E4CD2AD3E94ED874AEEA5"
             {
             "Name" = "8:VotingPC"
             "Arguments" = "8:"
-            "Description" = "8:"
+            "Description" = "8:Giao diện bầu cử"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_EB116324409947DA9A330A01C416B29C"
+            "Target" = "8:_950246C9A6974F68875D3502F406E596"
             "Folder" = "8:_B7A58ED76C0A4B328039E8780B1E6588"
             "WorkingFolder" = "8:_A7309E6742664709BAFFCA3731607F1E"
             "Icon" = "8:_21129D3D9C1844038C526AA9ED776B87"
             "Feature" = "8:"
             }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_D01F1D7C81C54600AE730866905C2348"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_6E8A23912A2141F8A4C95C3AEA78F13E"
+            {
+            "Name" = "8:FingerGet"
+            "Arguments" = "8:"
+            "Description" = "8:Nhập vân tay"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_9D55EAAAA2BE424496106A539DFC4FB9"
+            "Folder" = "8:_FE9265CD38BB464BB22FD271252D6674"
+            "WorkingFolder" = "8:_A7309E6742664709BAFFCA3731607F1E"
+            "Icon" = "8:_D902E4395EA945058D416B8571E0DA1C"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_845DD8DF7B904B50875A9B1E6DC73025"
             {
             "Name" = "8:VotingPC"
+            "Arguments" = "8:"
+            "Description" = "8:Giao diện bầu cử"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_950246C9A6974F68875D3502F406E596"
+            "Folder" = "8:_FE9265CD38BB464BB22FD271252D6674"
+            "WorkingFolder" = "8:_A7309E6742664709BAFFCA3731607F1E"
+            "Icon" = "8:_21129D3D9C1844038C526AA9ED776B87"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_91552B05837B4C3187C989336B1801F2"
+            {
+            "Name" = "8:Thư mục ứng dụng"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_EB116324409947DA9A330A01C416B29C"
+            "Target" = "8:_A7309E6742664709BAFFCA3731607F1E"
             "Folder" = "8:_FE9265CD38BB464BB22FD271252D6674"
             "WorkingFolder" = "8:_A7309E6742664709BAFFCA3731607F1E"
-            "Icon" = "8:_21129D3D9C1844038C526AA9ED776B87"
+            "Icon" = "8:_DE1310109B6A4C3A941DB1CBA9038BA4"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_FFF776AFD1F2452386C6AD5C4743FA11"
+            {
+            "Name" = "8:Thư mục ứng dụng"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_A7309E6742664709BAFFCA3731607F1E"
+            "Folder" = "8:_B7A58ED76C0A4B328039E8780B1E6588"
+            "WorkingFolder" = "8:_A7309E6742664709BAFFCA3731607F1E"
+            "Icon" = "8:_DE1310109B6A4C3A941DB1CBA9038BA4"
             "Feature" = "8:"
             }
         }
@@ -817,65 +968,6 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_7314C04E591E4C01857165B01E7FA1FA"
-            {
-            "SourcePath" = "8:..\\FingerGet\\obj\\Release\\net5.0-windows\\apphost.exe"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_A7309E6742664709BAFFCA3731607F1E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            "ProjectOutputGroupRegister" = "3:1"
-            "OutputConfiguration" = "8:Release|Any CPU"
-            "OutputGroupCanonicalName" = "8:PublishItems"
-            "OutputProjectGuid" = "8:{05E2B153-A099-4625-B98A-066959658C7A}"
-            "ShowKeyOutput" = "11:TRUE"
-                "ExcludeFilters"
-                {
-                "ExcludeFilter" = "8:*.pdb"
-                }
-            }
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_EB116324409947DA9A330A01C416B29C"
-            {
-            "SourcePath" = "8:..\\VotingPC\\obj\\Release\\net5.0-windows\\apphost.exe"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_A7309E6742664709BAFFCA3731607F1E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            "ProjectOutputGroupRegister" = "3:1"
-            "OutputConfiguration" = "8:Release|Any CPU"
-            "OutputGroupCanonicalName" = "8:PublishItems"
-            "OutputProjectGuid" = "8:{14A994A1-1E3A-4726-8A12-64232D750681}"
-            "ShowKeyOutput" = "11:TRUE"
-                "ExcludeFilters"
-                {
-                "ExcludeFilter" = "8:*.pdb"
-                "ExcludeFilter" = "8:runtimes"
-                }
-            }
         }
     }
 }
