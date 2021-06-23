@@ -1,5 +1,6 @@
 ﻿using MaterialDesignThemes.Wpf.Transitions;
 using SQLite;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO.Ports;
@@ -16,8 +17,9 @@ namespace VotingPC
         private static SQLiteAsyncConnection connection;
         private static SerialPort serial;
         private static bool isListening = true;
-        private static readonly List<List<Scale>> scales = new();
-        private static List<Info> infos;
+        private static readonly List<List<Scale>> scales = new(); // List of scales
+        private static List<Info> infos; // List of information about scales
+        // Contains vote stack panels, to preserve their state while user switch between scales
         private static readonly List<StackPanel> stacks = new();
         private static int currentScaleIndex;
 
@@ -56,8 +58,19 @@ namespace VotingPC
         private async void Init()
         {
             // Get serial port
-            serial = await Task.Run(GetArduinoCOMPort);
-            // When no serial port is found aka is null, dump error message box, then quit
+            try
+            {
+                serial = await Task.Run(GetArduinoCOMPort);
+            }
+            catch (Exception e)
+            {
+                _ = MessageBox.Show("Lỗi tìm thiết bị Arduino. Vui lòng gọi kỹ thuật viên.\n" +
+                    "Mã lỗi: " + e.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error,
+                MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
+                Close();
+                return;
+            }
+            // When no serial port is found, dump error message box, then quit
             if (serial == null)
             {
                 _ = MessageBox.Show("Không tìm thấy thiết bị Arduino. Vui lòng gọi kỹ thuật viên.", "Lỗi", MessageBoxButton.OK,
@@ -77,9 +90,9 @@ namespace VotingPC
         {
             if (serial == null) return;
             serial.DiscardInBuffer();
-            while (isListening)
+            while (isListening && serial.IsOpen)
             {
-                while (isListening && serial.BytesToRead < 1)
+                while (isListening && serial.IsOpen && serial.BytesToRead < 1)
                 {
                     await Task.Delay(100);
                 }
@@ -88,10 +101,16 @@ namespace VotingPC
                     serial.Write("X");
                     NextPage();
                     ((RadioButton)slide2.votePanel.Children[0]).IsChecked = true;
+                    ShowTextDialog("Đại biểu được bầu sẽ có dấu tích trước tên\n" +
+                        "Nhấp chuột vào tên của người không tín nhiệm để bỏ dấu tích", "Đã rõ");
                     break;
                 }
             }
         }
+        /// <summary>
+        /// Get SerialPort object linked to the Arduino. Return null if no Arduino found.
+        /// </summary>
+        /// <returns>SerialPort object linked to the Arduino</returns>
         private SerialPort GetArduinoCOMPort()
         {
             string[] COMPorts = SerialPort.GetPortNames();
@@ -99,13 +118,14 @@ namespace VotingPC
             {
                 SerialPort serialPort = new(COMPort, 115200);
                 serialPort.Open();
-                serialPort.Write("R");
+                serialPort.Write("V"); // Pre-defined character, used by the Arduino to acknowledge the PC
+                // Send signle to each COMPort in PC for 5 seconds, if nothing received, dispose serialPort
                 for (int i = 0; i < 10; i++)
                 {
                     if (serialPort.BytesToRead == 0)
                     {
                         Thread.Sleep(500);
-                        serialPort.Write("R");
+                        serialPort.Write("V");
                     }
                     else break;
                 }
@@ -123,6 +143,10 @@ namespace VotingPC
             }
             return null;
         }
+        /// <summary>
+        /// Load database into infos and scales Lists
+        /// </summary>
+        /// <returns>An awaitable Task that do the work</returns>
         private static async Task LoadDatabase()
         {
             string query = $"SELECT * FROM Info";
@@ -133,37 +157,43 @@ namespace VotingPC
                 scales.Add(await connection.QueryAsync<Scale>(query + info.Scale + "\""));
             }
         }
+        /// <summary>
+        /// Use loaded database lists to populate vote UI (Scale radio buttons, candidates, (sub)title)
+        /// </summary>
         private void PopulateVoteUI()
         {
             int index = 0;
             foreach (Info info in infos)
             {
                 // Add a button to scale chooser card on top left
-                RadioButton button = new();
-                button.Style = (Style)Application.Current.Resources["MaterialDesignTabRadioButton"];
-                button.Margin = new Thickness(4);
-                button.Content = info.Scale;
-                button.IsChecked = false;
+                RadioButton button = new()
+                {
+                    Style = (Style)Application.Current.Resources["MaterialDesignTabRadioButton"],
+                    Margin = new Thickness(4),
+                    Content = info.Scale,
+                    IsChecked = false
+                };
                 button.Checked += ChangeSlide_Checked;
                 _ = slide2.votePanel.Children.Add(button);
 
                 // Add new page as StackPanel to the voteStack on right hand
-                StackPanel stackPanel = new();
-                stackPanel.Margin = new Thickness(72, 40, 72, 40);
-                stackPanel.HorizontalAlignment = HorizontalAlignment.Left;
+                StackPanel stackPanel = new()
+                {
+                    Margin = new Thickness(72, 40, 72, 40),
+                    HorizontalAlignment = HorizontalAlignment.Left
+                };
 
                 currentScaleIndex = index;
                 foreach (Scale item in scales[index])
                 {
-                    TextBlock content = new();
-                    content.TextTrimming = TextTrimming.WordEllipsis;
+                    TextBlock content = new() { TextTrimming = TextTrimming.WordEllipsis };
 
                     item.Gender = item.Gender.Trim();
                     content.Text = item.Gender switch
                     {
                         "Bà" => "Bà      " + item.Name,
                         "Ông" => "Ông   " + item.Name,
-                        _ => item.Gender + "   " + item.Name,
+                        _ => item.Gender + "   " + item.Name
                     };
 
                     CheckBox checkBox = new()
@@ -178,8 +208,10 @@ namespace VotingPC
                     checkBox.Checked += CheckBox_Checked;
                     checkBox.IsChecked = true;
 
+                    // Add ToolTip if name is too long
                     checkBox.Loaded += (sender, e) =>
                     {
+                        // TODO: Run this only once, this is not optimized, and will run on every slide change event.
                         if (GetTheoreticalSize(content).Width > content.RenderSize.Width)
                         {
                             TextBlock textBlock = new()
@@ -204,8 +236,10 @@ namespace VotingPC
         }
         private static void ResetCheckboxes()
         {
+            int i = 0;
             foreach (StackPanel stack in stacks)
             {
+                currentScaleIndex = i;
                 foreach (CheckBox checkBox in stack.Children)
                 {
                     if (!(bool)checkBox.IsChecked)
@@ -213,6 +247,7 @@ namespace VotingPC
                         checkBox.IsChecked = true;
                     }
                 }
+                i++;
             }
         }
         private static Size GetTheoreticalSize(TextBlock textBlock)
@@ -288,6 +323,11 @@ namespace VotingPC
                 });
             }
         }
+        /// <summary>
+        /// Occur when slide is changed with change slide radio buttons
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ChangeSlide_Checked(object sender, RoutedEventArgs e)
         {
             currentScaleIndex = slide2.votePanel.Children.IndexOf((UIElement)sender);
@@ -295,7 +335,7 @@ namespace VotingPC
             _ = slide2.voteStack.Children.Add(stacks[currentScaleIndex]);
 
             slide2.title.Text = "Đại biểu " + infos[currentScaleIndex].Title + " " + infos[currentScaleIndex].Year;
-            slide2.caption.Text = "Chọn đúng " + infos[currentScaleIndex].Max + " Trần Dần";
+            slide2.caption.Text = "Chọn đúng " + infos[currentScaleIndex].Max + " người";
             slide2.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(infos[currentScaleIndex].Color));
             slide2.voteCard.MinWidth = slide2.mainGrid.ColumnDefinitions[1].ActualWidth - 120;
         }
