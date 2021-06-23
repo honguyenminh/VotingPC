@@ -9,12 +9,12 @@
 
   <ItemGroup>
     <None Remove="Assets\Emblem_of_Vietnam.png" />
-    <None Remove="database.db" />
+    <None Remove="template.db" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\vpc-icon.ico" />
-    <Content Include="database.db">
+    <Content Include="template.db">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

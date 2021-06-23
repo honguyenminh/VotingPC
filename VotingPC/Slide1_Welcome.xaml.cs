@@ -11,7 +11,5 @@ namespace VotingPC
         {
             InitializeComponent();
         }
-        // After slide load, wait for fingerprint, delete from database,
-        // then move to voting slide
     }
 }
