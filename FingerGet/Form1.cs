@@ -80,8 +80,12 @@ namespace FingerGet
 
         private void SubmitButton_Click(object sender, EventArgs e)
         {
-            serial.Write("S");
-            submitButton.Enabled = false;
+            try
+            {
+                serial.Write("S");
+                submitButton.Enabled = false;
+            }
+            catch { _ = Disconnected(); }
         }
         private static void GetArduinoCOMPort()
         {

@@ -70,6 +70,7 @@ namespace VotingPC
                 if (falsePassword)
                 {
                     title.Text = wrongPasswordText;
+                    passwordBox.Password = "";
                     title.Foreground = Brushes.Red;
                 }
                 return stackPanel;
