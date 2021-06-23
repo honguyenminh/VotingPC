@@ -278,13 +278,13 @@ namespace VotingPC
         }
         private async void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
-            bool validate = true; string errors = "";
+            bool validate = true; string errors = "Số đại biểu được bầu khác số lượng yêu cầu tại:";
             for (int i = 0; i < infos.Count; i++)
             {
                 if (infos[i].TotalVoted != infos[i].Max)
                 {
                     validate = false;
-                    errors += "Số đại biểu được bầu khác số lượng yêu cầu tại Phiếu bầu " + infos[i].Title + "\n";
+                    errors += "\n - Phiếu bầu " + infos[i].Title;
                     continue;
                 }
                 for (int j = 0; j < scales[i].Count; j++)

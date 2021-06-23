@@ -19,9 +19,13 @@ namespace VotingPC
         /// <param name="clickMethod">Method to execute on button click</param>
         private void ShowTextDialog(string text, string buttonContent, Action clickMethod)
         {
-            StackPanel stackPanel = new() { Margin = new Thickness(16) };
-            TextBlock textBlock = new() { Text = text };
-            Button button = new() { Content = buttonContent };
+            StackPanel stackPanel = new() { Margin = new Thickness(32) };
+            TextBlock textBlock = new() { Text = text, TextWrapping = TextWrapping.Wrap };
+            Button button = new()
+            {
+                Content = buttonContent,
+                Margin = new Thickness(0, 8, 0, 0)
+            };
             button.Click += (sender, e) =>
             {
                 CloseDialog();
@@ -43,7 +47,10 @@ namespace VotingPC
         {
             StackPanel stackPanel = new() { Margin = new Thickness(32) };
             TextBlock textBlock = new() { Text = text, TextWrapping = TextWrapping.Wrap };
-            Button button = new() { Content = buttonContent };
+            Button button = new() {
+                Content = buttonContent,
+                Margin = new Thickness(0, 8, 0, 0)
+            };
             button.Click += (sender, e) => CloseDialog();
             button.Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"];
 
@@ -64,8 +71,9 @@ namespace VotingPC
                 Margin = new Thickness(32),
                 IsIndeterminate = true,
                 Value = 0,
-                RenderTransform = new ScaleTransform(2, 2),
-                RenderTransformOrigin = new Point(0.5, 0.5)
+                LayoutTransform = new ScaleTransform(2, 2)
+                //RenderTransform = new ScaleTransform(2, 2),
+                //RenderTransformOrigin = new Point(0.5, 0.5)
             };
             _ = dialogHost.ShowDialog(progressBar);
         }
