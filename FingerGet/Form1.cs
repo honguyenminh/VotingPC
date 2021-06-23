@@ -19,6 +19,7 @@ namespace FingerGet
         }
         private async void Init()
         {
+            await Task.Delay(200);
             while (serial == null) await Task.Run(GetArduinoCOMPort);
             status.Text = "Đã tìm thấy Arduino tại " + serial.PortName;
             status.ForeColor = Color.Green;
@@ -34,18 +35,23 @@ namespace FingerGet
                 await Task.Delay(800);
                 if (!serial.IsOpen)
                 {
-                    status.Text = "Đã ngắt kết nối Arduino, vui lòng kết nối lại";
-                    status.ForeColor = Color.Red;
-                    submitButton.Enabled = false;
-                    isWaitingForSerial = false;
-                    serial.Close();
-                    serial.Dispose();
-                    serial = null;
+                    await Disconnected();
                     Init();
                     break;
                 }
             }
         }
+        private async Task Disconnected()
+        {
+            await Task.Delay(10);
+            status.Text = "Đã ngắt kết nối Arduino, vui lòng kết nối lại";
+            status.ForeColor = Color.Red;
+            submitButton.Enabled = false;
+            isWaitingForSerial = false;
+            serial.Dispose();
+            serial = null;
+        }
+
         private async void WaitForSerial()
         {
             await Task.Delay(100);
@@ -57,6 +63,10 @@ namespace FingerGet
                     if (input == "Internal done")
                     {
                         submitButton.Enabled = true;
+                        continue;
+                    }
+                    else if (input == "Internal found")
+                    {
                         continue;
                     }
                     serialOutput.AppendText(input + "\r\n");
@@ -75,37 +85,46 @@ namespace FingerGet
         }
         private static void GetArduinoCOMPort()
         {
-            Thread.Sleep(200);
             string[] COMPorts = SerialPort.GetPortNames();
+
             foreach (string COMPort in COMPorts)
             {
-                SerialPort serialPort = new(COMPort, 115200);
-                serialPort.NewLine = "\r\n";
-                serialPort.Encoding = System.Text.Encoding.UTF8;
-                serialPort.Open();
-
-                serialPort.Write("R");
-                for (int i = 0; i < 10; i++)
+                SerialPort serialPort = new(COMPort, 115200)
                 {
-                    if (serialPort.BytesToRead == 0)
+                    NewLine = "\r\n",
+                    Encoding = System.Text.Encoding.UTF8
+                };
+                try
+                {
+                    serialPort.Open();
+                    serialPort.Write("F");
+                    for (int i = 0; i < 10; i++)
                     {
                         Thread.Sleep(500);
-                        serialPort.Write("R");
+                        if (serialPort.BytesToRead == 0)
+                        {
+                            serialPort.Write("F");
+                        }
+                        else break;
                     }
-                    else break;
+                    if (serialPort.BytesToRead == 0)
+                    {
+                        serialPort.Dispose();
+                        continue;
+                    }
+                    string response = serialPort.ReadLine();
+                    if (response == "Internal found")
+                    {
+                        serial = serialPort;
+                        serial.DiscardInBuffer();
+                        return;
+                    }
                 }
-                if (serialPort.BytesToRead == 0)
+                catch (Exception)
                 {
-                    serialPort.Dispose();
                     continue;
                 }
-                string response = serialPort.ReadLine();
-                if (response == "​")
-                {
-                    serial = serialPort;
-                    serial.DiscardInBuffer();
-                    return;
-                }
+                
                 serialPort.Dispose();
             }
         }
