@@ -16,13 +16,6 @@
         Closing="Window_Closing"
         Width="1280" Height="720">
     <materialDesign:DialogHost x:Name="dialogHost">
-        <materialDesign:DialogHost.DialogContent>
-            <ProgressBar
-                Style="{DynamicResource MaterialDesignCircularProgressBar}"
-                HorizontalAlignment="Center" Margin="16"
-                IsIndeterminate="True"
-                Value="0"/>
-        </materialDesign:DialogHost.DialogContent>
         <materialDesign:Transitioner x:Name="TransitionerObj" SelectedIndex="0">
             <materialDesign:TransitionerSlide>
                 <local:Slide1_Welcome x:Name="slide1"/>

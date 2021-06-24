@@ -21,6 +21,18 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_1FB6390EC72D4A379671836FFA02EF2E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_20B26B4FB01F4DD9A9BF80D5A90FB1DD"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_21129D3D9C1844038C526AA9ED776B87"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -46,12 +58,6 @@
         "Entry"
         {
         "MsmKey" = "8:_DE1310109B6A4C3A941DB1CBA9038BA4"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F6499D3BF0624B81B55D7D3D39A1EECF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -177,6 +183,46 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_1FB6390EC72D4A379671836FFA02EF2E"
+            {
+            "SourcePath" = "8:..\\example.db"
+            "TargetName" = "8:example.db"
+            "Tag" = "8:"
+            "Folder" = "8:_73D2901AEC4548708A0C6B3895245FBE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:TRUE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_20B26B4FB01F4DD9A9BF80D5A90FB1DD"
+            {
+            "SourcePath" = "8:..\\VotingPC\\template.db"
+            "TargetName" = "8:template.db"
+            "Tag" = "8:"
+            "Folder" = "8:_73D2901AEC4548708A0C6B3895245FBE"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_21129D3D9C1844038C526AA9ED776B87"
             {
             "SourcePath" = "8:..\\VotingPC\\Assets\\vpc-icon.ico"
@@ -277,26 +323,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F6499D3BF0624B81B55D7D3D39A1EECF"
-            {
-            "SourcePath" = "8:..\\VotingPC\\bin\\Release\\net5.0-windows\\publish\\database.db"
-            "TargetName" = "8:database.db"
-            "Tag" = "8:"
-            "Folder" = "8:_A7309E6742664709BAFFCA3731607F1E"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
         }
         "FileType"
         {
@@ -346,6 +372,17 @@
             "Property" = "8:DesktopFolder"
                 "Folders"
                 {
+                    "{9EF0B969-E518-4E46-987F-47570745A589}:_73D2901AEC4548708A0C6B3895245FBE"
+                    {
+                    "Name" = "8:Databases"
+                    "AlwaysCreate" = "11:FALSE"
+                    "Condition" = "8:"
+                    "Transitive" = "11:FALSE"
+                    "Property" = "8:_04DE25984B14471885907CF3E4CB554A"
+                        "Folders"
+                        {
+                        }
+                    }
                 }
             }
         }
@@ -364,23 +401,23 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:VotingPCBundle"
-        "ProductCode" = "8:{210313AB-767D-487A-84F3-68D5BBB4BBE1}"
-        "PackageCode" = "8:{5A9A098F-0312-40F1-A5B6-BBD5B5B50903}"
+        "ProductCode" = "8:{23CBC477-46C9-415F-9F51-13F084176181}"
+        "PackageCode" = "8:{21E8DBAA-410C-4154-A0DA-99AD0EFA3F93}"
         "UpgradeCode" = "8:{F3B54F5F-883C-4528-9E4B-ED74268D4C3E}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:0.1.2"
+        "ProductVersion" = "8:0.1.3"
         "Manufacturer" = "8:TheHypedTeam"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
-        "Title" = "8:Cài đặt"
+        "Title" = "8:Setup"
         "Subject" = "8:"
         "ARPCONTACT" = "8:TheHypedTeam"
         "Keywords" = "8:"
-        "ARPCOMMENTS" = "8:Cài đặt chương trình bầu cử"
+        "ARPCOMMENTS" = "8:Software bundle to work with VotingArduino"
         "ARPURLINFOABOUT" = "8:"
         "ARPPRODUCTICON" = "8:_D902E4395EA945058D416B8571E0DA1C"
         "ARPIconIndex" = "3:0"
@@ -489,7 +526,7 @@
             {
             "Name" = "8:FingerGet"
             "Arguments" = "8:"
-            "Description" = "8:Nhập vân tay"
+            "Description" = "8:Get fingerprint"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
@@ -503,7 +540,7 @@
             {
             "Name" = "8:VotingPC"
             "Arguments" = "8:"
-            "Description" = "8:Giao diện bầu cử"
+            "Description" = "8:Voting UI"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
@@ -517,7 +554,7 @@
             {
             "Name" = "8:FingerGet"
             "Arguments" = "8:"
-            "Description" = "8:Nhập vân tay"
+            "Description" = "8:Get fingerprint"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
@@ -531,7 +568,7 @@
             {
             "Name" = "8:VotingPC"
             "Arguments" = "8:"
-            "Description" = "8:Giao diện bầu cử"
+            "Description" = "8:Voting UI"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
@@ -539,20 +576,6 @@
             "Folder" = "8:_FE9265CD38BB464BB22FD271252D6674"
             "WorkingFolder" = "8:_A7309E6742664709BAFFCA3731607F1E"
             "Icon" = "8:_21129D3D9C1844038C526AA9ED776B87"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_91552B05837B4C3187C989336B1801F2"
-            {
-            "Name" = "8:Install folder"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_A7309E6742664709BAFFCA3731607F1E"
-            "Folder" = "8:_FE9265CD38BB464BB22FD271252D6674"
-            "WorkingFolder" = "8:_A7309E6742664709BAFFCA3731607F1E"
-            "Icon" = "8:_DE1310109B6A4C3A941DB1CBA9038BA4"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_FFF776AFD1F2452386C6AD5C4743FA11"

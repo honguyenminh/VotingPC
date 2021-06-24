@@ -31,6 +31,7 @@ namespace VotingPC
         {
             CloseDialog();
             ShowLoadingDialog();
+
             // Create new SQLite database connection
             SQLiteConnectionString options = new(databasePath, storeDateTimeAsTicks: true, passwordDialog.Password);
             connection = new SQLiteAsyncConnection(options);
@@ -64,18 +65,22 @@ namespace VotingPC
             }
             catch (Exception e)
             {
-                _ = MessageBox.Show("Lỗi tìm thiết bị Arduino. Vui lòng gọi kỹ thuật viên.\n" +
-                    "Mã lỗi: " + e.Message, "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error,
-                MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
-                Close();
+                CloseDialog();
+                ShowTextDialog("Lỗi tìm thiết bị Arduino. Vui lòng gọi kỹ thuật viên.\n" +
+                    "Mã lỗi: " + e.Message, "OK", () =>
+                    {
+                        Close();
+                    });
                 return;
             }
             // When no serial port is found, dump error message box, then quit
             if (serial == null)
             {
-                _ = MessageBox.Show("Không tìm thấy thiết bị Arduino. Vui lòng gọi kỹ thuật viên.", "Lỗi", MessageBoxButton.OK,
-                MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
-                Close();
+                CloseDialog();
+                ShowTextDialog("Không tìm thấy thiết bị Arduino. Vui lòng gọi kỹ thuật viên.", "OK", () =>
+                {
+                    Close();
+                });
                 return;
             }
             await LoadDatabase();
