@@ -11,14 +11,11 @@
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <FontFamily x:Key="Quicksand">pack://application:,,,/Assets/#Quicksand</FontFamily>
             <Style TargetType="AccessText">
-                <Setter Property="FontFamily" Value="{StaticResource Quicksand}"/>
-                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="FontFamily" Value="Quicksand Medium"/>
             </Style>
             <Style TargetType="TextBlock">
-                <Setter Property="FontFamily" Value="{StaticResource Quicksand}"/>
-                <Setter Property="FontWeight" Value="Medium"/>
+                <Setter Property="FontFamily" Value="Quicksand Medium"/>
             </Style>
         </ResourceDictionary>
     </Application.Resources>

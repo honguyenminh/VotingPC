@@ -1,6 +1,8 @@
 // Refactoring the original code is pure pain
 // Someone#9554
 
+// TODO: add mechanism to stop receiving fingerprint until done voting
+
 #include <Adafruit_Fingerprint.h>
 
 SoftwareSerial softSerial(2, 3);
@@ -38,15 +40,11 @@ void loop() {
     // VotingPC mode
     if (isVote) {
         // Read fingerprint
-        uint8_t p = fingerReader.getImage();
-        if (p != FINGERPRINT_OK) return;
-        p = fingerReader.image2Tz();
-        if (p != FINGERPRINT_OK) return;
-        p = fingerReader.fingerFastSearch();
-        if (p != FINGERPRINT_OK) return;
-        else {
-            Serial.print('D'); // Send this when finger found
-        }
+        if (fingerReader.getImage() != FINGERPRINT_OK) return;
+        if (fingerReader.image2Tz() != FINGERPRINT_OK) return;
+        if (fingerReader.fingerFastSearch() != FINGERPRINT_OK) return;
+
+        Serial.print('D'); // Send this when finger found
 
         while (true) {
             if (Serial.available() > 0) {
@@ -54,6 +52,7 @@ void loop() {
                 if (receivedChar == 'X') {
                     // Delete fingerprint
                     fingerReader.deleteModel(fingerReader.fingerID);
+                    break;
                 }
                 else if (receivedChar == 'F') {
                     Serial.println("Internal found");
@@ -97,6 +96,7 @@ void loop() {
                     Serial.print("Đang chờ vân tay số "); Serial.println(id);
                     GetFingerprintEnroll();
                     Serial.println("Internal done");
+                    break;
                 }
             }
         }
