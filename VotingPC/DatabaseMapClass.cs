@@ -10,7 +10,7 @@ namespace VotingPC
 
         [NotNull]
         [Column("Votes")]
-        public int Votes { get; set; }
+        public long Votes { get; set; }
 
         public string Gender { get; set; }
     }
@@ -34,6 +34,6 @@ namespace VotingPC
         [Column("Year")]
         public string Year { get; set; }
 
-        public int TotalVoted { get; set; } = 0;
+        public int TotalVoted { get; set; }
     }
 }
