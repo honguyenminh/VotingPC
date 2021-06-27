@@ -10,6 +10,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
+// TODO: add invalid database check
+
 namespace VotingPC
 {
     public partial class MainWindow : Window
@@ -29,8 +31,8 @@ namespace VotingPC
         /// </summary>
         private async void PasswordDialogButton_Click(object sender, RoutedEventArgs e)
         {
-            CloseDialog();
-            ShowLoadingDialog();
+            dialogs.CloseDialog();
+            dialogs.ShowLoadingDialog();
 
             // Create new SQLite database connection
             SQLiteConnectionString options = new(databasePath, storeDateTimeAsTicks: true, passwordDialog.Password);
@@ -43,10 +45,10 @@ namespace VotingPC
             }
             catch (SQLiteException) // Wrong password
             {
-                CloseDialog();
+                dialogs.CloseDialog();
                 await connection.CloseAsync();
                 // Request password from user again, don't run init code
-                ShowPasswordDialog(true);
+                passwordDialog.Show(true);
                 return;
             }
 
@@ -61,12 +63,12 @@ namespace VotingPC
             // Get serial port
             try
             {
-                serial = await Task.Run(GetArduinoCOMPort);
+                serial = await Task.Run(ArduinoInteract.GetArduinoCOMPort);
             }
             catch (Exception e)
             {
-                CloseDialog();
-                ShowTextDialog("Lỗi tìm thiết bị Arduino. Vui lòng gọi kỹ thuật viên.\n" +
+                dialogs.CloseDialog();
+                dialogs.ShowTextDialog("Lỗi tìm thiết bị Arduino. Vui lòng gọi kỹ thuật viên.\n" +
                     "Mã lỗi: " + e.Message, "OK", () =>
                     {
                         Close();
@@ -76,8 +78,8 @@ namespace VotingPC
             // When no serial port is found, dump error message box, then quit
             if (serial == null)
             {
-                CloseDialog();
-                ShowTextDialog("Không tìm thấy thiết bị Arduino. Vui lòng gọi kỹ thuật viên.", "OK", () =>
+                dialogs.CloseDialog();
+                dialogs.ShowTextDialog("Không tìm thấy thiết bị Arduino. Vui lòng gọi kỹ thuật viên.", "OK", () =>
                 {
                     Close();
                 });
@@ -85,8 +87,8 @@ namespace VotingPC
             }
             await LoadDatabase();
             PopulateVoteUI();
-            CloseDialog();      // Close loading dialog opened above
-            WaitForSignal();    // Wait for serial signal from Arduino
+            dialogs.CloseDialog();  // Close loading dialog opened above
+            WaitForSignal();        // Wait for serial signal from Arduino
         }
         /// <summary>
         /// Asynchronously check for signal from serial port in the background. NEVER await for this.
@@ -106,47 +108,11 @@ namespace VotingPC
                     serial.Write("X");
                     NextPage();
                     ((RadioButton)slide2.votePanel.Children[0]).IsChecked = true;
-                    ShowTextDialog("Đại biểu được bầu sẽ có dấu tích trước tên\n" +
+                    dialogs.ShowTextDialog("Đại biểu được bầu sẽ có dấu tích trước tên\n" +
                         "Nhấp chuột vào tên của người không tín nhiệm để bỏ dấu tích", "Đã rõ");
                     break;
                 }
             }
-        }
-        /// <summary>
-        /// Get SerialPort object linked to the Arduino. Return null if no Arduino found.
-        /// </summary>
-        /// <returns>SerialPort object linked to the Arduino</returns>
-        private SerialPort GetArduinoCOMPort()
-        {
-            string[] COMPorts = SerialPort.GetPortNames();
-            foreach (string COMPort in COMPorts)
-            {
-                SerialPort serialPort = new(COMPort, 115200);
-                serialPort.Open();
-                serialPort.Write("V"); // Pre-defined character, used by the Arduino to acknowledge the PC
-                // Send signle to each COMPort in PC for 5 seconds, if nothing received, dispose serialPort
-                for (int i = 0; i < 10; i++)
-                {
-                    if (serialPort.BytesToRead == 0)
-                    {
-                        Thread.Sleep(500);
-                        serialPort.Write("V");
-                    }
-                    else break;
-                }
-                if (serialPort.BytesToRead == 0)
-                {
-                    serialPort.Dispose();
-                    continue;
-                }
-                int response = serialPort.ReadByte();
-                if (response == 'K')
-                {
-                    return serialPort;
-                }
-                serialPort.Dispose();
-            }
-            return null;
         }
         /// <summary>
         /// Load database into infos and scales Lists
@@ -235,7 +201,6 @@ namespace VotingPC
                 stacks.Add(stackPanel);
                 index++;
             }
-            //currentScaleIndex = 0;
             slide2.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(infos[0].Color));
             slide2.submitButton.Click += SubmitButton_Click;
         }
@@ -303,11 +268,11 @@ namespace VotingPC
 
             if (!validate)
             {
-                ShowTextDialog(errors, "Trở lại");
+                dialogs.ShowTextDialog(errors, "Trở lại");
             }
             else
             {
-                ShowLoadingDialog();
+                dialogs.ShowLoadingDialog();
                 for (int i = 0; i < infos.Count; i++)
                 {
                     for (int j = 0; j < scales[i].Count; j++)
@@ -318,9 +283,9 @@ namespace VotingPC
                         _ = await connection.ExecuteAsync(query);
                     }
                 }
-                CloseDialog();
+                dialogs.CloseDialog();
 
-                ShowTextDialog("Đã nộp phiếu bầu. Chúc một ngày tốt lành.", "Đóng", () =>
+                dialogs.ShowTextDialog("Đã nộp phiếu bầu. Chúc một ngày tốt lành.", "Đóng", () =>
                 {
                     PreviousPage();
                     ResetCheckboxes();

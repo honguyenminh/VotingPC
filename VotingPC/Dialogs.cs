@@ -9,15 +9,22 @@ namespace VotingPC
     /// <summary>
     /// Dialog methods. Should be run from an async method.
     /// </summary>
-    public partial class MainWindow : Window
+    public class Dialogs
     {
+        private readonly DialogHost dialogHost;
+        
+        public Dialogs(DialogHost dialogHost)
+        {
+            this.dialogHost = dialogHost;
+        }
+
         /// <summary>
-        /// Show a text dialog with a button. Should be run from an async method.
+        /// Show a text dialog with a button, close then run a custom method on button click. Should be run from an async method.
         /// </summary>
         /// <param name="text">Text to show</param>
         /// <param name="buttonContent">Content of button</param>
         /// <param name="clickMethod">Method to execute on button click</param>
-        private void ShowTextDialog(string text, string buttonContent, Action clickMethod)
+        public void ShowTextDialog(string text, string buttonContent, Action clickMethod)
         {
             StackPanel stackPanel = new() { Margin = new Thickness(32) };
             TextBlock textBlock = new() { Text = text, TextWrapping = TextWrapping.Wrap };
@@ -43,7 +50,7 @@ namespace VotingPC
         /// </summary>
         /// <param name="text">Text to show</param>
         /// <param name="buttonContent">Content of button</param>
-        private void ShowTextDialog(string text, string buttonContent)
+        public void ShowTextDialog(string text, string buttonContent)
         {
             StackPanel stackPanel = new() { Margin = new Thickness(32) };
             TextBlock textBlock = new() { Text = text, TextWrapping = TextWrapping.Wrap };
@@ -62,7 +69,7 @@ namespace VotingPC
         /// <summary>
         /// Show a circular loading dialog. Should be run from an async method.
         /// </summary>
-        private void ShowLoadingDialog()
+        public void ShowLoadingDialog()
         {
             ProgressBar progressBar = new()
             {
@@ -77,16 +84,12 @@ namespace VotingPC
             };
             _ = dialogHost.ShowDialog(progressBar);
         }
-        private void ShowPasswordDialog(bool falsePassword = false)
-        {
-            passwordDialog.falsePassword = falsePassword;
-            _ = dialogHost.ShowDialog(passwordDialog.Dialog);
-        }
+        
 
         /// <summary>
         /// Close whatever dialog is currently showing. Even if there's none.
         /// </summary>
-        private void CloseDialog()
+        public void CloseDialog()
         {
             if (dialogHost.IsOpen)
             {

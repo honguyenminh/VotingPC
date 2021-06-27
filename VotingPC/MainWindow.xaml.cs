@@ -13,11 +13,15 @@ namespace VotingPC
     {
         private readonly PasswordDialog passwordDialog;
         private string databasePath;
+        private readonly Dialogs dialogs;
         public MainWindow()
         {
             SQLitePCL.Batteries_V2.Init();
             InitializeComponent();
             if (!ShowOpenDatabaseDialog()) return;
+
+            // Init Dialogs class for MaterialDesign dialogs
+            dialogs = new(dialogHost);
 
             // Check if file can be written to or not. Exit if read-only
             try
@@ -26,8 +30,8 @@ namespace VotingPC
             }
             catch
             {
-                CloseDialog();
-                ShowTextDialog("File cơ sở dữ liệu chỉ đọc. Thiếu quyền admin.\n" +
+                dialogs.CloseDialog();
+                dialogs.ShowTextDialog("File cơ sở dữ liệu chỉ đọc. Thiếu quyền admin.\n" +
                     "Vui lòng chạy lại chương trình với quyền admin hoặc\n" +
                     "chuyển file vào nơi có thể ghi được như Desktop.", "OK", () =>
                     {
@@ -36,8 +40,11 @@ namespace VotingPC
                 return;
             }
 
-            passwordDialog = new("Nhập mật khẩu cơ sở dữ liệu:", "Mật khẩu không chính xác hoặc cơ sở dữ liệu không hợp lệ!", "Hoàn tất", PasswordDialogButton_Click);
-            ShowPasswordDialog();
+            passwordDialog = new(dialogHost, 
+                "Nhập mật khẩu cơ sở dữ liệu:",
+                "Mật khẩu không chính xác hoặc cơ sở dữ liệu không hợp lệ!",
+                "Hoàn tất", PasswordDialogButton_Click);
+            passwordDialog.Show();
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
