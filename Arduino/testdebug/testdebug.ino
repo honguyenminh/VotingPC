@@ -1,14 +1,22 @@
 // For debugging only
 // Someone#9554
+// v0.2.2
 
-bool isVote; // Current mode
+#define BUTTON_PIN 2
+
+uint8_t id = 0;
+bool isVote, fingerFound = false; // Current mode
 
 void setup() {
-    pinMode(2, INPUT);
+    pinMode(BUTTON_PIN, INPUT);
     pinMode(LED_BUILTIN, OUTPUT);
     // Start serial at 115200 baud rate
     Serial.begin(115200);
-    // Find mode first
+}
+
+
+void loop() {
+    // Find mode
     while (true) {
         if (Serial.available() > 0) {
             char receivedChar = Serial.read();
@@ -26,90 +34,88 @@ void setup() {
             }
         }
     }
-}
-
-
-void loop() {
+    
     // VotingPC mode
-    if (isVote) {
-        // Read fingerprint signal from button
-        while (digitalRead(2) == HIGH) delay(50);
-        Serial.print('D'); // Send this when finger found
+    while (isVote) {
+        if (Serial.available() > 0) {
+            char receivedChar = Serial.read();
+            // Next fingerprint aka resume reading
+            if (receivedChar == 'N') {
+                // Emulate read fingerprint with button
+                while (digitalRead(BUTTON_PIN) == HIGH) delay(100);
         
-        while (true) {
-            if (Serial.available() > 0) {
-                char receivedChar = Serial.read();
-                if (receivedChar == 'X') {
-                    // Delete fingerprint
-                    // Blink led
+                Serial.print('D'); // Send this when finger found
+                fingerFound = true;
+            }
+            // Delete fingerprint
+            else if (receivedChar == 'X') {
+                if (fingerFound) {
+                    // Blink led to emulate delete fingerprint
                     digitalWrite(LED_BUILTIN, HIGH);
-                    delay(500);
+                    delay(200);
                     digitalWrite(LED_BUILTIN, LOW);
-                    delay(500);
+                    delay(200);
                     digitalWrite(LED_BUILTIN, HIGH);
-                    delay(500);
+                    delay(200);
                     digitalWrite(LED_BUILTIN, LOW);
-                    delay(500);
+                    delay(200);
                     digitalWrite(LED_BUILTIN, HIGH);
-                    delay(500);
+                    delay(200);
                     digitalWrite(LED_BUILTIN, LOW);
-                    delay(500);
+                    delay(200);
                     digitalWrite(LED_BUILTIN, HIGH);
-                    delay(500);
+                    delay(200);
                     digitalWrite(LED_BUILTIN, LOW);
-                    break;
+                    fingerFound = false;
                 }
-                else if (receivedChar == 'F') {
-                    Serial.println("Internal found");
-                    isVote = false;
-                    break;
-                }
-                else if (receivedChar == 'V') {
-                    Serial.print('K');
-                    isVote = true;
-                    break;
-                }
+            }
+            // App closed
+            else if (receivedChar == 'C') {
+                fingerFound = false;
+                return;
+            }
+            // Mode change (should not be run though, just here to be extra safe)
+            else if (receivedChar == 'F') {
+                Serial.println("Internal found");
+                isVote = false;
+                fingerFound = false;
+                break;
+            }
+            else if (receivedChar == 'V') {
+                Serial.print('K');
+                isVote = true;
+                fingerFound = false;
             }
         }
     }
     
     // FingerGet mode
-    else {
-        while (true) {
-            if (Serial.available() > 0) {
-                char receivedChar = Serial.read();
-                if (receivedChar == 'F') {
-                    Serial.println("Internal found");
-                    break;
-                }
-                else if (receivedChar == 'V') {
-                    Serial.print('K');
-                    isVote = true;
-                    break;
-                }
-                else if (receivedChar == 'S') {
-                    // Demo code only
-                    Serial.println("Đang chờ vân tay");
-                    while (digitalRead(2) == HIGH) delay(50);
-                    Serial.println("Xong!");
-                    Serial.println("Internal done");
-                }
+    while (!isVote) {
+        if (Serial.available() > 0) {
+            char receivedChar = Serial.read();
+            // Get fingerprint to memory
+            if (receivedChar == 'S') {
+                id++;
+                // Replace this with generic waiting message if needed
+                Serial.print("Đang chờ vân tay số "); Serial.println(id);
+                // Emulate get fingerprint
+                while (digitalRead(BUTTON_PIN) == HIGH) delay(100);
+                // End session message
+                Serial.println("Internal done");
             }
-        }
-    }
-
-    // Find mode again, in case app is closed then reopened
-    if (Serial.available() > 0) {
-        char receivedChar = Serial.read();
-        // FingerGet signal
-        if (receivedChar == 'F') {
-            Serial.println("Internal found");
-            isVote = false;
-        }
-        // VotingPC signal
-        else if (receivedChar == 'V') {
-            Serial.print('K');
-            isVote = true;
+            // App closed
+            else if (receivedChar == 'C') {
+                break;
+            }
+            // Mode change (should not be run though, just here to be extra safe)
+            else if (receivedChar == 'V') {
+                Serial.print('K');
+                isVote = true;
+                break;
+            }
+            else if (receivedChar == 'F') {
+                Serial.println("Internal found");
+            }
         }
     }
 }

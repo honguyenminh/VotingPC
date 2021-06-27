@@ -19,7 +19,7 @@ namespace VotingPC
             InitializeComponent();
             if (!ShowOpenDatabaseDialog()) return;
 
-            // Check if file can be written to or not
+            // Check if file can be written to or not. Exit if read-only
             try
             {
                 using FileStream file = new(databasePath, FileMode.Open, FileAccess.ReadWrite);
@@ -43,9 +43,9 @@ namespace VotingPC
         {
             if (connection != null) _ = connection.CloseAsync();
             isListening = false;
-            Thread.Sleep(800);
             if (serial != null)
             {
+                serial.Write("C"); // App closed signal
                 serial.Close();
                 serial.Dispose();
             }

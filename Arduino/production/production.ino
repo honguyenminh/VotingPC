@@ -1,21 +1,24 @@
 // Refactoring the original code is pure pain
 // Someone#9554
-
-// TODO: add mechanism to stop receiving fingerprint until done voting
+// v0.2.2
 
 #include <Adafruit_Fingerprint.h>
 
 SoftwareSerial softSerial(2, 3);
 Adafruit_Fingerprint fingerReader = Adafruit_Fingerprint(&softSerial);
 
-uint8_t id, tam;
-bool isVote; // Current mode
+uint8_t id;
+bool isVote, fingerFound = false; // Current mode
 
 void setup() {
     // Start serial at 115200 baud rate
     Serial.begin(115200);
     fingerReader.begin(57600);
-    // Find mode first
+}
+
+
+void loop() {
+    // Find mode
     while (true) {
         if (Serial.available() > 0) {
             char receivedChar = Serial.read();
@@ -33,91 +36,81 @@ void setup() {
             }
         }
     }
-}
-
-
-void loop() {
+    
     // VotingPC mode
-    if (isVote) {
-        // Read fingerprint
-        if (fingerReader.getImage() != FINGERPRINT_OK) return;
-        if (fingerReader.image2Tz() != FINGERPRINT_OK) return;
-        if (fingerReader.fingerFastSearch() != FINGERPRINT_OK) return;
-
-        Serial.print('D'); // Send this when finger found
-
-        while (true) {
-            if (Serial.available() > 0) {
-                char receivedChar = Serial.read();
-                if (receivedChar == 'X') {
-                    // Delete fingerprint
+    while (isVote) {
+        if (Serial.available() > 0) {
+            char receivedChar = Serial.read();
+            // Next fingerprint aka resume reading
+            if (receivedChar == 'N') {
+                // Read fingerprint
+                if (fingerReader.getImage() != FINGERPRINT_OK) continue;
+                if (fingerReader.image2Tz() != FINGERPRINT_OK) continue;
+                if (fingerReader.fingerFastSearch() != FINGERPRINT_OK) continue;
+        
+                Serial.print('D'); // Send this when finger found
+                fingerFound = true;
+            }
+            // Delete fingerprint
+            else if (receivedChar == 'X') {
+                if (fingerFound) {
                     fingerReader.deleteModel(fingerReader.fingerID);
-                    break;
+                    fingerFound = false;
                 }
-                else if (receivedChar == 'F') {
-                    Serial.println("Internal found");
-                    isVote = false;
-                    break;
-                }
-                else if (receivedChar == 'V') {
-                    Serial.print('K');
-                    isVote = true;
-                    break;
-                }
-                
+            }
+            // App closed
+            else if (receivedChar == 'C') {
+                fingerFound = false;
+                return;
+            }
+            // Mode change (should not be run though, just here to be extra safe)
+            else if (receivedChar == 'F') {
+                Serial.println("Internal found");
+                isVote = false;
+                fingerFound = false;
+                break;
+            }
+            else if (receivedChar == 'V') {
+                Serial.print('K');
+                isVote = true;
+                fingerFound = false;
             }
         }
     }
     
     // FingerGet mode
-    else {
-        while (true) {
-            if (Serial.available() > 0) {
-                char receivedChar = Serial.read();
-                if (receivedChar == 'F') {
-                    Serial.println("Internal found");
-                    break;
-                }
-                else if (receivedChar == 'V') {
-                    Serial.print('K');
-                    isVote = true;
-                    break;
-                }
-                else if (receivedChar == 'S') {
-                    // Read fingerprint
-                    fingerReader.getTemplateCount();
-                    id = fingerReader.templateCount + 1;
-                    if (id != tam)
-                    {
-                        tam = id;
-                        Serial.println("Đang chờ xử lí");
-                        delay(1000);
-                    }
-                    Serial.print("Đang chờ vân tay số "); Serial.println(id);
-                    GetFingerprintEnroll();
-                    Serial.println("Internal done");
-                    break;
-                }
+    while (!isVote) {
+        if (Serial.available() > 0) {
+            char receivedChar = Serial.read();
+            // Get fingerprint to memory
+            if (receivedChar == 'S') {
+                // Get total fingerprint already in memory
+                // Remove if not needed to show
+                fingerReader.getTemplateCount();
+                id = fingerReader.templateCount + 1;
+                // Replace this with generic waiting message if needed
+                Serial.print("Đang chờ vân tay số "); Serial.println(id);
+                // Get fingerprint
+                GetFingerprintEnroll();
+                // End session message
+                Serial.println("Internal done");
+            }
+            // App closed
+            else if (receivedChar == 'C') {
+                break;
+            }
+            // Mode change (should not be run though, just here to be extra safe)
+            else if (receivedChar == 'V') {
+                Serial.print('K');
+                isVote = true;
+                break;
+            }
+            else if (receivedChar == 'F') {
+                Serial.println("Internal found");
             }
         }
     }
-
-    // Find mode again, in case app is closed then reopened
-    if (Serial.available() > 0) {
-        char receivedChar = Serial.read();
-        // FingerGet signal
-        if (receivedChar == 'F') {
-            Serial.println("Internal found");
-            isVote = false;
-        }
-        // VotingPC signal
-        else if (receivedChar == 'V') {
-            Serial.print('K');
-            isVote = true;
-        }
-    }
 }
-
 
 
 uint8_t GetFingerprintEnroll() {
@@ -135,7 +128,7 @@ uint8_t GetFingerprintEnroll() {
     {
         p = fingerReader.getImage();
     }
-    Serial.print("ID "); Serial.println(id);
+    // Serial.print("ID "); Serial.println(id);
     
     p = -1;
     Serial.println("Đặt tay lên cảm biến lần nữa.");

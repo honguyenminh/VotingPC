@@ -124,10 +124,7 @@ namespace FingerGet
                         return;
                     }
                 }
-                catch (Exception)
-                {
-                    continue;
-                }
+                catch (Exception) { }
                 
                 serialPort.Dispose();
             }
@@ -138,6 +135,7 @@ namespace FingerGet
             isWaitingForSerial = false;
             if (serial != null)
             {
+                serial.Write("C"); // App closed signal
                 if (serial.IsOpen) serial.Close();
                 serial.Dispose();
             }

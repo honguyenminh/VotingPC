@@ -94,7 +94,7 @@ namespace VotingPC
         private async void WaitForSignal()
         {
             if (serial == null) return;
-            serial.DiscardInBuffer();
+            serial.Write("N"); // Send signal to start the reader
             while (isListening && serial.IsOpen)
             {
                 while (isListening && serial.IsOpen && serial.BytesToRead < 1)
