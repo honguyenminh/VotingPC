@@ -12,7 +12,7 @@ namespace VotingPC
     public class Dialogs
     {
         private readonly DialogHost dialogHost;
-        
+
         public Dialogs(DialogHost dialogHost)
         {
             this.dialogHost = dialogHost;
@@ -54,7 +54,8 @@ namespace VotingPC
         {
             StackPanel stackPanel = new() { Margin = new Thickness(32) };
             TextBlock textBlock = new() { Text = text, TextWrapping = TextWrapping.Wrap };
-            Button button = new() {
+            Button button = new()
+            {
                 Content = buttonContent,
                 Margin = new Thickness(0, 8, 0, 0)
             };
@@ -84,7 +85,7 @@ namespace VotingPC
             };
             _ = dialogHost.ShowDialog(progressBar);
         }
-        
+
 
         /// <summary>
         /// Close whatever dialog is currently showing. Even if there's none.

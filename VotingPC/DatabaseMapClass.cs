@@ -1,4 +1,5 @@
 ﻿using SQLite;
+using System;
 
 namespace VotingPC
 {
@@ -10,10 +11,16 @@ namespace VotingPC
 
         [NotNull]
         [Column("Votes")]
-        public long Votes { get; set; }
+        public long? Votes { get; set; }
 
+        [NotNull]
+        [Column("Gender")]
         public string Gender { get; set; }
+
+        // Return true if all properties are not null
+        public bool IsValid => Name != null && Gender != null && Votes != null;
     }
+    [Table("Info")]
     public class Info
     {
         [NotNull, PrimaryKey, Unique]
@@ -22,18 +29,23 @@ namespace VotingPC
 
         [NotNull]
         [Column("Max")]
-        public int Max { get; set; }
+        public int? Max { get; set; }
 
         [NotNull]
         [Column("Color")]
         public string Color { get; set; }
 
+        [NotNull]
         [Column("Title")]
         public string Title { get; set; }
 
+        [NotNull]
         [Column("Year")]
         public string Year { get; set; }
 
         public int TotalVoted { get; set; }
+
+        // Return true if all properties are not null
+        public bool IsValid => Scale != null && Color != null && Title != null && Year != null && Max != null;
     }
 }

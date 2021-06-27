@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO.Ports;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -85,7 +84,19 @@ namespace VotingPC
                 });
                 return;
             }
+
             await LoadDatabase();
+
+            if (ValidateDatabase() == false)
+            {
+                dialogs.CloseDialog();
+                dialogs.ShowTextDialog("Cơ sở dữ liệu không hợp lệ, vui lòng kiểm tra lại.", "Đóng", () =>
+                {
+                    Close();
+                });
+                return;
+            }
+
             PopulateVoteUI();
             dialogs.CloseDialog();  // Close loading dialog opened above
             WaitForSignal();        // Wait for serial signal from Arduino
@@ -127,6 +138,21 @@ namespace VotingPC
             {
                 scales.Add(await connection.QueryAsync<Scale>(query + info.Scale + "\""));
             }
+        }
+        private static bool ValidateDatabase()
+        {
+            foreach (Info info in infos)
+            {
+                if (!info.IsValid) return false;
+            }
+            foreach (List<Scale> scaleList in scales)
+            {
+                foreach (Scale scale in scaleList)
+                {
+                    if (!scale.IsValid) return false;
+                }
+            }
+            return true;
         }
         /// <summary>
         /// Use loaded database lists to populate vote UI (Scale radio buttons, candidates, (sub)title)

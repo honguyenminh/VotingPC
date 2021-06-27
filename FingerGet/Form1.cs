@@ -104,7 +104,7 @@ namespace FingerGet
                     serialPort.Write("F");
                     for (int i = 0; i < 10; i++)
                     {
-                        Thread.Sleep(500);
+                        Thread.Sleep(100);
                         if (serialPort.BytesToRead == 0)
                         {
                             serialPort.Write("F");
@@ -125,7 +125,7 @@ namespace FingerGet
                     }
                 }
                 catch (Exception) { }
-                
+
                 serialPort.Dispose();
             }
         }

@@ -8,11 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Emblem_of_Vietnam.png" />
-    <None Remove="template.db" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Assets\vpc-icon.ico" />
     <Content Include="template.db">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -28,6 +23,10 @@
     <PackageReference Include="ShowMeTheXAML.MSBuild" Version="2.0.0" />
     <PackageReference Include="sqlite-net-sqlcipher" Version="1.7.335" />
     <PackageReference Include="System.IO.Ports" Version="5.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Emblem_of_Vietnam.png" />
   </ItemGroup>
 
 </Project>

@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.IO;
-using System.Threading;
 using System.Windows;
-using Microsoft.Win32;
 
 namespace VotingPC
 {
@@ -40,7 +39,7 @@ namespace VotingPC
                 return;
             }
 
-            passwordDialog = new(dialogHost, 
+            passwordDialog = new(dialogHost,
                 "Nhập mật khẩu cơ sở dữ liệu:",
                 "Mật khẩu không chính xác hoặc cơ sở dữ liệu không hợp lệ!",
                 "Hoàn tất", PasswordDialogButton_Click);
