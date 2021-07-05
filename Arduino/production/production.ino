@@ -8,14 +8,14 @@ SoftwareSerial softSerial(2, 3);
 Adafruit_Fingerprint fingerReader = Adafruit_Fingerprint(&softSerial);
 
 uint8_t id;
-bool isVote, fingerFound = false; // Current mode
+bool isVote; // Current mode
+bool fingerFound = false, searchForFinger = false;
 
 void setup() {
     // Start serial at 115200 baud rate
     Serial.begin(115200);
     fingerReader.begin(57600);
 }
-
 
 void loop() {
     // Find mode
@@ -41,15 +41,9 @@ void loop() {
     while (isVote) {
         if (Serial.available() > 0) {
             char receivedChar = Serial.read();
-            // Next fingerprint aka resume reading
+            // Next fingerprint or resume reading
             if (receivedChar == 'N') {
-                // Read fingerprint
-                if (fingerReader.getImage() != FINGERPRINT_OK) continue;
-                if (fingerReader.image2Tz() != FINGERPRINT_OK) continue;
-                if (fingerReader.fingerFastSearch() != FINGERPRINT_OK) continue;
-        
-                Serial.print('D'); // Send this when finger found
-                fingerFound = true;
+                searchForFinger = true;
             }
             // Delete fingerprint
             else if (receivedChar == 'X') {
@@ -61,6 +55,7 @@ void loop() {
             // App closed
             else if (receivedChar == 'C') {
                 fingerFound = false;
+                searchForFinger = false;
                 return;
             }
             // Mode change (should not be run though, just here to be extra safe)
@@ -68,12 +63,23 @@ void loop() {
                 Serial.println("Internal found");
                 isVote = false;
                 fingerFound = false;
+                searchForFinger = false;
                 break;
             }
             else if (receivedChar == 'V') {
                 Serial.print('K');
                 isVote = true;
                 fingerFound = false;
+                searchForFinger = false;
+            }
+            else if (searchForFinger) {
+                // Read fingerprint
+                if (fingerReader.getImage() != FINGERPRINT_OK) continue;
+                if (fingerReader.image2Tz() != FINGERPRINT_OK) continue;
+                if (fingerReader.fingerFastSearch() != FINGERPRINT_OK) continue;
+
+                Serial.print('D'); // Send this when finger found
+                fingerFound = true; searchForFinger = false;
             }
         }
     }
