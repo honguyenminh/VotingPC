@@ -83,21 +83,26 @@ namespace VotingPC
                 return;
             }
 
-            await LoadDatabase();
+            try { await LoadDatabase(); }
+            catch (Exception) { InvalidDatabase(); return; }
 
             if (ValidateDatabase() == false)
             {
-                dialogs.CloseDialog();
-                dialogs.ShowTextDialog("Cơ sở dữ liệu không hợp lệ, vui lòng kiểm tra lại.", "Đóng", () =>
-                {
-                    Close();
-                });
+                InvalidDatabase();
                 return;
             }
 
             PopulateVoteUI();
             dialogs.CloseDialog();  // Close loading dialog opened above
             WaitForSignal();        // Wait for serial signal from Arduino
+        }
+        private void InvalidDatabase()
+        {
+            dialogs.CloseDialog();
+            dialogs.ShowTextDialog("Cơ sở dữ liệu không hợp lệ, vui lòng kiểm tra lại.", "Đóng", () =>
+            {
+                Close();
+            });
         }
         /// <summary>
         /// Asynchronously check for signal from serial port in the background. NEVER await for this.
