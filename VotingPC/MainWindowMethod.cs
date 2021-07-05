@@ -9,8 +9,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-// TODO: add invalid database check
-
 namespace VotingPC
 {
     public partial class MainWindow : Window
@@ -18,11 +16,11 @@ namespace VotingPC
         private static SQLiteAsyncConnection connection;
         private static SerialPort serial;
         private static bool isListening = true;
-        private static readonly List<List<Scale>> scales = new(); // List of scales
-        private static List<Info> infos; // List of information about scales
-        // Contains vote stack panels, to preserve their state while user switch between scales
-        private static readonly List<StackPanel> stacks = new();
-        private static int currentScaleIndex;
+        private static readonly List<List<Section>> sections = new();
+        private static List<Info> infos; // List of information about sections
+        // Contains candidate list stack panels, to preserve their state while user switch between sections
+        private static readonly List<StackPanel> candidateLists = new();
+        private static int currentSectionIndex;
 
         #region Functional methods
         /// <summary>
@@ -126,7 +124,7 @@ namespace VotingPC
             }
         }
         /// <summary>
-        /// Load database into infos and scales Lists
+        /// Load database into infos and sections Lists
         /// </summary>
         /// <returns>An awaitable Task that do the work</returns>
         private static async Task LoadDatabase()
@@ -136,7 +134,7 @@ namespace VotingPC
             query = $"SELECT * FROM \"";
             foreach (Info info in infos)
             {
-                scales.Add(await connection.QueryAsync<Scale>(query + info.Scale + "\""));
+                sections.Add(await connection.QueryAsync<Section>(query + info.Section + "\""));
             }
         }
         private static bool ValidateDatabase()
@@ -145,33 +143,34 @@ namespace VotingPC
             {
                 if (!info.IsValid) return false;
             }
-            foreach (List<Scale> scaleList in scales)
+            foreach (List<Section> sectionList in sections)
             {
-                foreach (Scale scale in scaleList)
+                foreach (Section section in sectionList)
                 {
-                    if (!scale.IsValid) return false;
+                    if (!section.IsValid) return false;
                 }
             }
             return true;
         }
         /// <summary>
-        /// Use loaded database lists to populate vote UI (Scale radio buttons, candidates, (sub)title)
+        /// Use loaded database lists to populate vote UI (Section radio buttons, candidates, (sub)title)
         /// </summary>
         private void PopulateVoteUI()
         {
             int index = 0;
             foreach (Info info in infos)
             {
-                // Add a button to scale chooser card on top left
-                RadioButton button = new()
+                // Add a button to section chooser card on top left
+                RadioButton sectionButton = new()
                 {
                     Style = (Style)Application.Current.Resources["MaterialDesignTabRadioButton"],
                     Margin = new Thickness(4),
-                    Content = info.Scale,
+                    Content = info.Section,
                     IsChecked = false
                 };
-                button.Checked += ChangeSlide_Checked;
-                _ = slide2.votePanel.Children.Add(button);
+                sectionButton.Checked += ChangeSlide_Checked;
+                _ = slide2.votePanel.Children.Add(sectionButton);
+
 
                 // Add new page as StackPanel to the voteStack on right hand
                 StackPanel stackPanel = new()
@@ -179,9 +178,8 @@ namespace VotingPC
                     Margin = new Thickness(72, 40, 72, 40),
                     HorizontalAlignment = HorizontalAlignment.Left
                 };
-
-                currentScaleIndex = index;
-                foreach (Scale item in scales[index])
+                currentSectionIndex = index;
+                foreach (Section item in sections[index])
                 {
                     TextBlock content = new() { TextTrimming = TextTrimming.WordEllipsis };
 
@@ -192,7 +190,6 @@ namespace VotingPC
                         "Ông" => "Ông   " + item.Name,
                         _ => item.Gender + "   " + item.Name
                     };
-
                     CheckBox checkBox = new()
                     {
                         Content = content,
@@ -224,7 +221,7 @@ namespace VotingPC
 
                     _ = stackPanel.Children.Add(checkBox);
                 }
-                stacks.Add(stackPanel);
+                candidateLists.Add(stackPanel);
                 index++;
             }
             slide2.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(infos[0].Color));
@@ -233,9 +230,9 @@ namespace VotingPC
         private static void ResetCheckboxes()
         {
             int i = 0;
-            foreach (StackPanel stack in stacks)
+            foreach (StackPanel stack in candidateLists)
             {
-                currentScaleIndex = i;
+                currentSectionIndex = i;
                 foreach (CheckBox checkBox in stack.Children)
                 {
                     if (!(bool)checkBox.IsChecked)
@@ -266,11 +263,11 @@ namespace VotingPC
         // Interaction for slides. Bad practice but eh, the app is extremely simple, so...
         private void CheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            infos[currentScaleIndex].TotalVoted++;
+            infos[currentSectionIndex].TotalVoted++;
         }
         private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
         {
-            infos[currentScaleIndex].TotalVoted--;
+            infos[currentSectionIndex].TotalVoted--;
         }
         private async void SubmitButton_Click(object sender, RoutedEventArgs e)
         {
@@ -283,11 +280,11 @@ namespace VotingPC
                     errors += "\n - Phiếu bầu " + infos[i].Title;
                     continue;
                 }
-                for (int j = 0; j < scales[i].Count; j++)
+                for (int j = 0; j < sections[i].Count; j++)
                 {
-                    if ((bool)((CheckBox)stacks[i].Children[j]).IsChecked)
+                    if ((bool)((CheckBox)candidateLists[i].Children[j]).IsChecked)
                     {
-                        scales[i][j].Votes++;
+                        sections[i][j].Votes++;
                     }
                 }
             }
@@ -301,20 +298,21 @@ namespace VotingPC
                 dialogs.ShowLoadingDialog();
                 for (int i = 0; i < infos.Count; i++)
                 {
-                    for (int j = 0; j < scales[i].Count; j++)
+                    for (int j = 0; j < sections[i].Count; j++)
                     {
-                        string name = scales[i][j].Name.Replace("\'", "\'\'");
+                        string name = sections[i][j].Name.Replace("\'", "\'\'");
                         // Save stuff to db file
-                        string query = $"UPDATE \"{infos[i].Scale}\" SET Votes = {scales[i][j].Votes} WHERE Name = '{name}';";
+                        string query = $"UPDATE \"{infos[i].Section}\" SET Votes = {sections[i][j].Votes} WHERE Name = '{name}';";
                         _ = await connection.ExecuteAsync(query);
                     }
                 }
                 dialogs.CloseDialog();
 
-                dialogs.ShowTextDialog("Đã nộp phiếu bầu. Chúc một ngày tốt lành.", "Đóng", () =>
+                dialogs.ShowTextDialog("Đã nộp phiếu bầu. Chúc một ngày tốt lành.", "Đóng", async () =>
                 {
                     PreviousPage();
                     ResetCheckboxes();
+                    await Task.Delay(1000);
                     WaitForSignal();
                 });
             }
@@ -326,13 +324,13 @@ namespace VotingPC
         /// <param name="e"></param>
         private void ChangeSlide_Checked(object sender, RoutedEventArgs e)
         {
-            currentScaleIndex = slide2.votePanel.Children.IndexOf((UIElement)sender);
+            currentSectionIndex = slide2.votePanel.Children.IndexOf((UIElement)sender);
             slide2.voteStack.Children.Clear();
-            _ = slide2.voteStack.Children.Add(stacks[currentScaleIndex]);
+            _ = slide2.voteStack.Children.Add(candidateLists[currentSectionIndex]);
 
-            slide2.title.Text = "Đại biểu " + infos[currentScaleIndex].Title + " " + infos[currentScaleIndex].Year;
-            slide2.caption.Text = "Chọn đúng " + infos[currentScaleIndex].Max + " người";
-            slide2.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(infos[currentScaleIndex].Color));
+            slide2.title.Text = "Đại biểu " + infos[currentSectionIndex].Title + " " + infos[currentSectionIndex].Year;
+            slide2.caption.Text = "Chọn đúng " + infos[currentSectionIndex].Max + " người";
+            slide2.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(infos[currentSectionIndex].Color));
             slide2.voteCard.MinWidth = slide2.mainGrid.ColumnDefinitions[1].ActualWidth - 120;
         }
 

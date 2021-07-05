@@ -1,9 +1,8 @@
 ﻿using SQLite;
-using System;
 
 namespace VotingPC
 {
-    public class Scale
+    public class Section
     {
         [NotNull, PrimaryKey, Unique]
         [Column("Name")]
@@ -24,8 +23,8 @@ namespace VotingPC
     public class Info
     {
         [NotNull, PrimaryKey, Unique]
-        [Column("Scale")]
-        public string Scale { get; set; }
+        [Column("Section")]
+        public string Section { get; set; }
 
         [NotNull]
         [Column("Max")]
@@ -46,6 +45,6 @@ namespace VotingPC
         public int TotalVoted { get; set; }
 
         // Return true if all properties are not null
-        public bool IsValid => Scale != null && Color != null && Title != null && Year != null && Max != null;
+        public bool IsValid => Section != null && Color != null && Title != null && Year != null && Max != null;
     }
 }
