@@ -31,7 +31,8 @@ namespace VotingPC
             Button button = new()
             {
                 Content = buttonContent,
-                Margin = new Thickness(0, 8, 0, 0)
+                Margin = new Thickness(0, 8, 0, 0),
+                FocusVisualStyle = null
             };
             button.Click += (sender, e) =>
             {
@@ -57,7 +58,8 @@ namespace VotingPC
             Button button = new()
             {
                 Content = buttonContent,
-                Margin = new Thickness(0, 8, 0, 0)
+                Margin = new Thickness(0, 8, 0, 0),
+                FocusVisualStyle = null
             };
             button.Click += (sender, e) => CloseDialog();
             button.Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"];
@@ -79,7 +81,9 @@ namespace VotingPC
                 Margin = new Thickness(32),
                 IsIndeterminate = true,
                 Value = 0,
-                LayoutTransform = new ScaleTransform(2, 2)
+                LayoutTransform = new ScaleTransform(2, 2),
+                IsTabStop = false,
+                FocusVisualStyle = null
                 //RenderTransform = new ScaleTransform(2, 2),
                 //RenderTransformOrigin = new Point(0.5, 0.5)
             };
