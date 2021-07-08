@@ -92,6 +92,8 @@ namespace VotingPC
                 return;
             }
 
+            // TODO: Show database warnings/errors here
+
             PopulateVoteUI();
             dialogs.CloseDialog();  // Close loading dialog opened above
             WaitForSignal();        // Wait for serial signal from Arduino

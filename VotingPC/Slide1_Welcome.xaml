@@ -15,16 +15,16 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Image Height="140" Width="140" Grid.Row="0" Margin="36 18"
-                Source="Assets/Emblem_of_Vietnam.png"
+               Source="Assets/Emblem_of_Vietnam.png" x:Name="logoImage"
                VerticalAlignment="Center" HorizontalAlignment="Left"/>
         <StackPanel Margin="0 36" Orientation="Vertical"
                     HorizontalAlignment="Center" VerticalAlignment="Center">
                 <TextBlock x:Name="textBlock" Text="CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM"
-                           HorizontalAlignment="Center"
+                           HorizontalAlignment="Center" Margin="0 0 0 8"
                            FontWeight="Bold" FontSize="40"/>
-                <Line Stroke="Black" StrokeThickness="3" Margin="0 10"
-                      X1="0" X2="{Binding ActualWidth, ElementName=textBlock, Mode=OneWay}"/>
-                <TextBlock Text="Độc lập - Tự do - Hạnh phúc" FontSize="36"
+            <Line Stroke="Black" StrokeThickness="3" Margin="0 10"
+                  HorizontalAlignment="Center" X1="0" X2="300"/>
+            <TextBlock Text="Độc lập - Tự do - Hạnh phúc" FontSize="36"
                            HorizontalAlignment="Center" FontWeight="Normal"/>
         </StackPanel>
 

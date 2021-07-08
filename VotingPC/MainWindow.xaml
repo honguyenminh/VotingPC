@@ -14,6 +14,7 @@
         WindowState="Maximized" WindowStyle="None"
         Title="If you see this, the app is broken"
         Closing="Window_Closing"
+        Loaded="Window_Loaded"
         Width="1280" Height="720">
     <materialDesign:DialogHost x:Name="dialogHost">
         <materialDesign:Transitioner x:Name="TransitionerObj" SelectedIndex="0">

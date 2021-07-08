@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace VotingPC
 {
@@ -13,14 +14,40 @@ namespace VotingPC
         private readonly PasswordDialog passwordDialog;
         private string databasePath;
         private readonly Dialogs dialogs;
+        private readonly string[] supportedIconExt = { ".png", ".jpg", ".jpeg", ".jpe", ".gif", ".ico", ".tiff", ".bmp" };
         public MainWindow()
         {
             SQLitePCL.Batteries_V2.Init();
             InitializeComponent();
-            if (!ShowOpenDatabaseDialog()) return;
 
-            // Init Dialogs class for MaterialDesign dialogs
+            // Replace logo with custom image in app folder if exists and is valid
+            string appFolder = AppDomain.CurrentDomain.BaseDirectory;
+            foreach (string extension in supportedIconExt)
+            {
+                string filePath = appFolder + "\\logo" + extension;
+                if (File.Exists(filePath))
+                {
+                    try
+                    {
+                        BitmapImage image = new(new Uri(filePath, UriKind.Absolute));
+                        slide1.logoImage.Source = image;
+                        break;
+                    }
+                    catch (Exception) { }
+                }
+            }
+
+            // Init Dialogs classes for MaterialDesign dialogs
             dialogs = new(dialogHost);
+            passwordDialog = new(dialogHost,
+                "Nhập mật khẩu cơ sở dữ liệu:",
+                "Mật khẩu không chính xác hoặc cơ sở dữ liệu không hợp lệ!",
+                "Hoàn tất", PasswordDialogButton_Click);
+        }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Open file dialog
+            if (!ShowOpenDatabaseDialog()) return;
 
             // Check if file can be written to or not. Exit if read-only
             try
@@ -39,10 +66,6 @@ namespace VotingPC
                 return;
             }
 
-            passwordDialog = new(dialogHost,
-                "Nhập mật khẩu cơ sở dữ liệu:",
-                "Mật khẩu không chính xác hoặc cơ sở dữ liệu không hợp lệ!",
-                "Hoàn tất", PasswordDialogButton_Click);
             passwordDialog.Show();
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

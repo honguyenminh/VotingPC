@@ -16,10 +16,10 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-            <StackPanel Grid.Column="0" Orientation="Vertical">
+            <VirtualizingStackPanel Grid.Column="0" Orientation="Vertical">
                 <ScrollViewer Margin="40 30 40 50" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
                     <materialDesign:Card Margin="10" Height="56" Width="{Binding ActualWidth, ElementName=votePanel, Mode=OneWay}">
-                        <StackPanel x:Name="votePanel" Orientation="Horizontal"
+                        <VirtualizingStackPanel x:Name="votePanel" Orientation="Horizontal"
                                 Margin="10 4" HorizontalAlignment="Center"/>
                     </materialDesign:Card>
                 </ScrollViewer>
@@ -37,7 +37,7 @@
                     Background="#C02F1D" BorderBrush="#C02F1D"
                     Style="{StaticResource MaterialDesignRaisedButton}"
                     Width="200" Height="60" Margin="50" FontSize="30"/>
-            </StackPanel>
+            </VirtualizingStackPanel>
         </ScrollViewer>
         <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <materialDesign:Card x:Name="voteCard" Margin="50" HorizontalAlignment="Left"
