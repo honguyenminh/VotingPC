@@ -1,6 +1,6 @@
 // Refactoring the original code is pure pain
 // Someone#9554
-// v0.2.2
+// v0.2.2+
 
 #include <Adafruit_Fingerprint.h>
 
@@ -72,15 +72,15 @@ void loop() {
                 fingerFound = false;
                 searchForFinger = false;
             }
-            else if (searchForFinger) {
-                // Read fingerprint
-                if (fingerReader.getImage() != FINGERPRINT_OK) continue;
-                if (fingerReader.image2Tz() != FINGERPRINT_OK) continue;
-                if (fingerReader.fingerFastSearch() != FINGERPRINT_OK) continue;
+        }
+        else if (searchForFinger) {
+            // Read fingerprint
+            if (fingerReader.getImage() != FINGERPRINT_OK) continue;
+            if (fingerReader.image2Tz() != FINGERPRINT_OK) continue;
+            if (fingerReader.fingerFastSearch() != FINGERPRINT_OK) continue;
 
-                Serial.print('D'); // Send this when finger found
-                fingerFound = true; searchForFinger = false;
-            }
+            Serial.print('D'); // Send this when finger found
+            fingerFound = true; searchForFinger = false;
         }
     }
     
@@ -127,7 +127,7 @@ uint8_t GetFingerprintEnroll() {
         p = fingerReader.getImage();
     }
     
-    p = fingerReader.image2Tz(1);
+    fingerReader.image2Tz(1);
     Serial.println("Lấy tay ra khỏi cảm biến.");
     p = 0;
     while (p != FINGERPRINT_NOFINGER)
@@ -180,7 +180,7 @@ uint8_t GetFingerprintEnroll() {
             Serial.println("Lỗi viết bộ nhớ");
             return p;
         default:
-            Serial.println("Lỗi");
+            Serial.println("Lỗi không rõ");
             return p;
     }
     return p;
