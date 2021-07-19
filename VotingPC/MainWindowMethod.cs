@@ -16,7 +16,7 @@ namespace VotingPC
         private static SQLiteAsyncConnection connection;
         private static SerialPort serial;
         private static bool isListening = true;
-        private static readonly List<List<Section>> sections = new();
+        private static readonly List<List<Candidate>> sections = new();
         private static List<Info> infos; // List of information about sections
         // Contains candidate list stack panels, to preserve their state while user switch between sections
         private static readonly List<StackPanel> candidateLists = new();
@@ -141,7 +141,7 @@ namespace VotingPC
             query = $"SELECT * FROM \"";
             foreach (Info info in infos)
             {
-                sections.Add(await connection.QueryAsync<Section>(query + info.Section + "\""));
+                sections.Add(await connection.QueryAsync<Candidate>(query + info.Section + "\""));
             }
         }
         private static bool ValidateDatabase()
@@ -150,9 +150,9 @@ namespace VotingPC
             {
                 if (!info.IsValid) return false;
             }
-            foreach (List<Section> sectionList in sections)
+            foreach (List<Candidate> sectionList in sections)
             {
-                foreach (Section section in sectionList)
+                foreach (Candidate section in sectionList)
                 {
                     if (!section.IsValid) return false;
                 }
@@ -186,7 +186,7 @@ namespace VotingPC
                     HorizontalAlignment = HorizontalAlignment.Left
                 };
                 currentSectionIndex = index;
-                foreach (Section item in sections[index])
+                foreach (Candidate item in sections[index])
                 {
                     TextBlock content = new() { TextTrimming = TextTrimming.WordEllipsis };
 

@@ -5,7 +5,7 @@ using System.Windows.Media;
 
 namespace VotingPC
 {
-    internal class PasswordDialog
+    public class PasswordDialog
     {
         private readonly DialogHost dialogHost;
         private readonly RoutedEventHandler buttonClickHandler;

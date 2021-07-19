@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 
 // TODO: finish making database error logs
+// TODO: throw after all error found.
 
 namespace VotingPC
 {
@@ -10,7 +11,7 @@ namespace VotingPC
         public const int StringMaxLength = 128;
         public const int SmallStringMaxLength = 64;
     }
-    public class Section
+    public class Candidate
     {
         // Private fields
         private string name;

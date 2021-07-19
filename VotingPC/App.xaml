@@ -7,11 +7,13 @@
     <Application.Resources>
         <ResourceDictionary>
             
+            <!--Material Design theme-->
             <ResourceDictionary.MergedDictionaries>
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
             
+            <!--Change text fonts-->
             <Style TargetType="AccessText">
                 <Setter Property="FontFamily" Value="Quicksand"/>
                 <Setter Property="FontWeight" Value="Medium"/>
@@ -21,6 +23,7 @@
                 <Setter Property="FontWeight" Value="Medium"/>
             </Style>
 
+            <!--An attempt at removing the annoying tab stop shape-->
             <Style TargetType="materialDesign:Card">
                 <Setter Property="Focusable" Value="False"/>
                 <Setter Property="IsTabStop" Value="False"/>
