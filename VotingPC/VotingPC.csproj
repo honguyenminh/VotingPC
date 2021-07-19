@@ -29,4 +29,6 @@
     <Resource Include="Assets\Emblem_of_Vietnam.png" />
   </ItemGroup>
 
+  <Import Project="..\SharedLibs\SharedLibs.projitems" Label="Shared" />
+
 </Project>
