@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="VoteCounter.Slide2_Overview"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:VoteCounter"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" d:Background="White"
+             d:DesignHeight="640" d:DesignWidth="1200">
+    <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled"
+                  VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="72 16" x:Name="OverviewStackPanel">
+            <TextBlock Text="Kết quả bầu cử - Tổng quan"
+                       Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center"
+                       Margin="0 20 0 24" FontSize="42" FontWeight="SemiBold"/>
+            <d:StackPanel>
+                <local:DisplayCard Margin="0 16 56 16"/>
+                <local:DisplayCard Margin="56 16 0 16"/>
+                <local:DisplayCard Margin="0 16 56 16"/>
+                <local:DisplayCard Margin="56 16 0 16"/>
+            </d:StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

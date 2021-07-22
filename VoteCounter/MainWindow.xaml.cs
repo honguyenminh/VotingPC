@@ -16,6 +16,8 @@ using System.Windows.Shapes;
 using SQLite;
 using System.IO;
 using Microsoft.Win32;
+using Ookii.Dialogs.Wpf;
+using MaterialDesignThemes.Wpf.Transitions;
 
 namespace VoteCounter
 {
@@ -26,12 +28,11 @@ namespace VoteCounter
     {
         #region Global variables
         private readonly PasswordDialog passwordDialog;
-        private static string databasePath;
+        private static string[] databasePath;
         private readonly Dialogs dialogs;
-        private static readonly List<List<Candidate>> sections = new();
+        private static readonly Dictionary<string, List<Candidate>> sections = new();
         // List of information about sections (each section is a list of candidates)
-        private static List<Info> infos;
-        private static SQLiteAsyncConnection connection;
+        private static HashSet<Info> infos;
         #endregion
 
         public MainWindow()
@@ -45,58 +46,57 @@ namespace VoteCounter
                 "Nhập mật khẩu cơ sở dữ liệu:",
                 "Mật khẩu không chính xác hoặc cơ sở dữ liệu không hợp lệ!",
                 "Hoàn tất", PasswordDialogButton_Click);
+
+            // Set click event handlers for buttons in slide 1
+            SlideLanding.SingleFileButton.Click += SingleFileButton_Click;
+            SlideLanding.MultipleFileButton.Click += MultipleFileButton_Click;
+            SlideLanding.FolderButton.Click += FolderButton_Click;
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        // Button click events
+        private void SingleFileButton_Click(object sender, RoutedEventArgs e)
         {
             // Open file dialog
             if (!ShowOpenDatabaseDialog()) return;
 
-            // Check if file can be read or not. Exit if can't be read or not exist
-            try
-            {
-                using FileStream file = new(databasePath, FileMode.Open, FileAccess.Read);
-            }
-            catch
-            {
-                dialogs.CloseDialog();
-                dialogs.ShowTextDialog("File cơ sở dữ liệu chỉ đọc. Thiếu quyền admin.\n" +
-                    "Vui lòng chạy lại chương trình với quyền admin hoặc\n" +
-                    "chuyển file vào nơi có thể ghi được như Desktop.", "OK", () =>
-                    {
-                        Close();
-                    });
-                return;
-            }
+            passwordDialog.Show();
+        }
+        private void MultipleFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Open file dialog
+            if (!ShowOpenDatabaseDialog(multiFile: true)) return;
 
             passwordDialog.Show();
         }
+        private void FolderButton_Click(object sender, RoutedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
 
         /// <summary>
-        /// Show Windows's default open file dialog to select database file, then save path to databasePath
+        /// Show Windows's default open file dialog to select database file(s), then save paths to databasePath
         /// </summary>
-        /// <returns>True if file if selected, else</returns>
-        private bool ShowOpenDatabaseDialog()
+        /// <param name="multiFile">Allow multiple file or not</param>
+        /// <returns>True if file(s) if selected, else false</returns>
+        private static bool ShowOpenDatabaseDialog(bool multiFile = false)
         {
             OpenFileDialog openFileDialog = new()
             {
                 Filter = "Database file (*.db)|*.db",
-                Multiselect = false,
                 Title = "Chọn tệp cơ sở dữ liệu",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
             };
 
+            openFileDialog.Multiselect = multiFile;
+
             if (openFileDialog.ShowDialog() == true)
             {
-                databasePath = openFileDialog.FileName;
+                databasePath = openFileDialog.FileNames;
                 return true;
             }
-            else
-            {
-                Close();
-                return false;
-            }
+            else return false;
         }
+
         /// <summary>
         /// Click handler for the Password Dialog button.
         /// </summary>
@@ -105,66 +105,109 @@ namespace VoteCounter
             dialogs.CloseDialog();
             dialogs.ShowLoadingDialog();
 
-            // Create new SQLite database connection
-            SQLiteConnectionString options = new(databasePath, storeDateTimeAsTicks: true, passwordDialog.Password);
-            connection = new SQLiteAsyncConnection(options);
-
-            try
+            foreach (string database in databasePath)
             {
-                //This will try to query the SQLite Schema Database, if the key is correct then no error is raised
-                _ = await connection.QueryAsync<int>("SELECT count(*) FROM sqlite_master");
-            }
-            catch (SQLiteException) // Wrong password
-            {
-                dialogs.CloseDialog();
-                await connection.CloseAsync();
-                // Request password from user again, don't run init code
-                passwordDialog.Show(true);
-                return;
+                // Check if file can be read or not. Exit if can't be read or not exist
+                try
+                {
+                    using FileStream file = new(database, FileMode.Open, FileAccess.Read);
+                }
+                catch
+                {
+                    dialogs.CloseDialog();
+                    dialogs.ShowTextDialog("Không đủ quyền đọc file đã chọn.\n" +
+                        "Vui lòng chạy lại chương trình với quyền admin hoặc\n" +
+                        "chuyển file vào nơi có thể đọc được như Desktop.", "OK", () =>
+                        {
+                            Close();
+                        });
+                    return;
+                }
+
+                // Create new SQLite database connection for each file
+                SQLiteConnectionString options = new(database, storeDateTimeAsTicks: true, passwordDialog.Password);
+                SQLiteAsyncConnection connection = new(options);
+
+                // Check password
+                try
+                {
+                    //This will try to query the SQLite Schema Database, if the key is correct then no error is raised
+                    _ = await connection.QueryAsync<int>("SELECT count(*) FROM sqlite_master");
+                }
+                catch (SQLiteException) // Wrong password
+                {
+                    dialogs.CloseDialog();
+                    await connection.CloseAsync();
+                    // Request password from user again, don't run init code
+                    passwordDialog.Show(true);
+                    return;
+                }
+
+                // Parse data from database
+                try
+                {
+                    // Get infos about sections in current file
+                    string query = $"SELECT * FROM Info";
+                    List<Info> currentFileInfos = await connection.QueryAsync<Info>(query);
+                    // If infos is not read before, just save the object
+                    if (infos == null)
+                        infos = currentFileInfos.ToHashSet();
+                    // Merge two infos if infos is read already
+                    else
+                    {
+                        foreach (Info info in currentFileInfos)
+                        {
+                            _ = infos.Add(info);
+                        }
+                    }
+
+                    query = $"SELECT * FROM \"";
+                    foreach (Info section in currentFileInfos)
+                    {
+                        List<Candidate> candidateList = await connection.QueryAsync<Candidate>(query + section.Section + "\"");
+                        // If section not yet saved, save new section into sections collection
+                        if (!sections.ContainsKey(section.Section))
+                        {
+                            sections.Add(section.Section, candidateList);
+                            continue;
+                        }
+
+                        // Else merge with current file's section
+                        Dictionary<string, Candidate> candidateDict = candidateList.ToDictionary(x => x.Name, x => x);
+                        foreach (Candidate candidate in sections[section.Section])
+                        {
+                            if (candidateDict.ContainsKey(candidate.Name))
+                            {
+                                candidate.Votes += candidateDict[candidate.Name].Votes;
+                            }
+                            else throw new InvalidDataException();
+                        }
+                    }
+
+                    // TODO: replace one time validation with validate after every file read
+                    if (ValidateDatabase() == false) throw new InvalidDataException();
+                }
+                catch
+                {
+                    InvalidDatabase(); return;
+                }
             }
 
-            // If thing goes well aka correct password, run the init code
-            Init();
+            // The line below equals to await Task.Run(PopulateUI); but WPF is stupid so...
+            Application.Current.Dispatcher.Invoke(PopulateUI);
+            dialogs.CloseDialog();
+            NextPage();
         }
 
 
         ///***********************************************************///
         /// Loading section
         ///***********************************************************///
-
-        /// <summary>
-        /// Try to read from database and validate content
-        /// </summary>
-        private async void Init()
-        {
-            // Try to load database
-            try { await LoadDatabase(); }
-            catch (Exception) { InvalidDatabase(); return; }
-
-            if (ValidateDatabase() == false)
-            {
-                InvalidDatabase();
-                return;
-            }
-
-            PopulateVoteUI();
-            dialogs.CloseDialog();
-        }
         /// <summary>
         /// Load database into infos and sections Lists
         /// </summary>
         /// <returns>An awaitable Task that do the work</returns>
         #region Database loading and validating
-        private static async Task LoadDatabase()
-        {
-            string query = $"SELECT * FROM Info";
-            infos = await connection.QueryAsync<Info>(query);
-            query = $"SELECT * FROM \"";
-            foreach (Info info in infos)
-            {
-                sections.Add(await connection.QueryAsync<Candidate>(query + info.Section + "\""));
-            }
-        }
         private void InvalidDatabase()
         {
             dialogs.CloseDialog();
@@ -179,11 +222,11 @@ namespace VoteCounter
             {
                 if (!info.IsValid) return false;
             }
-            foreach (List<Candidate> sectionList in sections)
+            foreach (KeyValuePair<string, List<Candidate>> candidateList in sections)
             {
-                foreach (Candidate section in sectionList)
+                foreach (Candidate candidate in candidateList.Value)
                 {
-                    if (!section.IsValid) return false;
+                    if (!candidate.IsValid) return false;
                 }
             }
             return true;
@@ -193,13 +236,60 @@ namespace VoteCounter
         /// <summary>
         /// Use loaded database lists to populate vote UI
         /// </summary>
-        private void PopulateVoteUI()
+        private void PopulateUI()
         {
-            int index = 0;
+            bool left = true;
             foreach (Info info in infos)
             {
-                  
+                // Sort the candidate list
+                SortByHighestVotes(sections[info.Section]);
+
+                DisplayCard displayCard = new(info, sections[info.Section]);
+                if (left)
+                {
+                    displayCard.Margin = new(0, 16, 56, 16);
+                    left = false;
+                }
+                else
+                {
+                    displayCard.Margin = new(56, 16, 0, 16);
+                    left = true;
+                }
+
+                // TODO: implement the detail slide here instead of this
+                displayCard.Click += (sender, e) => { dialogs.ShowTextDialog("Hello, click được nhá.\nNhớ thêm cái slide detail đấy.", "OK"); };
+                _ = SlideOverview.OverviewStackPanel.Children.Add(displayCard);
             }
         }
+
+        /// <summary>
+        /// Sort the given list of Candidate by highest votes to lowest votes
+        /// </summary>
+        /// <param name="candidates">List of candidates to sort</param>
+        private static void SortByHighestVotes(List<Candidate> candidates)
+        {
+            // Compare function, hover over new() for more info on how this works
+            Comparison<Candidate> comparison = new((x, y) => (int)y.Votes - (int)x.Votes);
+            candidates.Sort(comparison);
+        }
+
+        #region Transitioner methods
+        /// <summary>
+        /// Move to next Slide
+        /// </summary>
+        private void NextPage()
+        {
+            // 0 is argument, meaning no arg
+            // Pass object as second argument
+            Transitioner.MoveNextCommand.Execute(0, TransitionerObj);
+        }
+        /// <summary>
+        /// Move to previous Slide
+        /// </summary>
+        private void PreviousPage()
+        {
+            Transitioner.MovePreviousCommand.Execute(0, TransitionerObj);
+        }
+        #endregion
     }
 }

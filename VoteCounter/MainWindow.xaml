@@ -4,41 +4,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VoteCounter"
-        mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        mc:Ignorable="d"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
         TextElement.FontSize="14"
         FontFamily="{materialDesign:MaterialDesignFont}"
         WindowState="Maximized" WindowStyle="None"
-        Loaded="Window_Loaded"
-        Title="MainWindow" Height="450" Width="800">
-    <materialDesign:DialogHost x:Name="dialogHost">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-
-            <TextBlock Text="Kết quả bầu cử - Tổng quan"
-                       Grid.Row="0" Grid.ColumnSpan="2"
-                       Margin="24" FontSize="26"/>
-
-            <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled"
-                          VerticalScrollBarVisibility="Auto">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <VirtualizingStackPanel x:Name="LeftStackPanel"
-                                        Grid.Row="1" Grid.Column="0"/>
-
-                    <VirtualizingStackPanel x:Name="RightStackPanel"
-                                        Grid.Row="1" Grid.Column="1"/>
-                </Grid>
-            </ScrollViewer>
-        </Grid>
+        Title="MainWindow" d:Height="640" d:Width="1200">
+    <materialDesign:DialogHost x:Name="dialogHost" IsTabStop="False">
+        <materialDesign:Transitioner x:Name="TransitionerObj" SelectedIndex="0" IsTabStop="False">
+            <local:Slide1_Landing x:Name="SlideLanding"/>
+            <local:Slide2_Overview x:Name="SlideOverview"/>
+        </materialDesign:Transitioner>
     </materialDesign:DialogHost>
 </Window>

@@ -1,0 +1,42 @@
+﻿<UserControl x:Class="VoteCounter.DisplayCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:VoteCounter"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" 
+             d:DesignHeight="260" d:DesignWidth="600">
+    <materialDesign:Card Height="Auto">
+        <VirtualizingStackPanel Margin="24">
+            <!--Name of section-->
+            <TextBlock x:Name="SectionTextBlock" Margin="16 0 16 12"
+                       Text="Cấp mẫu 1" FontSize="32"/>
+            
+            <!--Seperator Line-->
+            <Line Grid.RowSpan="2" X1="0" X2="100000" Y1="0" Y2="0"
+                      HorizontalAlignment="Right" VerticalAlignment="Center"
+                      StrokeThickness="3" Stroke="{DynamicResource MaterialDesignDarkSeparatorBackground}"/>
+            
+            <!--Name of the winning candidate-->
+            <TextBlock x:Name="NameTextBlock" Margin="16 10"
+                   Text="Nguyễn Văn A" FontSize="42" FontWeight="SemiBold"/>
+            
+            <!--Additional infos-->
+            <StackPanel Orientation="Horizontal" Margin="16 6 0 0">
+                <materialDesign:PackIcon Kind="AccountMultipleCheck" Height="36" VerticalAlignment="Center"
+                                         Width="{Binding Height, RelativeSource={RelativeSource Self}}"/>
+                <TextBlock FontSize="24" Text="Tổng phiếu bầu:"
+                           Margin="4 0 12 0" VerticalAlignment="Center"/>
+                <TextBlock x:Name="TotalVoteTextBlock" Text="260" FontSize="28" VerticalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="16 3 0 0">
+                <materialDesign:PackIcon Kind="ArchiveMarkerOutline" Height="36" VerticalAlignment="Center"
+                                         Width="{Binding Height, RelativeSource={RelativeSource Self}}"/>
+                <TextBlock FontSize="24" Text="Số nơi đắc cử:"
+                           Margin="4 0 12 0" VerticalAlignment="Center"/>
+                <TextBlock x:Name="PlacesTop1TextBlock" Text="16" FontSize="28" VerticalAlignment="Center"/>
+            </StackPanel>
+        </VirtualizingStackPanel>
+    </materialDesign:Card>
+</UserControl>
