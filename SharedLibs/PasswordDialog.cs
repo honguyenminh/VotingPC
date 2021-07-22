@@ -9,7 +9,7 @@ namespace VotingPC
     {
         private readonly DialogHost dialogHost;
         private readonly RoutedEventHandler buttonClickHandler;
-        public bool falsePassword;
+        private bool falsePassword;
         private readonly string wrongPasswordTitle;
         private readonly StackPanel stackPanel;
         private readonly TextBlock title;

@@ -1,4 +1,5 @@
 ﻿using SQLite;
+using System;
 using System.Text.RegularExpressions;
 
 // TODO: finish making database error logs
@@ -57,8 +58,18 @@ namespace VotingPC
         public bool IsValid => Name != null && Gender != null && Votes != null;
     }
     [Table("Info")]
-    public class Info
+    public class Info : IEquatable<Info>
     {
+        // Compare method
+        public bool Equals(Info other)
+        {
+            return (other.Section == Section) &&
+                (other.Color == Color) &&
+                (other.Max == Max) &&
+                (other.Title == Title) &&
+                (other.Year == Year);
+        }
+
         // Private fields
         private string section;
         private string color;
