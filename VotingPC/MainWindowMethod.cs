@@ -212,7 +212,8 @@ namespace VotingPC
                     // Add ToolTip if name is too long
                     checkBox.Loaded += (sender, e) =>
                     {
-                        // TODO: Run this only once, this is not optimized, and will run on every slide change event.
+                        if (((CheckBox)sender).Tag != null) return;
+
                         if (GetTheoreticalSize(content).Width > content.RenderSize.Width)
                         {
                             TextBlock textBlock = new()
@@ -224,6 +225,8 @@ namespace VotingPC
                             };
                             checkBox.ToolTip = textBlock;
                         }
+                        // Mark that this checkbox already has its length checked
+                        checkBox.Tag = "Tagged";
                     };
 
                     _ = stackPanel.Children.Add(checkBox);
