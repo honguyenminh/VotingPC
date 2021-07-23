@@ -32,7 +32,7 @@ namespace VoteCounter
         private readonly Dialogs dialogs;
         private static readonly Dictionary<string, List<Candidate>> sections = new();
         // List of information about sections (each section is a list of candidates)
-        private static HashSet<Info> infos;
+        private static Dictionary<string, Info> infos;
         #endregion
 
         public MainWindow()
@@ -146,18 +146,21 @@ namespace VoteCounter
                 // Parse data from database
                 try
                 {
-                    // Get infos about sections in current file
+                    // Parse Info table about sections in current file
                     string query = $"SELECT * FROM Info";
                     List<Info> currentFileInfos = await connection.QueryAsync<Info>(query);
+                    // Validate the parsed file
+                    if (ValidateData(currentFileInfos) == false) throw new InvalidDataException();
                     // If infos is not read before, just save the object
                     if (infos == null)
-                        infos = currentFileInfos.ToHashSet();
+                        infos = currentFileInfos.ToDictionary(x => x.Section, x => x);
                     // Merge two infos if infos is read already
                     else
                     {
                         foreach (Info info in currentFileInfos)
                         {
-                            _ = infos.Add(info);
+                            if (infos.ContainsKey(info.Section)) continue;
+                            infos.Add(info.Section, info);
                         }
                     }
 
@@ -165,6 +168,8 @@ namespace VoteCounter
                     foreach (Info section in currentFileInfos)
                     {
                         List<Candidate> candidateList = await connection.QueryAsync<Candidate>(query + section.Section + "\"");
+                        if (ValidateData(candidateList) == false) throw new InvalidDataException();
+
                         // If section not yet saved, save new section into sections collection
                         if (!sections.ContainsKey(section.Section))
                         {
@@ -176,20 +181,19 @@ namespace VoteCounter
                         Dictionary<string, Candidate> candidateDict = candidateList.ToDictionary(x => x.Name, x => x);
                         foreach (Candidate candidate in sections[section.Section])
                         {
-                            if (candidateDict.ContainsKey(candidate.Name))
-                            {
-                                candidate.Votes += candidateDict[candidate.Name].Votes;
-                            }
-                            else throw new InvalidDataException();
+                            candidate.Votes += candidateDict[candidate.Name].Votes;
                         }
                     }
-
-                    // TODO: replace one time validation with validate after every file read
-                    if (ValidateDatabase() == false) throw new InvalidDataException();
                 }
                 catch
                 {
-                    InvalidDatabase(); return;
+                    // TODO: Add detailed error report if possible
+                    dialogs.CloseDialog();
+                    dialogs.ShowTextDialog("Cơ sở dữ liệu không hợp lệ, vui lòng kiểm tra lại.", "Đóng", () =>
+                    {
+                        Close();
+                    });
+                    return;
                 }
             }
 
@@ -203,31 +207,21 @@ namespace VoteCounter
         ///***********************************************************///
         /// Loading section
         ///***********************************************************///
-        /// <summary>
-        /// Load database into infos and sections Lists
-        /// </summary>
-        /// <returns>An awaitable Task that do the work</returns>
-        #region Database loading and validating
-        private void InvalidDatabase()
+        #region Database validating
+        private static bool ValidateData(List<Info> infoList)
         {
-            dialogs.CloseDialog();
-            dialogs.ShowTextDialog("Cơ sở dữ liệu không hợp lệ, vui lòng kiểm tra lại.", "Đóng", () =>
-            {
-                Close();
-            });
-        }
-        private static bool ValidateDatabase()
-        {
-            foreach (Info info in infos)
+            foreach (Info info in infoList)
             {
                 if (!info.IsValid) return false;
             }
-            foreach (KeyValuePair<string, List<Candidate>> candidateList in sections)
+            return true;
+        }
+        private static bool ValidateData(List<Candidate> candidateList)
+        {
+
+            foreach (Candidate candidate in candidateList)
             {
-                foreach (Candidate candidate in candidateList.Value)
-                {
-                    if (!candidate.IsValid) return false;
-                }
+                if (!candidate.IsValid) return false;
             }
             return true;
         }
@@ -239,12 +233,12 @@ namespace VoteCounter
         private void PopulateUI()
         {
             bool left = true;
-            foreach (Info info in infos)
+            foreach (var info in infos)
             {
                 // Sort the candidate list
-                SortByHighestVotes(sections[info.Section]);
+                SortByHighestVotes(sections[info.Value.Section]);
 
-                DisplayCard displayCard = new(info, sections[info.Section]);
+                DisplayCard displayCard = new(info.Value, sections[info.Value.Section]);
                 if (left)
                 {
                     displayCard.Margin = new(0, 16, 56, 16);
