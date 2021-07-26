@@ -35,7 +35,7 @@
                                          Width="{Binding Height, RelativeSource={RelativeSource Self}}"/>
                 <TextBlock FontSize="24" Text="Số nơi đắc cử:"
                            Margin="4 0 12 0" VerticalAlignment="Center"/>
-                <TextBlock x:Name="PlacesTop1TextBlock" Text="16" FontSize="28" VerticalAlignment="Center"/>
+                <TextBlock x:Name="TotalWinningPlacesTextBlock" Text="16" FontSize="28" VerticalAlignment="Center"/>
             </StackPanel>
         </VirtualizingStackPanel>
     </materialDesign:Card>

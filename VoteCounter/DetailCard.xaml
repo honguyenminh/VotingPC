@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="VoteCounter.DetailCard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:VoteCounter"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d" d:Background="White"
+             d:DesignHeight="120" d:DesignWidth="760">
+    <materialDesign:Card>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock x:Name="positionTextBlock" d:Text="1" Margin="36 8" FontSize="64"
+                       VerticalAlignment="Center"/>
+
+            <TextBlock Grid.Column="1" d:Text="Nguyễn Văn A" FontSize="42" x:Name="nameTextBlock"
+                       VerticalAlignment="Center" Margin="32 0" TextWrapping="Wrap"/>
+
+            <DockPanel Grid.Column="2" Margin="22">
+                <TextBlock Text="Tổng phiếu" Grid.Column="2" FontSize="21" DockPanel.Dock="Top"/>
+                <TextBlock d:Text="256" DockPanel.Dock="Bottom" FontSize="46" x:Name="totalVotesTextBlock"
+                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </DockPanel>
+        </Grid>
+    </materialDesign:Card>
+</UserControl>

@@ -12,11 +12,15 @@ namespace VotingPC
         public const int StringMaxLength = 128;
         public const int SmallStringMaxLength = 64;
     }
+
     public class Candidate
     {
         // Private fields
         private string name;
         private string gender;
+
+        // Public field
+        public ulong TotalWinningPlaces { get; set; }
 
         [NotNull, PrimaryKey, Unique]
         [Column("Name")]
@@ -36,14 +40,14 @@ namespace VotingPC
 
         [NotNull]
         [Column("Votes")]
-        public long? Votes { get; set; }
+        public long Votes { get; set; }
 
         [NotNull]
         [Column("Gender")]
         public string Gender
         {
             get => gender;
-            // Cut the string if longer than StringMaxLength
+            // Cut the string if longer than SmallStringMaxLength
             set
             {
                 if (value.Length > GlobalVariable.SmallStringMaxLength)
@@ -54,9 +58,10 @@ namespace VotingPC
             }
         }
 
-        // Return true if all properties are not null
-        public bool IsValid => Name != null && Gender != null && Votes != null;
+        // Return true if required properties are not null, also reset votes to be safe
+        public bool IsValid => Name != null && Gender != null;
     }
+
     [Table("Info")]
     public class Info
     {

@@ -47,30 +47,48 @@ namespace VoteCounter
                 "Mật khẩu không chính xác hoặc cơ sở dữ liệu không hợp lệ!",
                 "Hoàn tất", PasswordDialogButton_Click);
 
-            // Set click event handlers for buttons in slide 1
-            SlideLanding.SingleFileButton.Click += SingleFileButton_Click;
-            SlideLanding.MultipleFileButton.Click += MultipleFileButton_Click;
-            SlideLanding.FolderButton.Click += FolderButton_Click;
+            // Set click event handlers for buttons in slides
+            slideLanding.SingleFileButton.Click += SingleFileButton_Click;
+            slideLanding.MultipleFileButton.Click += MultipleFileButton_Click;
+            slideLanding.FolderButton.Click += FolderButton_Click;
+            slideDetail.backButton.Click += (sender, e) => PreviousPage();
         }
 
         // Button click events
         private void SingleFileButton_Click(object sender, RoutedEventArgs e)
         {
             // Open file dialog
-            if (!ShowOpenDatabaseDialog()) return;
-
+            if (!ShowOpenDatabaseFileDialog()) return;
+            // TODO: show "Cancel" button on the password dialog as well
             passwordDialog.Show();
         }
         private void MultipleFileButton_Click(object sender, RoutedEventArgs e)
         {
-            // Open file dialog
-            if (!ShowOpenDatabaseDialog(multiFile: true)) return;
+            // Allow multiple file, then open file dialog
+            if (!ShowOpenDatabaseFileDialog(multiFile: true)) return;
 
             passwordDialog.Show();
         }
         private void FolderButton_Click(object sender, RoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            VistaFolderBrowserDialog dialog = new()
+            {
+                Description = "Chọn thư mục chứa file .db",
+                UseDescriptionForTitle = true
+            };
+
+            if (!(bool)dialog.ShowDialog()) return;
+
+            string[] filePaths = Directory.GetFiles(dialog.SelectedPath, "*.db", SearchOption.AllDirectories);
+
+            if (filePaths.Length == 0)
+            {
+                dialogs.ShowTextDialog("Không tìm thấy file .db trong thư mục đã chọn.\nVui lòng kiểm tra lại.", "OK", Close);
+                return;
+            }
+            databasePath = filePaths;
+
+            passwordDialog.Show();
         }
 
         /// <summary>
@@ -78,7 +96,7 @@ namespace VoteCounter
         /// </summary>
         /// <param name="multiFile">Allow multiple file or not</param>
         /// <returns>True if file(s) if selected, else false</returns>
-        private static bool ShowOpenDatabaseDialog(bool multiFile = false)
+        private static bool ShowOpenDatabaseFileDialog(bool multiFile = false)
         {
             OpenFileDialog openFileDialog = new()
             {
@@ -117,10 +135,7 @@ namespace VoteCounter
                     dialogs.CloseDialog();
                     dialogs.ShowTextDialog("Không đủ quyền đọc file đã chọn.\n" +
                         "Vui lòng chạy lại chương trình với quyền admin hoặc\n" +
-                        "chuyển file vào nơi có thể đọc được như Desktop.", "OK", () =>
-                        {
-                            Close();
-                        });
+                        "chuyển file vào nơi có thể đọc được như Desktop.", "OK", Close);
                     return;
                 }
 
@@ -170,6 +185,8 @@ namespace VoteCounter
                         List<Candidate> candidateList = await connection.QueryAsync<Candidate>(query + section.Section + "\"");
                         if (ValidateData(candidateList) == false) throw new InvalidDataException();
 
+                        FindMaxVote(candidateList);
+
                         // If section not yet saved, save new section into sections collection
                         if (!sections.ContainsKey(section.Section))
                         {
@@ -182,6 +199,7 @@ namespace VoteCounter
                         foreach (Candidate candidate in sections[section.Section])
                         {
                             candidate.Votes += candidateDict[candidate.Name].Votes;
+                            candidate.TotalWinningPlaces += candidateDict[candidate.Name].TotalWinningPlaces;
                         }
                     }
                 }
@@ -189,10 +207,7 @@ namespace VoteCounter
                 {
                     // TODO: Add detailed error report if possible
                     dialogs.CloseDialog();
-                    dialogs.ShowTextDialog("Cơ sở dữ liệu không hợp lệ, vui lòng kiểm tra lại.", "Đóng", () =>
-                    {
-                        Close();
-                    });
+                    dialogs.ShowTextDialog("Cơ sở dữ liệu không hợp lệ, vui lòng kiểm tra lại.", "Đóng", Close);
                     return;
                 }
             }
@@ -250,9 +265,11 @@ namespace VoteCounter
                     left = true;
                 }
 
-                // TODO: implement the detail slide here instead of this
-                displayCard.Click += (sender, e) => { dialogs.ShowTextDialog("Hello, click được nhá.\nNhớ thêm cái slide detail đấy.", "OK"); };
-                _ = SlideOverview.OverviewStackPanel.Children.Add(displayCard);
+                displayCard.Click += (sender, e) => {
+                    slideDetail.ChangeData(((DisplayCard)sender).SectionInfo, ((DisplayCard)sender).Candidates);
+                    NextPage();
+                };
+                _ = slideOverview.OverviewStackPanel.Children.Add(displayCard);
             }
         }
 
@@ -260,11 +277,35 @@ namespace VoteCounter
         /// Sort the given list of Candidate by highest votes to lowest votes
         /// </summary>
         /// <param name="candidates">List of candidates to sort</param>
-        private static void SortByHighestVotes(List<Candidate> candidates)
+        private static void SortByHighestVotes(in List<Candidate> candidates)
         {
             // Compare function, hover over new() for more info on how this works
             Comparison<Candidate> comparison = new((x, y) => (int)y.Votes - (int)x.Votes);
             candidates.Sort(comparison);
+        }
+        private static void FindMaxVote(in List<Candidate> candidates)
+        {
+            if (candidates.Count == 0) throw new ArgumentException("Empty candidate list as parameter");
+            long max = candidates[0].Votes;
+            List<int> winningCandidates = new();
+            winningCandidates.Add(0);
+            for (int i = 1; i < candidates.Count; i++)
+            {
+                if (candidates[i].Votes >= max)
+                {
+                    if (candidates[i].Votes > max)
+                    {
+                        winningCandidates.Clear();
+                        max = candidates[i].Votes;
+                    }
+                    winningCandidates.Add(i);
+                }
+            }
+
+            foreach (int index in winningCandidates)
+            {
+                candidates[index].TotalWinningPlaces++;
+            }
         }
 
         #region Transitioner methods

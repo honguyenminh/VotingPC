@@ -21,9 +21,11 @@ namespace VoteCounter
     /// </summary>
     public partial class DisplayCard : UserControl
     {
-        private readonly Info sectionInfo;
-        private readonly List<Candidate> candidates;
+        // Public properties
+        public Info SectionInfo { get; }
+        public List<Candidate> Candidates { get; }
 
+        // Constructors
         public DisplayCard()
         {
             PreviewMouseLeftButtonUp += (sender, args) => OnClick();
@@ -31,8 +33,8 @@ namespace VoteCounter
         }
         public DisplayCard(Info info, List<Candidate> candidates)
         {
-            sectionInfo = info;
-            this.candidates = candidates;
+            SectionInfo = info;
+            Candidates = candidates;
             PreviewMouseLeftButtonUp += (sender, args) => OnClick();
             InitializeComponent();
 
@@ -42,6 +44,9 @@ namespace VoteCounter
             // Show winning candidate
             NameTextBlock.Text = candidates[0].Name;
             TotalVoteTextBlock.Text = candidates[0].Votes.ToString();
+
+            // Show total winning places count
+            TotalWinningPlacesTextBlock.Text = candidates[0].TotalWinningPlaces.ToString();
         }
 
         // Click event setup
