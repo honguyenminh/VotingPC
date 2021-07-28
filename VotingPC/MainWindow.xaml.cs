@@ -1,4 +1,5 @@
-﻿using Microsoft.Win32;
+﻿using MaterialDesignThemes.Wpf.Transitions;
+using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Windows;
@@ -99,6 +100,24 @@ namespace VotingPC
                 Close();
                 return false;
             }
+        }
+
+        // Transition methods
+        /// <summary>
+        /// Move to next Slide
+        /// </summary>
+        private void NextPage()
+        {
+            // 0 is argument, meaning no arg
+            // Pass object as second argument
+            Transitioner.MoveNextCommand.Execute(0, TransitionerObj);
+        }
+        /// <summary>
+        /// Move to previous Slide
+        /// </summary>
+        private void PreviousPage()
+        {
+            Transitioner.MovePreviousCommand.Execute(0, TransitionerObj);
         }
     }
 }
