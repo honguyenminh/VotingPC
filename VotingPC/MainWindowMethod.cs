@@ -20,6 +20,7 @@ namespace VotingPC
         // Contains candidate list stack panels, to preserve their state while user switch between sections
         private static readonly List<StackPanel> candidateLists = new();
         private static int currentSectionIndex;
+        private static bool saveToSingleFile;
 
         #region Functional methods
         /// <summary>
@@ -79,17 +80,20 @@ namespace VotingPC
             try { await LoadDatabase(); }
             catch (Exception) { InvalidDatabase(); return; }
 
+            connection?.CloseAsync();
             if (ValidateDatabase() == false)
             {
                 InvalidDatabase();
                 return;
             }
 
-            // TODO: Show database warnings/errors here
+            
 
-            PopulateVoteUI();
-            dialogs.CloseDialog();  // Close loading dialog opened above
-            WaitForSignal();        // Wait for serial signal from Arduino
+            // TODO: Show database warnings/errors here
+            // Await for PopulateVoteUI. This is stupid.
+            await Application.Current.Dispatcher.InvokeAsync(PopulateVoteUI);
+            dialogs.CloseDialog();
+            WaitForSignal(); // Wait for serial signal from Arduino
         }
         private void InvalidDatabase()
         {

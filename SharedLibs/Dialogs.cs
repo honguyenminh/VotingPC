@@ -19,12 +19,13 @@ namespace VotingPC
         }
 
         /// <summary>
-        /// Show a text dialog with a button, close then run a custom method on button click. Should be run from an async method.
+        /// Show a text dialog with a button, which run a custom method on button click. Should be run from an async method.
+        /// The dialog WILL auto-close on button click
         /// </summary>
         /// <param name="text">Text to show</param>
         /// <param name="buttonContent">Content of button</param>
         /// <param name="clickMethod">Method to execute on button click</param>
-        public void ShowTextDialog(string text, string buttonContent, Action clickMethod)
+        public void ShowTextDialog(string text, string buttonContent, Action clickMethod = null)
         {
             StackPanel stackPanel = new() { Margin = new Thickness(32) };
             TextBlock textBlock = new() { Text = text, TextWrapping = TextWrapping.Wrap };
@@ -37,31 +38,8 @@ namespace VotingPC
             button.Click += (sender, e) =>
             {
                 CloseDialog();
-                clickMethod();
+                clickMethod?.Invoke();
             };
-            button.Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"];
-
-            _ = stackPanel.Children.Add(textBlock);
-            _ = stackPanel.Children.Add(button);
-            stackPanel.LayoutTransform = new ScaleTransform(2, 2);
-            _ = dialogHost.ShowDialog(stackPanel);
-        }
-        /// <summary>
-        /// Show text method, close on button click. Should be run from an async method.
-        /// </summary>
-        /// <param name="text">Text to show</param>
-        /// <param name="buttonContent">Content of button</param>
-        public void ShowTextDialog(string text, string buttonContent)
-        {
-            StackPanel stackPanel = new() { Margin = new Thickness(32) };
-            TextBlock textBlock = new() { Text = text, TextWrapping = TextWrapping.Wrap };
-            Button button = new()
-            {
-                Content = buttonContent,
-                Margin = new Thickness(0, 8, 0, 0),
-                FocusVisualStyle = null
-            };
-            button.Click += (sender, e) => CloseDialog();
             button.Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"];
 
             _ = stackPanel.Children.Add(textBlock);
@@ -89,7 +67,52 @@ namespace VotingPC
             };
             _ = dialogHost.ShowDialog(progressBar);
         }
+        /// <summary>
+        /// Show a text dialog with 2 button, which run the provided click method on click.
+        /// DOES NOT auto-close the dialog after clicked, must manually call CloseDialog in click method
+        /// </summary>
+        public void Show2ChoiceDialog(string text, string leftButtonContent, string rightButtonContent, Action leftClickMethod = null, Action rightClickMethod = null)
+        {
+            StackPanel stackPanel = new() { Margin = new Thickness(32) };
+            TextBlock textBlock = new() { Text = text, TextWrapping = TextWrapping.Wrap };
 
+            Button leftButton = new()
+            {
+                Content = leftButtonContent,
+                Margin = new Thickness(0, 0, 4, 0),
+                FocusVisualStyle = null
+            };
+            leftButton.Click += (sender, e) =>
+            {
+                leftClickMethod?.Invoke();
+            };
+            leftButton.Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"];
+            Button rightButton = new()
+            {
+                Content = rightButtonContent,
+                Margin = new Thickness(4, 0, 0, 0),
+                FocusVisualStyle = null
+            };
+            rightButton.Click += (sender, e) =>
+            {
+                rightClickMethod?.Invoke();
+            };
+            rightButton.Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"];
+
+            StackPanel buttonStack = new()
+            {
+                Margin = new(0, 8, 0, 0),
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
+
+            _ = buttonStack.Children.Add(leftButton);
+            _ = buttonStack.Children.Add(rightButton);
+            _ = stackPanel.Children.Add(textBlock);
+            _ = stackPanel.Children.Add(buttonStack);
+            stackPanel.LayoutTransform = new ScaleTransform(2, 2);
+            _ = dialogHost.ShowDialog(stackPanel);
+        }
 
         /// <summary>
         /// Close whatever dialog is currently showing. Even if there's none.

@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -22,10 +23,10 @@ namespace VotingPC
             InitializeComponent();
 
             // Replace logo with custom image in app folder if exists and is valid
-            string appFolder = AppDomain.CurrentDomain.BaseDirectory;
+            string filePathWithoutExt = AppDomain.CurrentDomain.BaseDirectory + "\\logo";
             foreach (string extension in supportedIconExt)
             {
-                string filePath = appFolder + "\\logo" + extension;
+                string filePath = filePathWithoutExt + extension;
                 if (File.Exists(filePath))
                 {
                     try
@@ -60,18 +61,19 @@ namespace VotingPC
                 dialogs.CloseDialog();
                 dialogs.ShowTextDialog("File cơ sở dữ liệu chỉ đọc. Thiếu quyền admin.\n" +
                     "Vui lòng chạy lại chương trình với quyền admin hoặc\n" +
-                    "chuyển file vào nơi có thể ghi được như Desktop.", "OK", () =>
-                    {
-                        Close();
-                    });
+                    "chuyển file vào nơi có thể ghi được như Desktop.", "OK", Close);
                 return;
             }
 
-            passwordDialog.Show();
+            // Pop-up dialog to select file save method
+            // After clicked, show password dialog
+            dialogs.Show2ChoiceDialog("Lưu kết quả vào một file hay tách\ncác cấp thành nhiều file?", "File đơn", "Nhiều file",
+                async () => { saveToSingleFile = true; dialogs.CloseDialog(); await Task.Delay(300); passwordDialog.Show(); },
+                async () => { saveToSingleFile = false; dialogs.CloseDialog(); await Task.Delay(300); passwordDialog.Show(); });
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (connection != null) _ = connection.CloseAsync();
+            _ = connection?.CloseAsync();
             isListening = false;
             if (serial != null)
             {

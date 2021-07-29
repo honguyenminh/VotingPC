@@ -31,7 +31,7 @@ namespace VoteCounter
             if ((info == null) || (candidates == null) || (candidates.Count == 0))
                 throw new ArgumentException("Null argument or empty candidate list");
 
-            titleTextBox.Text = "Chi tiết - " + info.Title;
+            titleTextBox.Text = info.Title;
 
             detailStackPanel.Children.Clear();
 
@@ -46,11 +46,12 @@ namespace VoteCounter
 
                 DetailCard detailCard = new(position, candidate.Name, candidate.Votes);
 
+                // Add custom margin for the card based on the rank of user
                 detailCard.Margin = position switch
                 {
-                    1 => new(56, 16, 56, 16),
-                    2 => new(64, 16, 64, 16),
-                    3 => new(72, 16, 72, 16),
+                    1 => new(0, 16, 0, 16),
+                    2 => new(32, 16, 32, 16),
+                    3 => new(64, 16, 64, 16),
                     _ => new(80, 16, 80, 16)
                 };
 
