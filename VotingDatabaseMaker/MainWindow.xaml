@@ -18,27 +18,13 @@
     <materialDesign:DialogHost x:Name="dialogHost">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Text="Voting Database Maker" 
-                       Margin="24" FontSize="30" Grid.Row="0"
-                       VerticalAlignment="Center"/>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
-                        Margin="0" Click="ThemeButton_Click" ToolTip="Theme màu tối"
-                        VerticalAlignment="Center">
-                    <materialDesign:PackIcon x:Name="ThemeIcon" Kind="WeatherNight"/>
-                </Button>
-                <Button Content="Xuất file" Margin="24" FontSize="14"
-                        VerticalAlignment="Center"/>
-            </StackPanel>
-
-            <Grid x:Name="grid" Grid.Row="1">
+            <Grid x:Name="grid" Grid.Row="0" Margin="0 20 0 0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="3*"/>
                     <ColumnDefinition Width="5*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
@@ -49,47 +35,62 @@
                 <!--Sector Block-->
                 <TextBlock Text="Sector" FontSize="24" Margin="24 8"/>
                 <Button x:Name="AddSectorButton" Content="Thêm sector" Margin="24 8" FontSize="14"
-                        VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="0"/>
-                <ListBox x:Name="SectorList" Grid.Row="1" Margin="24"/>
+                        VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="0" Click="AddSectorButton_Click"/>
+                <ListBox x:Name="SectorList" Grid.Row="1" Margin="24" SelectionChanged="SectorList_SelectionChanged" SelectionMode="Single"/>
 
                 <!--Seperator Line-->
                 <Line Grid.RowSpan="2" X1="0" X2="0" Y1="0" 
-                      Y2="{Binding ActualHeight, Converter={StaticResource MinusValueConverter}, ConverterParameter=160, ElementName=grid, Mode=OneWay}"
+                      Y2="{Binding ActualHeight, Converter={StaticResource MinusValueConverter}, ConverterParameter=60, ElementName=grid, Mode=OneWay}"
                       HorizontalAlignment="Right" VerticalAlignment="Center"
-                      StrokeThickness="1" Stroke="{DynamicResource MaterialDesignBody}"/>
+                      StrokeThickness="1" Stroke="{DynamicResource MaterialDesignDarkSeparatorBackground}"/>
 
                 <!--Candidate Block-->
                 <TextBlock Grid.Column="1" Margin="24 8" Text="Ứng cử viên" FontSize="24"/>
                 <Button x:Name="AddCandidateButton" Content="Thêm ứng cử viên" Margin="24 8" FontSize="14"
-                        VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="1"/>
+                        VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="1" Click="AddCandidateButton_Click"/>
 
                 <ListView Grid.Column="1" Grid.Row="1" x:Name="NameList" Margin="24"
-                          ScrollViewer.VerticalScrollBarVisibility="Auto">
+                          SelectionChanged="CandidateList_SelectionChanged"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionMode="Single">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Tên ứng cử viên" Width="460"
-                                            DisplayMemberBinding="{Binding Name}">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBox/>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
+                                            DisplayMemberBinding="{Binding Name}"/>
                             <GridViewColumn Header="Giới tính"
-                                            DisplayMemberBinding="{Binding Gender}">
-                                <GridViewColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <ComboBox Width="100">
-                                            <ComboBoxItem Content="Ông"/>
-                                            <ComboBoxItem Content="Bà"/>
-                                        </ComboBox>
-                                    </DataTemplate>
-                                </GridViewColumn.CellTemplate>
-                            </GridViewColumn>
+                                            DisplayMemberBinding="{Binding Gender}"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
             </Grid>
+
+            <!--Bottom buttons-->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="1">
+                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                        Margin="0" Click="ThemeButton_Click" ToolTip="Theme màu tối"
+                        VerticalAlignment="Center">
+                    <materialDesign:PackIcon x:Name="ThemeIcon" Kind="WeatherNight"/>
+                </Button>
+                <Button Content="Xuất file" Margin="24" FontSize="14"
+                        VerticalAlignment="Center" Click="ExportButton_Click"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="1">
+                <!--Edit buttons-->
+                <Button Content="Sửa Sector" Margin="24 24 12 24" FontSize="14" x:Name="SectorEditButton"
+                        VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
+                        IsEnabled="False" d:IsEnabled="True" Click="SectorEditButton_Click"/>
+                <Button Content="Sửa Ứng cử viên" Margin="12 24" FontSize="14" x:Name="CandidateEditButton"
+                        VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
+                        IsEnabled="False" d:IsEnabled="True" Click="CandidateEditButton_Click"/>
+                <!--Delete buttons-->
+                <Button Content="Xóa Sector" Margin="12 24" FontSize="14" x:Name="SectorRemoveButton"
+                        VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
+                        IsEnabled="False" d:IsEnabled="True" Click="SectorRemoveButton_Click"
+                        Foreground="Red" BorderBrush="Red"/>
+                <Button Content="Xóa Ứng cử viên" Margin="12 24" FontSize="14" x:Name="CandidateRemoveButton"
+                        VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
+                        IsEnabled="False" d:IsEnabled="True" Click="CandidateRemoveButton_Click"
+                        Foreground="Red" BorderBrush="Red"/>
+            </StackPanel>
         </Grid>
     </materialDesign:DialogHost>
 </Window>

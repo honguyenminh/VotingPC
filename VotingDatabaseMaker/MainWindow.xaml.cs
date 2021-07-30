@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SQLite;
+using VotingPC;
 
 namespace VotingDatabaseMaker
 {
@@ -22,44 +23,24 @@ namespace VotingDatabaseMaker
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly VotingPC.Dialogs dialogs;
+        private readonly Dialogs dialogs;
         //private static SQLiteAsyncConnection connection;
-        readonly List<List<Candidate>> candidates = new(1);
+        private readonly Dictionary<string, Dictionary<string, Candidate>> candidates = new(1);
+        private readonly Dictionary<string, Info> sectors = new();
+        private string selectedSector, selectedCandidate;
 
         public MainWindow()
         {
             InitializeComponent();
             dialogs = new(dialogHost);
+            SectorList.ItemsSource = sectors.Keys.ToList();
 
-            candidates.Add(new());
-            candidates[0].Add(new() { Name = "Yoooo test 1" });
-            candidates[0].Add(new() { Name = "Yoooo test 2" });
-            candidates[0].Add(new() { Name = "Yoooo test 3 12831bc0123d1uobid12dbb1ud3o1duoi13d" });
-            candidates[0].Add(new() { Name = "Yoooo test 3 12831bc0123d1uobid12dbb1ud3o1duoi13d" });
-            candidates[0].Add(new() { Name = "Yoooo test 3 12831bc0123d1uobid12dbb1ud3o1duoi13d" });
-            candidates[0].Add(new() { Name = "Yoooo test 3 12831bc0123d1uobid12dbb1ud3o1duoi13d" });
-            candidates[0].Add(new() { Name = "Yoooo test 3 12831bc0123d1uobid12dbb1ud3o1duoi13d" });
-            candidates[0].Add(new() { Name = "Yoooo test 3 12831bc0123d1uobid12dbb1ud3o1duoi13d" });
-            candidates[0].Add(new() { Name = "Yoooo test 3 12831bc0123d1uobid12dbb1ud3o1duoi13d" });
-            candidates[0].Add(new() { Name = "Yoooo test 3 12831bc0123d1uobid12dbb1ud3o1duoi13d" });
-            candidates[0].Add(new() { Name = "Yoooo test 3 12831bc0123d1uobid12dbb1ud3o1duoi13d" });
-            candidates[0].Add(new() { Name = "Yoooo test 3 12831bc0123d1uobid12dbb1ud3o1duoi13d" });
-            NameList.ItemsSource = candidates[0];
-
-            List<string> sectors = new();
-            sectors.Add("123131231");
-            sectors.Add("QH");
-            sectors.Add("Tỉnh");
-            sectors.Add("Huyện");
-            sectors.Add("Xã");
-            sectors.Add("Obama");
-            sectors.Add("Trần Dần");
-            SectorList.ItemsSource = sectors;
+            //NameList.ItemsSource = candidates[0];
         }
 
         private void ThemeButton_Click(object sender, RoutedEventArgs e)
         {
-            var paletteHelper = new PaletteHelper();
+            PaletteHelper paletteHelper = new();
             ITheme theme = paletteHelper.GetTheme();
             if (theme.Paper == Theme.Dark.MaterialDesignPaper)
             {
@@ -76,6 +57,67 @@ namespace VotingDatabaseMaker
 
             paletteHelper.SetTheme(theme);
         }
+
+        private void AddSectorButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Nút thêm Sector
+        }
+        private void AddCandidateButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Nút thêm ứng cử viên
+        }
+
+        private void SectorEditButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Nút sửa sector đã chọn
+        }
+        private void CandidateEditButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Nút sửa ứng cử viên đã chọn
+        }
+
+        private void SectorRemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Nút xóa Sector
+        }
+        private void CandidateRemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Nút xóa ứng cử viên
+        }
+
+        private void ExportButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Nút xuất file
+        }
+
+        private void SectorList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SectorEditButton.IsEnabled = true;
+            var selectedItem = e.AddedItems;
+            if (selectedItem.Count == 0)
+            {
+                selectedSector = null; // TODO: check for this on other use of this var
+                NameList.ItemsSource = null;
+                SectorEditButton.IsEnabled = false;
+                return;
+            };
+            selectedSector = (string)selectedItem[0];
+
+            NameList.ItemsSource = candidates[selectedSector].Values.ToList();
+        }
+        private void CandidateList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            CandidateEditButton.IsEnabled = true;
+            var selectedItem = e.AddedItems;
+            if (selectedItem.Count == 0)
+            {
+                selectedCandidate = null;
+                CandidateEditButton.IsEnabled = false;
+                return;
+            };
+            selectedCandidate = ((Candidate)selectedItem).Name;
+        }
+
     }
 
     public class Candidate
