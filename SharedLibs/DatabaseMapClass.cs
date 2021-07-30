@@ -20,6 +20,7 @@ namespace VotingPC
         private string gender;
 
         // Public field
+        [Ignore]
         public ulong TotalWinningPlaces { get; set; }
 
         [NotNull, PrimaryKey, Unique]
@@ -59,6 +60,7 @@ namespace VotingPC
         }
 
         // Return true if required properties are not null, also reset votes to be safe
+        [Ignore]
         public bool IsValid => Name != null && Gender != null;
     }
 
@@ -71,7 +73,9 @@ namespace VotingPC
         private string title;
         private string year;
 
+        [Ignore]
         public string Error { get; private set; } = "";
+        [Ignore]
         public string Warning { get; private set; } = "";
 
         [NotNull, PrimaryKey, Unique]
@@ -164,8 +168,10 @@ namespace VotingPC
             }
         }
 
+        [Ignore]
         public int TotalVoted { get; set; }
 
+        [Ignore]
         // Return true if all properties are not null
         public bool IsValid => Section != null && Color != null && Title != null && Year != null && Max != null;
     }

@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using System;
 using System.IO;
+using System.Security.AccessControl;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -15,6 +16,7 @@ namespace VotingPC
     {
         private readonly PasswordDialog passwordDialog;
         private string databasePath;
+        private string folderPath;
         private readonly Dialogs dialogs;
         private readonly string[] supportedIconExt = { ".png", ".jpg", ".jpeg", ".jpe", ".gif", ".ico", ".tiff", ".bmp" };
         public MainWindow()
@@ -59,48 +61,60 @@ namespace VotingPC
             catch
             {
                 dialogs.CloseDialog();
-                dialogs.ShowTextDialog("File cơ sở dữ liệu chỉ đọc. Thiếu quyền admin.\n" +
-                    "Vui lòng chạy lại chương trình với quyền admin hoặc\n" +
+                dialogs.ShowTextDialog("File cơ sở dữ liệu chỉ đọc. Thiếu quyền Admin.\n" +
+                    "Vui lòng chạy lại chương trình với quyền Admin hoặc\n" +
                     "chuyển file vào nơi có thể ghi được như Desktop.", "OK", Close);
                 return;
             }
 
             // Pop-up dialog to select file save method
             // After clicked, show password dialog
-            dialogs.Show2ChoiceDialog("Lưu kết quả vào một file hay tách\ncác cấp thành nhiều file?", "File đơn", "Nhiều file",
-                async () => { saveToSingleFile = true; dialogs.CloseDialog(); await Task.Delay(300); passwordDialog.Show(); },
-                async () => { saveToSingleFile = false; dialogs.CloseDialog(); await Task.Delay(300); passwordDialog.Show(); });
+            dialogs.Show2ChoiceDialog("Lưu kết quả vào file ban đầu hay tách\ncác cấp thành nhiều file?", "File ban đầu", "Nhiều file",
+                async (sender, e) => { saveToMultipleFile = false; dialogs.CloseDialog(); await Task.Delay(400); passwordDialog.Show(); },
+                MultipleFileButton_Click);
+        }
+        private async void MultipleFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            saveToMultipleFile = true;
+            dialogs.CloseDialog();
+
+            // Show open folder dialog
+            Ookii.Dialogs.Wpf.VistaFolderBrowserDialog dialog = new()
+            {
+                Description = "Chọn thư mục chứa file cơ sở dữ liệu xuất ra",
+                UseDescriptionForTitle = true
+            };
+            if (!(bool)dialog.ShowDialog()) { Close(); return; }
+
+            dialogs.ShowLoadingDialog();
+            // Check if folder can be written to or not
+            var directoryInfo = new DirectoryInfo(dialog.SelectedPath);
+            bool isReadonly = directoryInfo.Attributes.HasFlag(FileAttributes.ReadOnly);
+            if (isReadonly)
+            {
+                dialogs.CloseDialog();
+                dialogs.ShowTextDialog("Thư mục chỉ đọc. Thiếu quyền Admin.\n" +
+                    "Vui lòng chạy lại chương trình với quyền Admin hoặc\n" +
+                    "chọn thư mục khác có thể ghi được.", "OK", Close);
+                return;
+            }
+
+            folderPath = dialog.SelectedPath;
+            dialogs.CloseDialog();
+            await Task.Delay(400);
+            passwordDialog.Show();
         }
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            _ = connection?.CloseAsync();
+            foreach (SQLite.SQLiteAsyncConnection connection in connectionList)
+                _ = connection?.CloseAsync();
+            
             isListening = false;
             if (serial != null)
             {
                 serial.Write("C"); // App closed signal
                 serial.Close();
                 serial.Dispose();
-            }
-        }
-        private bool ShowOpenDatabaseDialog()
-        {
-            OpenFileDialog openFileDialog = new()
-            {
-                Filter = "Database file (*.db)|*.db",
-                Multiselect = false,
-                Title = "Chọn tệp cơ sở dữ liệu",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
-            };
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                databasePath = openFileDialog.FileName;
-                return true;
-            }
-            else
-            {
-                Close();
-                return false;
             }
         }
 

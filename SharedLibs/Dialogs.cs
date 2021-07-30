@@ -71,7 +71,8 @@ namespace VotingPC
         /// Show a text dialog with 2 button, which run the provided click method on click.
         /// DOES NOT auto-close the dialog after clicked, must manually call CloseDialog in click method
         /// </summary>
-        public void Show2ChoiceDialog(string text, string leftButtonContent, string rightButtonContent, Action leftClickMethod = null, Action rightClickMethod = null)
+        public void Show2ChoiceDialog(string text, string leftButtonContent, string rightButtonContent,
+            RoutedEventHandler leftClickHandler = null, RoutedEventHandler rightClickHandler = null)
         {
             StackPanel stackPanel = new() { Margin = new Thickness(32) };
             TextBlock textBlock = new() { Text = text, TextWrapping = TextWrapping.Wrap };
@@ -82,10 +83,7 @@ namespace VotingPC
                 Margin = new Thickness(0, 0, 4, 0),
                 FocusVisualStyle = null
             };
-            leftButton.Click += (sender, e) =>
-            {
-                leftClickMethod?.Invoke();
-            };
+            leftButton.Click += leftClickHandler;
             leftButton.Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"];
             Button rightButton = new()
             {
@@ -93,10 +91,7 @@ namespace VotingPC
                 Margin = new Thickness(4, 0, 0, 0),
                 FocusVisualStyle = null
             };
-            rightButton.Click += (sender, e) =>
-            {
-                rightClickMethod?.Invoke();
-            };
+            rightButton.Click += rightClickHandler;
             rightButton.Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"];
 
             StackPanel buttonStack = new()

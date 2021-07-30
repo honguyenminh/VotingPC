@@ -1,4 +1,5 @@
 ﻿using SQLite;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -12,88 +13,57 @@ namespace VotingPC
 {
     public partial class MainWindow : Window
     {
-        private static SQLiteAsyncConnection connection;
+        private static readonly List<SQLiteAsyncConnection> connectionList = new();
         private static SerialPort serial;
         private static bool isListening = true;
         private static readonly List<List<Candidate>> sectionList = new();
-        private static List<Info> infoList; // List of information about sections
-        // Contains candidate list stack panels, to preserve their state while user switch between sections
+        // List of information about sections
+        private static List<Info> infoList;
+        // Stack panel list which contain the vote UI, to preserve their state while user switch between sections
         private static readonly List<StackPanel> candidateLists = new();
         private static int currentSectionIndex;
-        private static bool saveToSingleFile;
+        private static bool saveToMultipleFile;
 
-        #region Functional methods
-        /// <summary>
-        /// Click handler for the Password Dialog button.
-        /// </summary>
-        private async void PasswordDialogButton_Click(object sender, RoutedEventArgs e)
+        private bool ShowOpenDatabaseDialog()
         {
-            dialogs.CloseDialog();
-            dialogs.ShowLoadingDialog();
-
-            // Create new SQLite database connection
-            SQLiteConnectionString options = new(databasePath, storeDateTimeAsTicks: true, passwordDialog.Password);
-            connection = new SQLiteAsyncConnection(options);
-
-            try
+            OpenFileDialog openFileDialog = new()
             {
-                //This will try to query the SQLite Schema Database, if the key is correct then no error is raised
-                _ = await connection.QueryAsync<int>("SELECT count(*) FROM sqlite_master");
-            }
-            catch (SQLiteException) // Wrong password
-            {
-                dialogs.CloseDialog();
-                await connection.CloseAsync();
-                // Request password from user again, don't run init code
-                passwordDialog.Show(true);
-                return;
-            }
+                Filter = "Database file (*.db)|*.db",
+                Multiselect = false,
+                Title = "Chọn tệp cơ sở dữ liệu",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+            };
 
-            // If thing goes well aka correct password, run the init code
-            Init();
+            if (openFileDialog.ShowDialog() == true)
+            {
+                databasePath = openFileDialog.FileName;
+                return true;
+            }
+            else
+            {
+                Close();
+                return false;
+            }
         }
-        /// <summary>
-        /// Initialize application. With a loading dialog :))
-        /// </summary>
-        private async void Init()
+        private static async Task CreateCloneTable(SQLiteAsyncConnection cloneConnection, Info info, List<Candidate> candidateList)
         {
-            // Get serial port
-            try
-            {
-                serial = await Task.Run(ArduinoInteract.GetArduinoCOMPort);
-            }
-            catch (Exception e)
-            {
-                dialogs.CloseDialog();
-                dialogs.ShowTextDialog("Lỗi tìm thiết bị Arduino. Vui lòng gọi kỹ thuật viên.\n" +
-                    "Mã lỗi: " + e.Message, "OK", Close);
-                return;
-            }
-            // When no serial port is found, dump error message box, then quit
-            if (serial == null)
-            {
-                dialogs.CloseDialog();
-                dialogs.ShowTextDialog("Không tìm thấy thiết bị Arduino. Vui lòng gọi kỹ thuật viên.", "OK", Close);
-                return;
-            }
-
-            try { await LoadDatabase(); }
-            catch (Exception) { InvalidDatabase(); return; }
-
-            connection?.CloseAsync();
-            if (ValidateDatabase() == false)
-            {
-                InvalidDatabase();
-                return;
-            }
-
-            
-
-            // TODO: Show database warnings/errors here
-            // Await for PopulateVoteUI. This is stupid.
-            await Application.Current.Dispatcher.InvokeAsync(PopulateVoteUI);
-            dialogs.CloseDialog();
-            WaitForSignal(); // Wait for serial signal from Arduino
+            // Create Info table then add info row to table
+            await cloneConnection.ExecuteAsync("CREATE TABLE 'Info' (\n" +
+                "'Section' TEXT NOT NULL UNIQUE,\n" +
+                "'Max'   INTEGER NOT NULL,\n" +
+                "'Color' TEXT NOT NULL DEFAULT '#111111',\n" +
+                "'Title' TEXT NOT NULL,\n" +
+                "'Year'  TEXT NOT NULL,\n" +
+                "PRIMARY KEY('Section')\n)");
+            await cloneConnection.InsertOrReplaceAsync(info);
+            // Create section table then add candidates
+            await cloneConnection.ExecuteAsync($"CREATE TABLE 'Candidate' (\n" +
+                "'Name' TEXT NOT NULL UNIQUE,\n" +
+                "'Votes'   INTEGER NOT NULL DEFAULT 0,\n" +
+                "'Gender' TEXT NOT NULL,\n" +
+                "PRIMARY KEY('Name')\n)");
+            await cloneConnection.InsertAllAsync(candidateList);
+            await cloneConnection.ExecuteAsync($"ALTER TABLE Candidate RENAME TO {info.Section};");
         }
         private void InvalidDatabase()
         {
@@ -101,21 +71,7 @@ namespace VotingPC
             dialogs.ShowTextDialog("Cơ sở dữ liệu không hợp lệ, vui lòng kiểm tra lại.", "Đóng", Close);
         }
         /// <summary>
-        /// Load database into infos and sections Lists
-        /// </summary>
-        /// <returns>An awaitable Task that do the work</returns>
-        private static async Task LoadDatabase()
-        {
-            string query = $"SELECT * FROM Info";
-            infoList = await connection.QueryAsync<Info>(query);
-            query = $"SELECT * FROM \"";
-            foreach (Info info in infoList)
-            {
-                sectionList.Add(await connection.QueryAsync<Candidate>(query + info.Section + "\""));
-            }
-        }
-        /// <summary>
-        /// Validate the database. Will reset the votes too
+        /// Validate the database, then reset the votes
         /// </summary>
         /// <returns>True if is valid, else false</returns>
         private static bool ValidateDatabase()
@@ -273,83 +229,5 @@ namespace VotingPC
                 1);
             return new Size(formattedText.Width, formattedText.Height);
         }
-        #endregion
-
-
-        #region UI methods
-        // Interaction for slides. Bad practice but eh, the app is extremely simple, so...
-        private void CheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            infoList[currentSectionIndex].TotalVoted++;
-        }
-        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
-        {
-            infoList[currentSectionIndex].TotalVoted--;
-        }
-        private async void SubmitButton_Click(object sender, RoutedEventArgs e)
-        {
-            bool validate = true; string errors = "Số đại biểu được bầu khác số lượng yêu cầu tại:";
-            for (int i = 0; i < infoList.Count; i++)
-            {
-                if (infoList[i].TotalVoted != infoList[i].Max)
-                {
-                    validate = false;
-                    errors += "\n - Phiếu bầu " + infoList[i].Title;
-                    continue;
-                }
-                for (int j = 0; j < sectionList[i].Count; j++)
-                {
-                    if ((bool)((CheckBox)candidateLists[i].Children[j]).IsChecked)
-                    {
-                        sectionList[i][j].Votes++;
-                    }
-                }
-            }
-
-            if (!validate)
-            {
-                dialogs.ShowTextDialog(errors, "Trở lại");
-            }
-            else
-            {
-                dialogs.ShowLoadingDialog();
-                for (int i = 0; i < infoList.Count; i++)
-                {
-                    for (int j = 0; j < sectionList[i].Count; j++)
-                    {
-                        string name = sectionList[i][j].Name.Replace("\'", "\'\'");
-                        // Save stuff to db file
-                        string query = $"UPDATE \"{infoList[i].Section}\" SET Votes = {sectionList[i][j].Votes} WHERE Name = '{name}';";
-                        _ = await connection.ExecuteAsync(query);
-                    }
-                }
-                dialogs.CloseDialog();
-
-                dialogs.ShowTextDialog("Đã nộp phiếu bầu. Chúc một ngày tốt lành.", "Đóng", async () =>
-                {
-                    PreviousPage();
-                    ResetCheckboxes();
-                    await Task.Delay(1000);
-                    WaitForSignal();
-                });
-            }
-        }
-        /// <summary>
-        /// Occur when slide is changed with change slide radio buttons
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ChangeSlide_Checked(object sender, RoutedEventArgs e)
-        {
-            currentSectionIndex = slide2.votePanel.Children.IndexOf((UIElement)sender);
-            slide2.voteStack.Children.Clear();
-            _ = slide2.voteStack.Children.Add(candidateLists[currentSectionIndex]);
-
-            slide2.title.Text = "Đại biểu " + infoList[currentSectionIndex].Title + " " + infoList[currentSectionIndex].Year;
-            slide2.caption.Text = "Chọn đúng " + infoList[currentSectionIndex].Max + " người";
-            slide2.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(infoList[currentSectionIndex].Color));
-            slide2.voteCard.MinWidth = slide2.mainGrid.ColumnDefinitions[1].ActualWidth - 120;
-        }
-        #endregion
     }
 }
