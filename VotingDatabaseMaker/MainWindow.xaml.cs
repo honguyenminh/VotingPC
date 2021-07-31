@@ -66,9 +66,53 @@ namespace VotingDatabaseMaker
             paletteHelper.SetTheme(theme);
         }
 
-        private void AddSectorButton_Click(object sender, RoutedEventArgs e)
+        private async void AddSectorButton_Click(object sender, RoutedEventArgs e)
         {
             // Nút thêm Sector
+            StackPanel stackPanel = new() { Margin = new(16) };
+            TextBlock title = new() {
+                Text = "Nhập Tên Của Cấp Cần Bầu Cử",
+                FontSize = 20
+            };
+            TextBox nameBox = new()
+            {
+                Margin = new(0, 8, 0, 0),
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            };
+            StackPanel buttonStack = new()
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
+            Button cancelButton = new()
+            {
+                Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"],
+                IsCancel = true,
+                Margin = new(0, 8, 8, 0),
+                Content = "Hủy"
+            };
+            cancelButton.Click += (sender, e) => dialogs.CloseDialog();
+            Button submitButton = new()
+            {
+                Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"],
+                IsDefault = true,
+                Margin = new(0, 8, 8, 0),
+                Content = "OK"
+            };
+            submitButton.Click += (sender, e) =>
+            {
+                string Name = nameBox.Text;
+                Info info = new();
+                sectorDict.Add(Name, info);
+                SectorList.ItemsSource = sectorDict.Keys;
+                dialogs.CloseDialog();
+            };
+            _ = buttonStack.Children.Add(cancelButton);
+            _ = buttonStack.Children.Add(submitButton);
+            _ = stackPanel.Children.Add(title);
+            _ = stackPanel.Children.Add(nameBox);
+            _ = stackPanel.Children.Add(buttonStack);
+            _ = await dialogHost.ShowDialog(stackPanel);
             _ = sectorDict.Add("Test sector 1", new());
             if (!candidates.Add("Test sector 1", new()))
             {
@@ -97,9 +141,57 @@ namespace VotingDatabaseMaker
             NameList.ItemsSource = candidates.GetValue(SelectedSector).Values.ToList();
         }
 
-        private void SectorEditButton_Click(object sender, RoutedEventArgs e)
+        private async void SectorEditButton_Click(object sender, RoutedEventArgs e)
         {
-            // Nút sửa sector đã chọn
+            // Nút sửa cấp đã chọn
+            // SelectedSector is sectoredit
+            StackPanel stackPanel = new() { Margin = new(16) };
+            TextBlock title = new()
+            {
+                Text = "_______Sửa Cấp_______",
+                FontSize = 20,
+            };
+            TextBox nameBox = new()
+            {
+                Margin = new(0, 8, 0, 0),
+                HorizontalAlignment = HorizontalAlignment.Stretch
+            };
+            nameBox.Text = nameBox.Text.Insert(0,SelectedSector);
+            StackPanel buttonStack = new()
+            {
+                Orientation = Orientation.Horizontal,
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
+            Button cancelButton = new()
+            {
+                Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"],
+                IsCancel = true,
+                Margin = new(0, 8, 8, 0),
+                Content = "Hủy"
+            };
+            cancelButton.Click += (sender, e) => dialogs.CloseDialog();
+            Button submitButton = new()
+            {
+                Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"],
+                IsDefault = true,
+                Margin = new(0, 8, 8, 0),
+                Content = "OK"
+            };
+            submitButton.Click += (sender, e) =>
+            {
+                sectorDict.Remove(SelectedSector);
+                string Name = nameBox.Text;
+                Info info = new();
+                sectorDict.Add(Name, info);
+                SectorList.ItemsSource = sectorDict.Keys;
+                dialogs.CloseDialog();
+            };
+            _ = buttonStack.Children.Add(cancelButton);
+            _ = buttonStack.Children.Add(submitButton);
+            _ = stackPanel.Children.Add(title);
+            _ = stackPanel.Children.Add(nameBox);
+            _ = stackPanel.Children.Add(buttonStack);
+            _ = await dialogHost.ShowDialog(stackPanel);
         }
         private void CandidateEditButton_Click(object sender, RoutedEventArgs e)
         {
@@ -109,6 +201,7 @@ namespace VotingDatabaseMaker
         private void SectorRemoveButton_Click(object sender, RoutedEventArgs e)
         {
             // Nút xóa Sector
+            sectorDict.Remove(SelectedSector);
         }
         private void CandidateRemoveButton_Click(object sender, RoutedEventArgs e)
         {
