@@ -11,7 +11,8 @@
         TextElement.FontSize="14"
         FontFamily="{materialDesign:MaterialDesignFont}"
         Title="VotingDatabaseMaker - Tạo file cơ sở dữ liệu bầu cử"
-        Height="600" Width="1000" MinHeight="450" MinWidth="900">
+        Height="600" Width="1000" MinHeight="450" MinWidth="900"
+        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
     <Window.Resources>
         <local:MinusValueConverter x:Key="MinusValueConverter"/>
     </Window.Resources>
@@ -36,7 +37,9 @@
                 <TextBlock Text="Sector" FontSize="24" Margin="24 8"/>
                 <Button x:Name="AddSectorButton" Content="Thêm sector" Margin="24 8" FontSize="14"
                         VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="0" Click="AddSectorButton_Click"/>
-                <ListBox x:Name="SectorList" Grid.Row="1" Margin="24" SelectionChanged="SectorList_SelectionChanged" SelectionMode="Single"/>
+                <ListBox x:Name="SectorList" Grid.Row="1" Margin="24" ItemsSource="{Binding SectorStringList}"
+                         SelectedItem="{Binding SelectedSector, Mode=TwoWay}" SelectionMode="Single"
+                         SelectionChanged="SectorList_SelectionChanged"/>
 
                 <!--Seperator Line-->
                 <Line Grid.RowSpan="2" X1="0" X2="0" Y1="0" 
@@ -47,7 +50,8 @@
                 <!--Candidate Block-->
                 <TextBlock Grid.Column="1" Margin="24 8" Text="Ứng cử viên" FontSize="24"/>
                 <Button x:Name="AddCandidateButton" Content="Thêm ứng cử viên" Margin="24 8" FontSize="14"
-                        VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="1" Click="AddCandidateButton_Click"/>
+                        IsEnabled="False" d:IsEnabled="True" Click="AddCandidateButton_Click"
+                        VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="1"/>
 
                 <ListView Grid.Column="1" Grid.Row="1" x:Name="NameList" Margin="24"
                           SelectionChanged="CandidateList_SelectionChanged"

@@ -15,6 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SQLite;
 using VotingPC;
+using System.Collections.ObjectModel;
 
 namespace VotingDatabaseMaker
 {
@@ -24,16 +25,21 @@ namespace VotingDatabaseMaker
     public partial class MainWindow : Window
     {
         private readonly Dialogs dialogs;
+        private readonly CandidateDialog candidateDialog = new();
         //private static SQLiteAsyncConnection connection;
         private readonly Dictionary<string, Dictionary<string, Candidate>> candidates = new(1);
-        private readonly Dictionary<string, Info> sectors = new();
-        private string selectedSector, selectedCandidate;
+        private readonly SectorDictionary sectorDict = new();
+        public string SelectedSector { get; set; }
+        public string SelectedCandidate { get; set; }
+
+        public ObservableCollection<string> SectorStringList => sectorDict.sectorsIndex;
 
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = this;
             dialogs = new(dialogHost);
-            SectorList.ItemsSource = sectors.Keys.ToList();
+            SectorList.ItemsSource = sectorDict.sectorsIndex;
 
             //NameList.ItemsSource = candidates[0];
         }
@@ -61,10 +67,23 @@ namespace VotingDatabaseMaker
         private void AddSectorButton_Click(object sender, RoutedEventArgs e)
         {
             // Nút thêm Sector
+            _ = sectorDict.Add("Test sector 1", new());
+            if (!candidates.ContainsKey("Test sector 1")) candidates.Add("Test sector 1", new());
+            AddCandidateButton.IsEnabled = true;
         }
-        private void AddCandidateButton_Click(object sender, RoutedEventArgs e)
+        private async void AddCandidateButton_Click(object sender, RoutedEventArgs e)
         {
             // Nút thêm ứng cử viên
+            // TODO: Show add dialog here, somehow :)
+            bool result = (bool)await dialogHost.ShowDialog(candidateDialog);
+            if (result == false) return;
+            Candidate candidate = new()
+            {
+                Name = candidateDialog.NameInput,
+                Gender = candidateDialog.GenderInput
+            };
+            candidates[SelectedSector].Add(candidate.Name, candidate);
+            NameList.ItemsSource = candidates[SelectedSector].Values;
         }
 
         private void SectorEditButton_Click(object sender, RoutedEventArgs e)
@@ -93,17 +112,8 @@ namespace VotingDatabaseMaker
         private void SectorList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             SectorEditButton.IsEnabled = true;
-            var selectedItem = e.AddedItems;
-            if (selectedItem.Count == 0)
-            {
-                selectedSector = null; // TODO: check for this on other use of this var
-                NameList.ItemsSource = null;
+            if (SelectedSector == null)
                 SectorEditButton.IsEnabled = false;
-                return;
-            };
-            selectedSector = (string)selectedItem[0];
-
-            NameList.ItemsSource = candidates[selectedSector].Values.ToList();
         }
         private void CandidateList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -111,13 +121,16 @@ namespace VotingDatabaseMaker
             var selectedItem = e.AddedItems;
             if (selectedItem.Count == 0)
             {
-                selectedCandidate = null;
+                SelectedCandidate = null;
                 CandidateEditButton.IsEnabled = false;
                 return;
             };
-            selectedCandidate = ((Candidate)selectedItem).Name;
+            SelectedCandidate = ((Candidate)selectedItem).Name;
         }
-
+        private void SectorList_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            SectorList.Items.Refresh();
+        }
     }
 
     public class Candidate
