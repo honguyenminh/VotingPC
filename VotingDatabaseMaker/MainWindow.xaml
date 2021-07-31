@@ -11,7 +11,7 @@
         TextElement.FontSize="14"
         FontFamily="{materialDesign:MaterialDesignFont}"
         Title="VotingDatabaseMaker - Tạo file cơ sở dữ liệu bầu cử"
-        Height="600" Width="1000" MinHeight="450" MinWidth="900"
+        Height="600" Width="1000" MinHeight="600" MinWidth="1000"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
     <Window.Resources>
         <local:MinusValueConverter x:Key="MinusValueConverter"/>
@@ -26,7 +26,7 @@
             <Grid x:Name="grid" Grid.Row="0" Margin="0 20 0 0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="6*"/>
+                    <ColumnDefinition Width="5*"/>
                     <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
@@ -36,11 +36,18 @@
 
                 <!--Sector Block-->
                 <TextBlock Text="Sector" FontSize="24" Margin="24 8"/>
-                <Button x:Name="AddSectorButton" Content="Thêm" Margin="24 8" FontSize="14"
-                        VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="0" Click="AddSectorButton_Click"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Sửa" Margin="8" FontSize="14" x:Name="SectorEditButton"
+                        VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
+                        IsEnabled="False" d:IsEnabled="True" Click="SectorEditButton_Click"/>
+                    <Button x:Name="AddSectorButton" Content="Thêm" Margin="4 8 24 8" FontSize="14"
+                        VerticalAlignment="Center" Click="AddSectorButton_Click"/>
+                </StackPanel>
                 <ListBox x:Name="SectorList" Grid.Row="1" Margin="24" ItemsSource="{Binding SectorStringList}"
                          SelectedItem="{Binding SelectedSector, Mode=TwoWay}" SelectionMode="Single"
-                         SelectionChanged="SectorList_SelectionChanged"/>
+                         SelectionChanged="SectorList_SelectionChanged"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
 
                 <!--Seperator Line-->
                 <Line Grid.RowSpan="2" X1="0" X2="0" Y1="0" 
@@ -56,18 +63,18 @@
                         IsEnabled="False" d:IsEnabled="True" Click="CandidateEditButton_Click"/>
                     <Button x:Name="AddCandidateButton" Content="Thêm" Margin="8 8 24 8" FontSize="14"
                         IsEnabled="False" d:IsEnabled="True" Click="AddCandidateButton_Click"
-                        VerticalAlignment="Top" HorizontalAlignment="Right" />
+                        VerticalAlignment="Center" HorizontalAlignment="Right" />
                 </StackPanel>
 
                 <ListView Grid.Column="1" Grid.Row="1" x:Name="NameList" Margin="24"
                           SelectionChanged="CandidateList_SelectionChanged"
-                          SelectedItem="{Binding SelectedSector, Mode=TwoWay}"
+                          SelectedItem="{Binding SelectedCandidate, Mode=TwoWay}"
                           ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionMode="Single">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Tên ứng cử viên" Width="260"
                                             DisplayMemberBinding="{Binding Name}"/>
-                            <GridViewColumn Header="Giới tính" Width="100"
+                            <GridViewColumn Header="Giới tính"
                                             DisplayMemberBinding="{Binding Gender}"/>
                         </GridView>
                     </ListView.View>

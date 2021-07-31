@@ -35,7 +35,8 @@ namespace VotingDatabaseMaker
         /// <returns></returns>
         public TValue GetValue(TKey key)
         {
-            return Values[Keys.IndexOf(key)];
+            int index = Keys.IndexOf(key);
+            return index == -1 ? default : Values[index];
         }
 
         /// <summary>
@@ -53,16 +54,31 @@ namespace VotingDatabaseMaker
         }
 
         /// <summary>
-        /// Remove item with given index
+        /// Remove item with given key
         /// </summary>
-        /// <param name="index">index of item to remove</param>
+        /// <param name="key">index of item to remove</param>
         /// <returns>true if removed, false if item not found</returns>
-        public bool Remove(TKey index)
+        public bool RemoveKey(TKey key)
         {
-            int indexToRemove = Keys.IndexOf(index);
+            int indexToRemove = Keys.IndexOf(key);
             if (indexToRemove == -1) return false;
             Values.RemoveAt(indexToRemove);
             Keys.RemoveAt(indexToRemove);
+            return true;
+        }
+        public bool RemoveValue(TValue value)
+        {
+            int indexToRemove = Values.IndexOf(value);
+            if (indexToRemove == -1) return false;
+            Values.RemoveAt(indexToRemove);
+            Keys.RemoveAt(indexToRemove);
+            return true;
+        }
+        public bool Rename(TKey key, TKey newKey)
+        {
+            int indexToRename = Keys.IndexOf(key);
+            if (indexToRename == -1) return false;
+            Keys[indexToRename] = newKey;
             return true;
         }
     }
