@@ -26,7 +26,8 @@
             <Grid x:Name="grid" Grid.Row="0" Margin="0 20 0 0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="3*"/>
-                    <ColumnDefinition Width="5*"/>
+                    <ColumnDefinition Width="6*"/>
+                    <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -35,7 +36,7 @@
 
                 <!--Sector Block-->
                 <TextBlock Text="Sector" FontSize="24" Margin="24 8"/>
-                <Button x:Name="AddSectorButton" Content="Thêm sector" Margin="24 8" FontSize="14"
+                <Button x:Name="AddSectorButton" Content="Thêm" Margin="24 8" FontSize="14"
                         VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="0" Click="AddSectorButton_Click"/>
                 <ListBox x:Name="SectorList" Grid.Row="1" Margin="24" ItemsSource="{Binding SectorStringList}"
                          SelectedItem="{Binding SelectedSector, Mode=TwoWay}" SelectionMode="Single"
@@ -49,22 +50,62 @@
 
                 <!--Candidate Block-->
                 <TextBlock Grid.Column="1" Margin="24 8" Text="Ứng cử viên" FontSize="24"/>
-                <Button x:Name="AddCandidateButton" Content="Thêm ứng cử viên" Margin="24 8" FontSize="14"
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Sửa" Margin="8" FontSize="14" x:Name="CandidateEditButton"
+                        VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
+                        IsEnabled="False" d:IsEnabled="True" Click="CandidateEditButton_Click"/>
+                    <Button x:Name="AddCandidateButton" Content="Thêm" Margin="8 8 24 8" FontSize="14"
                         IsEnabled="False" d:IsEnabled="True" Click="AddCandidateButton_Click"
-                        VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="1"/>
+                        VerticalAlignment="Top" HorizontalAlignment="Right" />
+                </StackPanel>
 
                 <ListView Grid.Column="1" Grid.Row="1" x:Name="NameList" Margin="24"
                           SelectionChanged="CandidateList_SelectionChanged"
+                          SelectedItem="{Binding SelectedSector, Mode=TwoWay}"
                           ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionMode="Single">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Header="Tên ứng cử viên" Width="460"
+                            <GridViewColumn Header="Tên ứng cử viên" Width="260"
                                             DisplayMemberBinding="{Binding Name}"/>
-                            <GridViewColumn Header="Giới tính"
+                            <GridViewColumn Header="Giới tính" Width="100"
                                             DisplayMemberBinding="{Binding Gender}"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
+
+                <!--Seperator Line-->
+                <Line Grid.RowSpan="2" X1="0" X2="0" Y1="0" Grid.Column="1"
+                      Y2="{Binding ActualHeight, Converter={StaticResource MinusValueConverter}, ConverterParameter=60, ElementName=grid, Mode=OneWay}"
+                      HorizontalAlignment="Right" VerticalAlignment="Center"
+                      StrokeThickness="1" Stroke="{DynamicResource MaterialDesignDarkSeparatorBackground}"/>
+                
+                <!--Sector properties-->
+                <TextBlock Grid.Column="2" Text="Thuộc tính Sector" Margin="24 8" FontSize="24"/>
+                <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="24">
+                    <TextBox materialDesign:HintAssist.Hint="Tiêu đề sector"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             Margin="6" MaxLength="128" TextWrapping="Wrap">
+                        <TextBox.Text>
+                            <Binding Path="SectorTitle" Mode="TwoWay"
+                                     UpdateSourceTrigger="PropertyChanged">
+                                <Binding.ValidationRules>
+                                    <local:NotEmptyValidationRule ValidatesOnTargetUpdated="True"/>
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <TextBox materialDesign:HintAssist.Hint="Niên khóa"
+                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             Margin="6 12" MaxLength="128" TextWrapping="Wrap">
+                        <TextBox.Text>
+                            <Binding Path="SectorYear" Mode="TwoWay"
+                                     UpdateSourceTrigger="PropertyChanged"/>
+                        </TextBox.Text>
+                    </TextBox>
+                    <StackPanel.LayoutTransform>
+                        <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
+                    </StackPanel.LayoutTransform>
+                </StackPanel>
             </Grid>
 
             <!--Bottom buttons-->
@@ -79,14 +120,9 @@
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="1">
                 <!--Edit buttons-->
-                <Button Content="Sửa Sector" Margin="24 24 12 24" FontSize="14" x:Name="SectorEditButton"
-                        VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
-                        IsEnabled="False" d:IsEnabled="True" Click="SectorEditButton_Click"/>
-                <Button Content="Sửa Ứng cử viên" Margin="12 24" FontSize="14" x:Name="CandidateEditButton"
-                        VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
-                        IsEnabled="False" d:IsEnabled="True" Click="CandidateEditButton_Click"/>
+                
                 <!--Delete buttons-->
-                <Button Content="Xóa Sector" Margin="12 24" FontSize="14" x:Name="SectorRemoveButton"
+                <Button Content="Xóa Sector" Margin="24" FontSize="14" x:Name="SectorRemoveButton"
                         VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
                         IsEnabled="False" d:IsEnabled="True" Click="SectorRemoveButton_Click"
                         Foreground="Red" BorderBrush="Red"/>

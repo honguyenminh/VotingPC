@@ -6,9 +6,9 @@
              xmlns:local="clr-namespace:VotingDatabaseMaker"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" d:Background="White"
-             d:DesignHeight="280" d:DesignWidth="460">
+             d:DesignHeight="300" Width="460">
     <StackPanel Margin="32">
-        <TextBlock Text="Thêm ứng cử viên" FontSize="26" Margin="6 0 6 12"/>
+        <TextBlock Text="Thêm ứng cử viên" FontSize="20" Margin="6 0 6 12"/>
         <TextBox x:Name="NameTextBox" materialDesign:HintAssist.Hint="Tên ứng cử viên"
                  Margin="6" MaxLength="128" TextWrapping="Wrap">
             <TextBox.Text>
@@ -56,5 +56,8 @@
                 </Button.CommandParameter>
             </Button>
         </StackPanel>
+        <StackPanel.LayoutTransform>
+            <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
+        </StackPanel.LayoutTransform>
     </StackPanel>
 </UserControl>
