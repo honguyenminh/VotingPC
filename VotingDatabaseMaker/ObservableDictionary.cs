@@ -81,5 +81,9 @@ namespace VotingDatabaseMaker
             Keys[indexToRename] = newKey;
             return true;
         }
+        /// <summary>
+        /// Entries count
+        /// </summary>
+        public int Count => Keys.Count;
     }
 }
