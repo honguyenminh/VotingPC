@@ -27,7 +27,7 @@ namespace VotingDatabaseMaker
         private readonly Dialogs dialogs;
         private readonly CandidateDialog candidateDialog = new();
         //private static SQLiteAsyncConnection connection;
-        private readonly ObservableDictionary<string, Dictionary<string, Candidate>> candidates = new();
+        private readonly ObservableDictionary<string, ObservableDictionary<string, Candidate>> candidates = new();
         private readonly ObservableDictionary<string, Info> sectorDict = new();
         public string SelectedSector { get; set; }
         public Candidate SelectedCandidate { get; set; }
@@ -110,10 +110,10 @@ namespace VotingDatabaseMaker
 
             if (!sectorDict.Add(nameBox.Text, new()))
             {
-                dialogs.ShowTextDialog("Sector đã tồn tại, vui lòng kiểm tra lại", "OK");
+                dialogs.ShowTextDialog("Sector đã tồn tại, vui lòng kiểm tra lại", "OK", customScaleFactor: 1.5);
                 return;
             }
-            _ = candidates.Add(nameBox.Text, new());
+            candidates.Add(nameBox.Text, new());
             SectorList.SelectedItem = nameBox.Text;
             AddCandidateButton.IsEnabled = true;
         }
@@ -122,9 +122,9 @@ namespace VotingDatabaseMaker
             // Nút thêm ứng cử viên
             bool result = (bool)await dialogHost.ShowDialog(candidateDialog);
             if (result == false) return;
-            if (candidates.GetValue(SelectedSector).ContainsKey(candidateDialog.NameInput))
+            if (candidates[SelectedSector].Keys.Contains(candidateDialog.NameInput))
             {
-                dialogs.ShowTextDialog("Ứng cử viên đã tồn tại", "OK");
+                dialogs.ShowTextDialog("Ứng cử viên đã tồn tại", "OK", customScaleFactor: 1.5);
                 return;
             }
             Candidate candidate = new()
@@ -132,8 +132,8 @@ namespace VotingDatabaseMaker
                 Name = candidateDialog.NameInput,
                 Gender = candidateDialog.GenderInput
             };
-            candidates.GetValue(SelectedSector).Add(candidate.Name, candidate);
-            NameList.ItemsSource = candidates.GetValue(SelectedSector).Values.ToList();
+            _ = candidates[SelectedSector].Add(candidate.Name, candidate);
+            NameList.ItemsSource = candidates[SelectedSector].Values;
         }
 
         private void SectorEditButton_Click(object sender, RoutedEventArgs e)
@@ -144,7 +144,6 @@ namespace VotingDatabaseMaker
             {
                 Margin = new(16),
                 Width = 220,
-                Height = 160
             };
             TextBlock title = new()
             {
@@ -181,8 +180,15 @@ namespace VotingDatabaseMaker
             submitButton.Click += (sender, e) =>
             {
                 dialogs.CloseDialog();
+                if (sectorDict.Keys.Contains(nameBox.Text))
+                {
+                    dialogs.ShowTextDialog("Sector cùng tên đã tồn tại.", "OK", customScaleFactor: 1.5);
+                    return;
+                }
+                _ = candidates.Rename(SelectedSector, nameBox.Text);
                 _ = sectorDict.Rename(SelectedSector, nameBox.Text);
                 SelectedSector = nameBox.Text;
+                NameList.ItemsSource = candidates[SelectedSector].Values;
             };
             _ = buttonStack.Children.Add(cancelButton);
             _ = buttonStack.Children.Add(submitButton);
@@ -199,15 +205,13 @@ namespace VotingDatabaseMaker
         private void SectorRemoveButton_Click(object sender, RoutedEventArgs e)
         {
             // Nút xóa Sector
-            _ = sectorDict.RemoveKey(SelectedSector);
             _ = candidates.RemoveKey(SelectedSector);
+            _ = sectorDict.RemoveKey(SelectedSector);
         }
         private void CandidateRemoveButton_Click(object sender, RoutedEventArgs e)
         {
             // Nút xóa ứng cử viên
-            _ = candidates.GetValue(SelectedSector).Remove(SelectedCandidate.Name);
-            // TODO: fix this stupid
-            NameList.ItemsSource = candidates.GetValue(SelectedSector).Values.ToList();
+            _ = candidates[SelectedSector].RemoveKey(SelectedCandidate.Name);
         }
 
         private void ExportButton_Click(object sender, RoutedEventArgs e)
@@ -230,7 +234,7 @@ namespace VotingDatabaseMaker
                 AddCandidateButton.IsEnabled = true;
                 SectorRemoveButton.IsEnabled = true;
                 SectorEditButton.IsEnabled = true;
-                NameList.ItemsSource = candidates.GetValue(SelectedSector)?.Values.ToList();
+                NameList.ItemsSource = candidates[SelectedSector].Values;
             }
         }
         private void CandidateList_SelectionChanged(object sender, SelectionChangedEventArgs e)

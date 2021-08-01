@@ -25,7 +25,7 @@ namespace VotingPC
         /// <param name="text">Text to show</param>
         /// <param name="buttonContent">Content of button</param>
         /// <param name="clickMethod">Method to execute on button click</param>
-        public void ShowTextDialog(string text, string buttonContent, Action clickMethod = null)
+        public void ShowTextDialog(string text, string buttonContent, Action clickMethod = null, double customScaleFactor = 2)
         {
             StackPanel stackPanel = new() { Margin = new Thickness(32) };
             TextBlock textBlock = new() { Text = text, TextWrapping = TextWrapping.Wrap };
@@ -44,7 +44,7 @@ namespace VotingPC
 
             _ = stackPanel.Children.Add(textBlock);
             _ = stackPanel.Children.Add(button);
-            stackPanel.LayoutTransform = new ScaleTransform(2, 2);
+            stackPanel.LayoutTransform = new ScaleTransform(customScaleFactor, customScaleFactor);
             _ = dialogHost.ShowDialog(stackPanel);
         }
         /// <summary>

@@ -38,6 +38,11 @@ namespace VotingDatabaseMaker
             int index = Keys.IndexOf(key);
             return index == -1 ? default : Values[index];
         }
+        public TValue this[TKey key]
+        {
+            get => Values[Keys.IndexOf(key)];
+            set => Values[Keys.IndexOf(key)] = value;
+        }
 
         /// <summary>
         /// Add key and value pair to the collection
