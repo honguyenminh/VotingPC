@@ -16,7 +16,7 @@
     <Window.Resources>
         <local:MinusValueConverter x:Key="MinusValueConverter"/>
     </Window.Resources>
-    <materialDesign:DialogHost x:Name="dialogHost">
+    <materialDesign:DialogHost x:Name="DialogHost">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>

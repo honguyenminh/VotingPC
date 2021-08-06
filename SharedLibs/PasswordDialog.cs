@@ -8,13 +8,11 @@ namespace VotingPC
     public class PasswordDialog
     {
         private readonly DialogHost dialogHost;
-        private readonly RoutedEventHandler buttonClickHandler;
         private bool falsePassword;
         private readonly string wrongPasswordTitle;
         private readonly StackPanel stackPanel;
         private readonly TextBlock title;
         private readonly PasswordBox passwordBox;
-        private readonly Button button;
         public string Password => passwordBox.Password;
         /// <summary>
         /// Create new instance of a Material Design password dialog
@@ -27,7 +25,6 @@ namespace VotingPC
         public PasswordDialog(DialogHost dialogHost, string title, string wrongPasswordTitle, string buttonText, RoutedEventHandler buttonClickHandler)
         {
             this.dialogHost = dialogHost;
-            this.buttonClickHandler = buttonClickHandler;
             this.wrongPasswordTitle = wrongPasswordTitle;
             stackPanel = new()
             {
@@ -49,24 +46,18 @@ namespace VotingPC
             {
                 if (e.Key == System.Windows.Input.Key.Enter)
                 {
-                    this.buttonClickHandler(sender, null);
+                    buttonClickHandler(sender, null);
                 }
             };
             // Add top text on password box
             HintAssist.SetHelperText(passwordBox, "Mật khẩu");
-            button = new()
+            Button button = new()
             {
                 Content = buttonText,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"]
             };
-            button.Click += this.buttonClickHandler;
-
-            if (falsePassword)
-            {
-                this.title.Text = wrongPasswordTitle;
-                this.title.Foreground = Brushes.Red;
-            }
+            button.Click += buttonClickHandler;
 
             _ = stackPanel.Children.Add(this.title);
             _ = stackPanel.Children.Add(passwordBox);
@@ -80,12 +71,10 @@ namespace VotingPC
         {
             get
             {
-                if (falsePassword)
-                {
-                    title.Text = wrongPasswordTitle;
-                    passwordBox.Password = "";
-                    title.Foreground = Brushes.Red;
-                }
+                if (!falsePassword) return stackPanel;
+                title.Text = wrongPasswordTitle;
+                passwordBox.Password = "";
+                title.Foreground = Brushes.Red;
                 return stackPanel;
             }
         }

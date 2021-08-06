@@ -168,35 +168,35 @@ namespace VoteCounter
                     if (ValidateData(currentFileInfos) == false) throw new InvalidDataException();
                     // If infos is not read before, just save the object
                     if (infos == null)
-                        infos = currentFileInfos.ToDictionary(x => x.Section, x => x);
+                        infos = currentFileInfos.ToDictionary(x => x.Sector, x => x);
                     // Merge two infos if infos is read already
                     else
                     {
                         foreach (Info info in currentFileInfos)
                         {
-                            if (infos.ContainsKey(info.Section)) continue;
-                            infos.Add(info.Section, info);
+                            if (infos.ContainsKey(info.Sector)) continue;
+                            infos.Add(info.Sector, info);
                         }
                     }
 
                     query = $"SELECT * FROM \"";
                     foreach (Info section in currentFileInfos)
                     {
-                        List<Candidate> candidateList = await connection.QueryAsync<Candidate>(query + section.Section + "\"");
+                        List<Candidate> candidateList = await connection.QueryAsync<Candidate>(query + section.Sector + "\"");
                         if (ValidateData(candidateList) == false) throw new InvalidDataException();
 
                         FindMaxVote(candidateList);
 
                         // If section not yet saved, save new section into sections collection
-                        if (!sections.ContainsKey(section.Section))
+                        if (!sections.ContainsKey(section.Sector))
                         {
-                            sections.Add(section.Section, candidateList);
+                            sections.Add(section.Sector, candidateList);
                             continue;
                         }
 
                         // Else merge with current file's section
                         Dictionary<string, Candidate> candidateDict = candidateList.ToDictionary(x => x.Name, x => x);
-                        foreach (Candidate candidate in sections[section.Section])
+                        foreach (Candidate candidate in sections[section.Sector])
                         {
                             candidate.Votes += candidateDict[candidate.Name].Votes;
                             candidate.TotalWinningPlaces += candidateDict[candidate.Name].TotalWinningPlaces;
@@ -251,9 +251,9 @@ namespace VoteCounter
             foreach (var info in infos)
             {
                 // Sort the candidate list
-                SortByHighestVotes(sections[info.Value.Section]);
+                SortByHighestVotes(sections[info.Value.Sector]);
 
-                DisplayCard displayCard = new(info.Value, sections[info.Value.Section]);
+                DisplayCard displayCard = new(info.Value, sections[info.Value.Sector]);
                 if (left)
                 {
                     displayCard.Margin = new(0, 16, 56, 16);

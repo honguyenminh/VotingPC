@@ -43,7 +43,7 @@ namespace VotingDatabaseMaker
         {
             InitializeComponent();
             DataContext = this;
-            dialogs = new(dialogHost);
+            dialogs = new Dialogs(DialogHost);
         }
 
         private void ThemeButton_Click(object sender, RoutedEventArgs e)
@@ -72,15 +72,16 @@ namespace VotingDatabaseMaker
             sectorDialog.Title.Text = "Thêm Sector";
             sectorDialog.NameTextBox.Text = "";
 
-            bool result = (bool)await dialogHost.ShowDialog(sectorDialog);
+            bool result = (bool?)await DialogHost.ShowDialog(sectorDialog) ?? false;
             if (result == false) return;
 
-            if (!sectorDict.Add(sectorDialog.NameInput, new()))
+            if (!sectorDict.Keys.Contains(sectorDialog.NameInput))
             {
                 dialogs.ShowTextDialog("Sector đã tồn tại, vui lòng kiểm tra lại", "OK", customScaleFactor: 1.5);
                 return;
             }
 
+            _ = sectorDict.Add(sectorDialog.NameInput, new());
             _ = candidates.Add(sectorDialog.NameInput, new());
             SectorList.SelectedItem = sectorDialog.NameInput;
             AddCandidateButton.IsEnabled = true;
@@ -92,7 +93,7 @@ namespace VotingDatabaseMaker
             candidateDialog.NameTextBox.Text = "";
             candidateDialog.GenderBox.Text = "";
 
-            bool result = (bool)await dialogHost.ShowDialog(candidateDialog);
+            bool result = (bool?)await DialogHost.ShowDialog(candidateDialog) ?? false;
             if (result == false) return;
 
             if (candidates[SelectedSector].Keys.Contains(candidateDialog.NameInput))
@@ -116,7 +117,7 @@ namespace VotingDatabaseMaker
             sectorDialog.Title.Text = "Sửa tên Sector";
             sectorDialog.NameTextBox.Text = SelectedSector;
 
-            bool result = (bool)await dialogHost.ShowDialog(sectorDialog);
+            bool result = (bool?)await DialogHost.ShowDialog(sectorDialog) ?? false;
             if (result == false) return;
 
             if (sectorDict.Keys.Contains(sectorDialog.NameInput))

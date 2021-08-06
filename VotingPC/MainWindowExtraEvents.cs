@@ -69,7 +69,7 @@ namespace VotingPC
                 query = $"SELECT * FROM \"";
                 foreach (Info info in infoList)
                 {
-                    sectionList.Add(await connection.QueryAsync<Candidate>(query + info.Section + "\""));
+                    sectionList.Add(await connection.QueryAsync<Candidate>(query + info.Sector + "\""));
                 }
             }
             catch (Exception) { InvalidDatabase(); return; }
@@ -87,7 +87,7 @@ namespace VotingPC
                 await connection?.CloseAsync();
                 for (int i = 0; i < infoList.Count; i++)
                 {
-                    string path = $"{folderPath}\\{infoList[i].Section}.db";
+                    string path = $"{folderPath}\\{infoList[i].Sector}.db";
                     try { if (File.Exists(path)) File.Delete(path); }
                     catch
                     {
@@ -163,7 +163,7 @@ namespace VotingPC
                         // Escape the quotes in string name
                         string name = sectionList[i][j].Name.Replace("\'", "\'\'");
                         // Add details to query command
-                        string query = $"UPDATE {infoList[i].Section} SET Votes = {sectionList[i][j].Votes} WHERE Name = '{name}';";
+                        string query = $"UPDATE {infoList[i].Sector} SET Votes = {sectionList[i][j].Votes} WHERE Name = '{name}';";
                         await connection.ExecuteAsync(query);
                     }
                 }

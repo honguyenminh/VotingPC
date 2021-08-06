@@ -63,7 +63,7 @@ namespace VotingPC
                 "'Gender' TEXT NOT NULL,\n" +
                 "PRIMARY KEY('Name')\n)");
             await cloneConnection.InsertAllAsync(candidateList);
-            await cloneConnection.ExecuteAsync($"ALTER TABLE Candidate RENAME TO {info.Section};");
+            await cloneConnection.ExecuteAsync($"ALTER TABLE Candidate RENAME TO {info.Sector};");
         }
         private void InvalidDatabase()
         {
@@ -105,7 +105,7 @@ namespace VotingPC
                 {
                     Style = (Style)Application.Current.Resources["MaterialDesignTabRadioButton"],
                     Margin = new Thickness(4),
-                    Content = info.Section,
+                    Content = info.Sector,
                     IsChecked = false
                 };
                 sectionButton.Checked += ChangeSlide_Checked;

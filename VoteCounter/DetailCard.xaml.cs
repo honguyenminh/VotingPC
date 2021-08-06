@@ -27,9 +27,9 @@ namespace VoteCounter
         public DetailCard(long position, string name, long totalVotes)
         {
             InitializeComponent();
-            positionTextBlock.Text = position.ToString();
-            nameTextBlock.Text = name;
-            totalVotesTextBlock.Text = totalVotes.ToString();
+            PositionTextBlock.Text = position.ToString();
+            NameTextBlock.Text = name;
+            TotalVotesTextBlock.Text = totalVotes.ToString();
         }
     }
 }

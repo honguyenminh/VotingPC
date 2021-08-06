@@ -39,7 +39,7 @@ namespace VoteCounter
             InitializeComponent();
 
             // Set details to parameters
-            SectionTextBlock.Text = info.Title ?? info.Section;
+            SectionTextBlock.Text = info.Title ?? info.Sector;
 
             // Show winning candidate
             NameTextBlock.Text = candidates[0].Name;
@@ -54,12 +54,12 @@ namespace VoteCounter
         public static readonly RoutedEvent ClickEvent = EventManager.RegisterRoutedEvent("Click", RoutingStrategy.Bubble, typeof(RoutedEventHandler), typeof(DisplayCard));
         public event RoutedEventHandler Click
         {
-            add { AddHandler(ClickEvent, value); }
-            remove { RemoveHandler(ClickEvent, value); }
+            add => AddHandler(ClickEvent, value);
+            remove => RemoveHandler(ClickEvent, value);
         }
         private void RaiseClickEvent()
         {
-            RoutedEventArgs newEventArgs = new RoutedEventArgs(ClickEvent);
+            RoutedEventArgs newEventArgs = new(ClickEvent);
             RaiseEvent(newEventArgs);
         }
         private void OnClick()

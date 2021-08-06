@@ -33,7 +33,7 @@ namespace VotingPC
             {
                 if (value.Length > GlobalVariable.StringMaxLength)
                 {
-                    name = value.Substring(0, GlobalVariable.StringMaxLength);
+                    name = value[..GlobalVariable.StringMaxLength];
                 }
                 else name = value;
             }
@@ -53,7 +53,7 @@ namespace VotingPC
             {
                 if (value.Length > GlobalVariable.SmallStringMaxLength)
                 {
-                    gender = value.Substring(0, GlobalVariable.SmallStringMaxLength);
+                    gender = value[..GlobalVariable.SmallStringMaxLength];
                 }
                 else gender = value;
             }
@@ -68,7 +68,7 @@ namespace VotingPC
     public class Info
     {
         // Private fields
-        private string section;
+        private string sector;
         private string color;
         private string title;
         private string year;
@@ -80,16 +80,16 @@ namespace VotingPC
 
         [NotNull, PrimaryKey, Unique]
         [Column("Section")]
-        public string Section
+        public string Sector
         {
-            get => section;
+            get => sector;
             set
             {
                 if (value.Length > GlobalVariable.SmallStringMaxLength)
                 {
                     Error += $"Tên Section quá dài (hơn {GlobalVariable.SmallStringMaxLength} ký tự).\n";
                 }
-                else section = value;
+                else sector = value;
             }
         }
 
@@ -114,7 +114,7 @@ namespace VotingPC
                     }
                     else
                     {
-                        Error += $"Màu nền RGB không hợp lệ tại Section {Section}.\n";
+                        Error += $"Màu nền RGB không hợp lệ tại Section {Sector}.\n";
                     }
                 }
                 // Is #ARGB
@@ -126,12 +126,12 @@ namespace VotingPC
                     }
                     else
                     {
-                        Error += $"Màu nền ARGB không hợp lệ tại Section {Section}.\n";
+                        Error += $"Màu nền ARGB không hợp lệ tại Section {Sector}.\n";
                     }
                 }
                 else
                 {
-                    Error += $"Màu nền không hợp lệ tại Section {Section}.\nVui lòng kiểm tra lại độ dài mã màu.\n";
+                    Error += $"Màu nền không hợp lệ tại Section {Sector}.\nVui lòng kiểm tra lại độ dài mã màu.\n";
                 }
             }
         }
@@ -145,7 +145,7 @@ namespace VotingPC
             {
                 if (value.Length > GlobalVariable.StringMaxLength)
                 {
-                    Warning += $"Tiêu đề Section {Section} quá dài (hơn {GlobalVariable.StringMaxLength} ký tự). Đã tự động cắt.\n";
+                    Warning += $"Tiêu đề Section {Sector} quá dài (hơn {GlobalVariable.StringMaxLength} ký tự). Đã tự động cắt.\n";
                     title = value.Substring(0, GlobalVariable.StringMaxLength);
                 }
                 else title = value;
@@ -161,8 +161,8 @@ namespace VotingPC
             {
                 if (value.Length > GlobalVariable.SmallStringMaxLength)
                 {
-                    Warning += $"Phụ đề niên khóa của Section {Section} quá dài (hơn {GlobalVariable.SmallStringMaxLength} ký tự). Đã tự động cắt.\n";
-                    year = value.Substring(0, GlobalVariable.SmallStringMaxLength);
+                    Warning += $"Phụ đề niên khóa của Section {Sector} quá dài (hơn {GlobalVariable.SmallStringMaxLength} ký tự). Đã tự động cắt.\n";
+                    year = value[..GlobalVariable.SmallStringMaxLength];
                 }
                 else year = value;
             }
@@ -173,6 +173,6 @@ namespace VotingPC
 
         [Ignore]
         // Return true if all properties are not null
-        public bool IsValid => Section != null && Color != null && Title != null && Year != null && Max != null;
+        public bool IsValid => Sector != null && Color != null && Title != null && Year != null && Max != null;
     }
 }
