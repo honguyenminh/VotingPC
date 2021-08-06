@@ -152,12 +152,12 @@ namespace VotingPC
             else
             {
                 dialogs.ShowLoadingDialog();
-                // For each section
+                // For each sector
                 SQLiteAsyncConnection connection = connectionList[0];
                 for (int i = 0; i < infoList.Count; i++)
                 {
                     if (saveToMultipleFile) connection = connectionList[i];
-                    // For each candidate in section
+                    // For each candidate in sector
                     for (int j = 0; j < sectionList[i].Count; j++)
                     {
                         // Escape the quotes in string name

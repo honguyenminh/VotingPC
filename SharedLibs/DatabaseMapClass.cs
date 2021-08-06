@@ -79,7 +79,7 @@ namespace VotingPC
         public string Warning { get; private set; } = "";
 
         [NotNull, PrimaryKey, Unique]
-        [Column("Section")]
+        [Column("Sector")]
         public string Sector
         {
             get => sector;
@@ -87,7 +87,7 @@ namespace VotingPC
             {
                 if (value.Length > GlobalVariable.SmallStringMaxLength)
                 {
-                    Error += $"Tên Section quá dài (hơn {GlobalVariable.SmallStringMaxLength} ký tự).\n";
+                    Error += $"Tên Sector quá dài (hơn {GlobalVariable.SmallStringMaxLength} ký tự).\n";
                 }
                 else sector = value;
             }
@@ -114,7 +114,7 @@ namespace VotingPC
                     }
                     else
                     {
-                        Error += $"Màu nền RGB không hợp lệ tại Section {Sector}.\n";
+                        Error += $"Màu nền RGB không hợp lệ tại Sector {Sector}.\n";
                     }
                 }
                 // Is #ARGB
@@ -126,12 +126,12 @@ namespace VotingPC
                     }
                     else
                     {
-                        Error += $"Màu nền ARGB không hợp lệ tại Section {Sector}.\n";
+                        Error += $"Màu nền ARGB không hợp lệ tại Sector {Sector}.\n";
                     }
                 }
                 else
                 {
-                    Error += $"Màu nền không hợp lệ tại Section {Sector}.\nVui lòng kiểm tra lại độ dài mã màu.\n";
+                    Error += $"Màu nền không hợp lệ tại Sector {Sector}.\nVui lòng kiểm tra lại độ dài mã màu.\n";
                 }
             }
         }
@@ -145,7 +145,7 @@ namespace VotingPC
             {
                 if (value.Length > GlobalVariable.StringMaxLength)
                 {
-                    Warning += $"Tiêu đề Section {Sector} quá dài (hơn {GlobalVariable.StringMaxLength} ký tự). Đã tự động cắt.\n";
+                    Warning += $"Tiêu đề Sector {Sector} quá dài (hơn {GlobalVariable.StringMaxLength} ký tự). Đã tự động cắt.\n";
                     title = value.Substring(0, GlobalVariable.StringMaxLength);
                 }
                 else title = value;
@@ -161,7 +161,7 @@ namespace VotingPC
             {
                 if (value.Length > GlobalVariable.SmallStringMaxLength)
                 {
-                    Warning += $"Phụ đề niên khóa của Section {Sector} quá dài (hơn {GlobalVariable.SmallStringMaxLength} ký tự). Đã tự động cắt.\n";
+                    Warning += $"Phụ đề niên khóa của Sector {Sector} quá dài (hơn {GlobalVariable.SmallStringMaxLength} ký tự). Đã tự động cắt.\n";
                     year = value[..GlobalVariable.SmallStringMaxLength];
                 }
                 else year = value;

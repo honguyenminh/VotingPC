@@ -31,7 +31,7 @@ namespace VoteCounter
         private static string[] databasePath;
         private readonly Dialogs dialogs;
         private static readonly Dictionary<string, List<Candidate>> sections = new();
-        // List of information about sections (each section is a list of candidates)
+        // List of information about sections (each sector is a list of candidates)
         private static Dictionary<string, Info> infos;
         #endregion
 
@@ -180,23 +180,23 @@ namespace VoteCounter
                     }
 
                     query = $"SELECT * FROM \"";
-                    foreach (Info section in currentFileInfos)
+                    foreach (Info sector in currentFileInfos)
                     {
-                        List<Candidate> candidateList = await connection.QueryAsync<Candidate>(query + section.Sector + "\"");
+                        List<Candidate> candidateList = await connection.QueryAsync<Candidate>(query + sector.Sector + "\"");
                         if (ValidateData(candidateList) == false) throw new InvalidDataException();
 
                         FindMaxVote(candidateList);
 
-                        // If section not yet saved, save new section into sections collection
-                        if (!sections.ContainsKey(section.Sector))
+                        // If sector not yet saved, save new sector into sections collection
+                        if (!sections.ContainsKey(sector.Sector))
                         {
-                            sections.Add(section.Sector, candidateList);
+                            sections.Add(sector.Sector, candidateList);
                             continue;
                         }
 
-                        // Else merge with current file's section
+                        // Else merge with current file's sector
                         Dictionary<string, Candidate> candidateDict = candidateList.ToDictionary(x => x.Name, x => x);
-                        foreach (Candidate candidate in sections[section.Sector])
+                        foreach (Candidate candidate in sections[sector.Sector])
                         {
                             candidate.Votes += candidateDict[candidate.Name].Votes;
                             candidate.TotalWinningPlaces += candidateDict[candidate.Name].TotalWinningPlaces;

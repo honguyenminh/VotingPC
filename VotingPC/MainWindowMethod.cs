@@ -48,22 +48,22 @@ namespace VotingPC
         private static async Task CreateCloneTable(SQLiteAsyncConnection cloneConnection, Info info, List<Candidate> candidateList)
         {
             // Create Info table then add info row to table
-            await cloneConnection.ExecuteAsync("CREATE TABLE 'Info' (\n" +
-                "'Section' TEXT NOT NULL UNIQUE,\n" +
+            _ = await cloneConnection.ExecuteAsync("CREATE TABLE 'Info' (\n" +
+                "'Sector' TEXT NOT NULL UNIQUE,\n" +
                 "'Max'   INTEGER NOT NULL,\n" +
                 "'Color' TEXT NOT NULL DEFAULT '#111111',\n" +
                 "'Title' TEXT NOT NULL,\n" +
                 "'Year'  TEXT NOT NULL,\n" +
-                "PRIMARY KEY('Section')\n)");
-            await cloneConnection.InsertOrReplaceAsync(info);
-            // Create section table then add candidates
-            await cloneConnection.ExecuteAsync($"CREATE TABLE 'Candidate' (\n" +
+                "PRIMARY KEY('Sector')\n)");
+            _ = await cloneConnection.InsertOrReplaceAsync(info);
+            // Create Sector table then add candidates
+            _ = await cloneConnection.ExecuteAsync($"CREATE TABLE 'Candidate' (\n" +
                 "'Name' TEXT NOT NULL UNIQUE,\n" +
                 "'Votes'   INTEGER NOT NULL DEFAULT 0,\n" +
                 "'Gender' TEXT NOT NULL,\n" +
                 "PRIMARY KEY('Name')\n)");
-            await cloneConnection.InsertAllAsync(candidateList);
-            await cloneConnection.ExecuteAsync($"ALTER TABLE Candidate RENAME TO {info.Sector};");
+            _ = await cloneConnection.InsertAllAsync(candidateList);
+            _ = await cloneConnection.ExecuteAsync($"ALTER TABLE Candidate RENAME TO {info.Sector};");
         }
         private void InvalidDatabase()
         {
@@ -91,7 +91,7 @@ namespace VotingPC
             return true;
         }
         /// <summary>
-        /// Use loaded database lists to populate vote UI (Section radio buttons, candidates, (sub)title)
+        /// Use loaded database lists to populate vote UI (Sector radio buttons, candidates, (sub)title)
         /// </summary>
         private void PopulateVoteUI()
         {
@@ -100,7 +100,7 @@ namespace VotingPC
             int index = 0;
             foreach (Info info in infoList)
             {
-                // Add a button to section chooser card on top left
+                // Add a button to Sector chooser card on top left
                 RadioButton sectionButton = new()
                 {
                     Style = (Style)Application.Current.Resources["MaterialDesignTabRadioButton"],
@@ -159,7 +159,7 @@ namespace VotingPC
                             checkBox.ToolTip = textBlock;
                         }
                         // Mark that this checkbox already has its length checked
-                        checkBox.Tag = "Tagged";
+                        checkBox.Tag = "";
                     };
 
                     _ = stackPanel.Children.Add(checkBox);
