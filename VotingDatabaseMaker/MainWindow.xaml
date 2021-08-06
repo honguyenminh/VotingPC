@@ -66,7 +66,7 @@
                         VerticalAlignment="Center" HorizontalAlignment="Right" />
                 </StackPanel>
 
-                <ListView Grid.Column="1" Grid.Row="1" x:Name="NameList" Margin="24"
+                <ListView Grid.Column="1" Grid.Row="1" x:Name="CandidateList" Margin="24"
                           SelectionChanged="CandidateList_SelectionChanged"
                           SelectedItem="{Binding SelectedCandidate, Mode=TwoWay}"
                           ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionMode="Single">

@@ -16,15 +16,12 @@ using System.Windows.Shapes;
 namespace VotingDatabaseMaker
 {
     /// <summary>
-    /// Interaction logic for CandidateDialog.xaml
+    /// Interaction logic for SectorDialog.xaml
     /// </summary>
-    public partial class CandidateDialog : UserControl
+    public partial class SectorDialog : UserControl
     {
-        // Public properties
         public string NameInput { get; set; } = "";
-        public string GenderInput { get; set; } = "";
-
-        public CandidateDialog()
+        public SectorDialog()
         {
             InitializeComponent();
         }

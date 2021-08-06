@@ -26,13 +26,13 @@ namespace VotingDatabaseMaker
     {
         private readonly Dialogs dialogs;
         private readonly CandidateDialog candidateDialog = new();
-        //private static SQLiteAsyncConnection connection;
+        private readonly SectorDialog sectorDialog = new();
         private readonly ObservableDictionary<string, ObservableDictionary<string, Candidate>> candidates = new();
         private readonly ObservableDictionary<string, Info> sectorDict = new();
-        public string SelectedSector { get; set; }
-        public Candidate SelectedCandidate { get; set; }
 
         // Public properties for binding to XAML
+        public string SelectedSector { get; set; }
+        public Candidate SelectedCandidate { get; set; }
         public string SectorTitle { get; set; }
         public string SectorYear { get; set; }
         public string SectorMax { get; set; }
@@ -68,138 +68,76 @@ namespace VotingDatabaseMaker
 
         private async void AddSectorButton_Click(object sender, RoutedEventArgs e)
         {
-            // Nút thêm Sector
-            StackPanel stackPanel = new() { Margin = new(16) };
-            TextBlock title = new()
-            {
-                Text = "Nhập tên sector (cấp bầu cử, chức vụ,...)",
-                FontSize = 20
-            };
-            TextBox nameBox = new()
-            {
-                Margin = new(0, 8, 0, 0),
-                HorizontalAlignment = HorizontalAlignment.Stretch
-            };
-            StackPanel buttonStack = new()
-            {
-                Orientation = Orientation.Horizontal,
-                HorizontalAlignment = HorizontalAlignment.Right
-            };
-            Button cancelButton = new()
-            {
-                Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"],
-                IsCancel = true,
-                Margin = new(0, 8, 8, 0),
-                Content = "Hủy"
-            };
-            cancelButton.Click += (sender, e) => dialogs.CloseDialog();
-            Button submitButton = new()
-            {
-                Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"],
-                IsDefault = true,
-                Margin = new(0, 8, 8, 0),
-                Content = "OK"
-            };
-            submitButton.Click += (sender, e) => dialogs.CloseDialog();
-            _ = buttonStack.Children.Add(cancelButton);
-            _ = buttonStack.Children.Add(submitButton);
-            _ = stackPanel.Children.Add(title);
-            _ = stackPanel.Children.Add(nameBox);
-            _ = stackPanel.Children.Add(buttonStack);
-            _ = await dialogHost.ShowDialog(stackPanel);
+            // Reset dialog
+            sectorDialog.Title.Text = "Thêm Sector";
+            sectorDialog.NameTextBox.Text = "";
 
-            if (!sectorDict.Add(nameBox.Text, new()))
+            bool result = (bool)await dialogHost.ShowDialog(sectorDialog);
+            if (result == false) return;
+
+            if (!sectorDict.Add(sectorDialog.NameInput, new()))
             {
                 dialogs.ShowTextDialog("Sector đã tồn tại, vui lòng kiểm tra lại", "OK", customScaleFactor: 1.5);
                 return;
             }
-            candidates.Add(nameBox.Text, new());
-            SectorList.SelectedItem = nameBox.Text;
+
+            _ = candidates.Add(sectorDialog.NameInput, new());
+            SectorList.SelectedItem = sectorDialog.NameInput;
             AddCandidateButton.IsEnabled = true;
         }
         private async void AddCandidateButton_Click(object sender, RoutedEventArgs e)
         {
-            // Nút thêm ứng cử viên
+            // Reset dialog
+            candidateDialog.Title.Text = "Thêm ứng cử viên";
+            candidateDialog.NameTextBox.Text = "";
+            candidateDialog.GenderBox.Text = "";
+
             bool result = (bool)await dialogHost.ShowDialog(candidateDialog);
             if (result == false) return;
+
             if (candidates[SelectedSector].Keys.Contains(candidateDialog.NameInput))
             {
                 dialogs.ShowTextDialog("Ứng cử viên đã tồn tại", "OK", customScaleFactor: 1.5);
                 return;
             }
+
             Candidate candidate = new()
             {
                 Name = candidateDialog.NameInput,
                 Gender = candidateDialog.GenderInput
             };
             _ = candidates[SelectedSector].Add(candidate.Name, candidate);
-            NameList.ItemsSource = candidates[SelectedSector].Values;
+            CandidateList.ItemsSource = candidates[SelectedSector].Values;
         }
 
-        private void SectorEditButton_Click(object sender, RoutedEventArgs e)
+        private async void SectorEditButton_Click(object sender, RoutedEventArgs e)
         {
-            // Nút sửa cấp đã chọn
-            // SelectedSector is sectoredit
-            StackPanel stackPanel = new()
+            // Reset dialog
+            sectorDialog.Title.Text = "Sửa tên Sector";
+            sectorDialog.NameTextBox.Text = SelectedSector;
+
+            bool result = (bool)await dialogHost.ShowDialog(sectorDialog);
+            if (result == false) return;
+
+            if (sectorDict.Keys.Contains(sectorDialog.NameInput))
             {
-                Margin = new(16),
-                Width = 220,
-            };
-            TextBlock title = new()
-            {
-                Text = "Sửa cấp",
-                FontSize = 20,
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
-            TextBox nameBox = new()
-            {
-                Margin = new(0, 8, 0, 0),
-                HorizontalAlignment = HorizontalAlignment.Stretch
-            };
-            nameBox.Text = nameBox.Text.Insert(0, SelectedSector);
-            StackPanel buttonStack = new()
-            {
-                Orientation = Orientation.Horizontal,
-                HorizontalAlignment = HorizontalAlignment.Right
-            };
-            Button cancelButton = new()
-            {
-                Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"],
-                IsCancel = true,
-                Margin = new(0, 8, 8, 0),
-                Content = "Hủy"
-            };
-            cancelButton.Click += (sender, e) => dialogs.CloseDialog();
-            Button submitButton = new()
-            {
-                Style = (Style)Application.Current.Resources["MaterialDesignFlatButton"],
-                IsDefault = true,
-                Margin = new(0, 8, 8, 0),
-                Content = "OK"
-            };
-            submitButton.Click += (sender, e) =>
-            {
-                dialogs.CloseDialog();
-                if (sectorDict.Keys.Contains(nameBox.Text))
-                {
-                    dialogs.ShowTextDialog("Sector cùng tên đã tồn tại.", "OK", customScaleFactor: 1.5);
-                    return;
-                }
-                _ = candidates.Rename(SelectedSector, nameBox.Text);
-                _ = sectorDict.Rename(SelectedSector, nameBox.Text);
-                SelectedSector = nameBox.Text;
-                NameList.ItemsSource = candidates[SelectedSector].Values;
-            };
-            _ = buttonStack.Children.Add(cancelButton);
-            _ = buttonStack.Children.Add(submitButton);
-            _ = stackPanel.Children.Add(title);
-            _ = stackPanel.Children.Add(nameBox);
-            _ = stackPanel.Children.Add(buttonStack);
-            _ = dialogHost.ShowDialog(stackPanel);
+                dialogs.ShowTextDialog("Sector cùng tên đã tồn tại.", "OK", customScaleFactor: 1.5);
+                return;
+            }
+
+            _ = candidates.Rename(SelectedSector, sectorDialog.NameInput);
+            _ = sectorDict.Rename(SelectedSector, sectorDialog.NameInput);
+            // Change selected sector to reflect renamed item
+            SectorList.SelectedItem = sectorDialog.NameInput;
+            // Change candidate list item source to renamed item
+            CandidateList.ItemsSource = candidates[SelectedSector].Values;
         }
         private void CandidateEditButton_Click(object sender, RoutedEventArgs e)
         {
-            // Nút sửa ứng cử viên đã chọn
+            // Reset dialog
+            candidateDialog.Title.Text = "Sửa ứng cử viên";
+            candidateDialog.NameTextBox.Text = SelectedCandidate.Name;
+            candidateDialog.GenderBox.Text = SelectedCandidate.Gender;
         }
 
         private void SectorRemoveButton_Click(object sender, RoutedEventArgs e)
@@ -227,14 +165,14 @@ namespace VotingDatabaseMaker
                 SectorRemoveButton.IsEnabled = false;
                 AddCandidateButton.IsEnabled = false;
                 SectorEditButton.IsEnabled = false;
-                NameList.ItemsSource = null;
+                CandidateList.ItemsSource = null;
             }
             else
             {
                 AddCandidateButton.IsEnabled = true;
                 SectorRemoveButton.IsEnabled = true;
                 SectorEditButton.IsEnabled = true;
-                NameList.ItemsSource = candidates[SelectedSector].Values;
+                CandidateList.ItemsSource = candidates[SelectedSector].Values;
             }
         }
         private void CandidateList_SelectionChanged(object sender, SelectionChangedEventArgs e)
