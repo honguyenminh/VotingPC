@@ -22,14 +22,15 @@
         </TextBox>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="12 24 0 0">
             <Button Content="Hủy" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-                    Style="{DynamicResource MaterialDesignFlatButton}">
+                    Style="{DynamicResource MaterialDesignFlatButton}" IsCancel="True">
                 <Button.CommandParameter>
                     <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                         False
                     </system:Boolean>
                 </Button.CommandParameter>
             </Button>
-            <Button Content=" OK " Margin="24 0 0 0" Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
+            <Button Content=" OK " Margin="24 0 0 0" IsDefault="True"
+                    Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}">
                 <Button.CommandParameter>
                     <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                         True

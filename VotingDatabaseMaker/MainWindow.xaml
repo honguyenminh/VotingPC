@@ -87,8 +87,8 @@
                       StrokeThickness="1" Stroke="{DynamicResource MaterialDesignDarkSeparatorBackground}"/>
                 
                 <!--Sector properties-->
-                <TextBlock Grid.Column="2" Text="Thuộc tính Sector" Margin="24 8" FontSize="24"/>
-                <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="24">
+                <TextBlock x:Name="PropertyTitle" Grid.Column="2" Text="Thuộc tính Sector" Margin="24 8" FontSize="24"/>
+                <StackPanel x:Name="PropertyPanel" Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="24" IsEnabled="False" d:IsEnabled="True">
                     <TextBox materialDesign:HintAssist.Hint="Tiêu đề sector"
                              Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                              Margin="6" MaxLength="128" TextWrapping="Wrap">

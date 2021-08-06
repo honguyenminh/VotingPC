@@ -159,19 +159,31 @@ namespace VotingDatabaseMaker
 
         private void SectorList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // TODO: add enable and disable sector property here
+            // If list is cleared or no item selected
             if (e.AddedItems.Count == 0)
             {
+                // Disable edit and remove buttons
                 SectorRemoveButton.IsEnabled = false;
                 AddCandidateButton.IsEnabled = false;
                 SectorEditButton.IsEnabled = false;
+                // Clear candidate list
                 CandidateList.ItemsSource = null;
+                // Disable property panel on the right
+                PropertyTitle.IsEnabled = false;
+                PropertyPanel.IsEnabled = false;
+                // TODO: clear property panel value here
             }
             else
             {
+                // Enable buttons
                 AddCandidateButton.IsEnabled = true;
                 SectorRemoveButton.IsEnabled = true;
                 SectorEditButton.IsEnabled = true;
+                // Enable property panel
+                PropertyTitle.IsEnabled = true;
+                PropertyPanel.IsEnabled = true;
+                // TODO: show current property here
+                // Change candidate list source to selected sector's list
                 CandidateList.ItemsSource = candidates[SelectedSector].Values;
             }
         }
