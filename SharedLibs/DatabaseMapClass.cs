@@ -72,6 +72,8 @@ namespace VotingPC
         private string color;
         private string title;
         private string year;
+        // Hex color regex
+        private static readonly Regex hexColorRegex = new("^#([0-9A-F]{8}|[0-9A-F]{6})$", RegexOptions.Compiled);
 
         [Ignore]
         public string Error { get; private set; } = "";
@@ -104,34 +106,29 @@ namespace VotingPC
             get => color;
             set
             {
-                value = value.Trim();
-                // Is #RGB
-                if (value.Length == 7)
+                if (value is null)
                 {
-                    if (new Regex("^#(?:[0-9a-fA-F]{3}){1,2}$").Match(value).Success)
+                    color = null;
+                    return;
+                }
+
+                value = value.Trim().ToUpper();
+                if (value.Length is 7 or 9)
+                {
+                    if (hexColorRegex.IsMatch(value))
                     {
                         color = value;
                     }
                     else
                     {
                         Error += $"Màu nền RGB không hợp lệ tại Sector {Sector}.\n";
-                    }
-                }
-                // Is #ARGB
-                else if (value.Length == 9)
-                {
-                    if (new Regex("^#(?:[0-9a-fA-F]{3,4}){1,2}$").Match(value).Success)
-                    {
-                        color = value;
-                    }
-                    else
-                    {
-                        Error += $"Màu nền ARGB không hợp lệ tại Sector {Sector}.\n";
+                        color = null;
                     }
                 }
                 else
                 {
                     Error += $"Màu nền không hợp lệ tại Sector {Sector}.\nVui lòng kiểm tra lại độ dài mã màu.\n";
+                    color = null;
                 }
             }
         }
@@ -170,6 +167,12 @@ namespace VotingPC
 
         [Ignore]
         public int TotalVoted { get; set; }
+        [Ignore]
+        public string ColorNoHash
+        {
+            get => Color?[1..];
+            set => Color = '#' + value;
+        }
 
         [Ignore]
         // Return true if all properties are not null
