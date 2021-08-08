@@ -23,9 +23,6 @@ namespace VotingDatabaseMaker
         /// </summary>
         public ObservableCollection<TKey> Keys { get; } = new();
 
-        /// <summary>
-        /// New ObservaleDictionary
-        /// </summary>
         public ObservableDictionary() { }
 
         /// <summary>

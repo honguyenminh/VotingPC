@@ -8,13 +8,14 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
-        TextElement.FontSize="14"
+        TextElement.FontSize="16"
         FontFamily="{materialDesign:MaterialDesignFont}"
         Title="VotingDatabaseMaker - Tạo file cơ sở dữ liệu bầu cử"
-        Height="600" Width="1000" MinHeight="600" MinWidth="1000"
+        Height="610" Width="1000" MinHeight="610" MinWidth="1000"
         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
     <Window.Resources>
         <local:MinusValueConverter x:Key="MinusValueConverter"/>
+        <local:HexToBrushValueConverter x:Key="HexToBrush"/>
     </Window.Resources>
     <materialDesign:DialogHost x:Name="DialogHost">
         <Grid>
@@ -88,31 +89,72 @@
                 
                 <!--Sector properties-->
                 <TextBlock x:Name="PropertyTitle" Grid.Column="2" Text="Thuộc tính Sector" Margin="24 8" FontSize="24"/>
-                <StackPanel x:Name="PropertyPanel" Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="24" IsEnabled="False" d:IsEnabled="True">
-                    <TextBox materialDesign:HintAssist.Hint="Tiêu đề sector"
-                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                             Margin="6" MaxLength="128" TextWrapping="Wrap">
-                        <TextBox.Text>
-                            <Binding Path="SectorTitle" Mode="TwoWay"
+                <ScrollViewer Grid.Row="1" Grid.Column="2" VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel x:Name="PropertyPanel" Orientation="Vertical" DataContext="{Binding Property}"
+                                IsEnabled="False" d:IsEnabled="True" Margin="24">
+                        <TextBox materialDesign:HintAssist.Hint="Tiêu đề sector"
+                                 TextChanged="SectorTitle_TextChanged"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                 Margin="0 0 0 6" MaxLength="128" TextWrapping="Wrap">
+                            <TextBox.Text>
+                                <Binding Path="Title" Mode="TwoWay"
                                      UpdateSourceTrigger="PropertyChanged">
-                                <Binding.ValidationRules>
-                                    <local:NotEmptyValidationRule ValidatesOnTargetUpdated="True"/>
-                                </Binding.ValidationRules>
-                            </Binding>
-                        </TextBox.Text>
-                    </TextBox>
-                    <TextBox materialDesign:HintAssist.Hint="Niên khóa"
-                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                             Margin="6 12" MaxLength="128" TextWrapping="Wrap">
-                        <TextBox.Text>
-                            <Binding Path="SectorYear" Mode="TwoWay"
+                                    <Binding.ValidationRules>
+                                        <local:NotEmptyValidationRule ValidatesOnTargetUpdated="True"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <TextBox materialDesign:HintAssist.Hint="Niên khóa"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                 Margin="0 12 0 6" MaxLength="128" TextWrapping="Wrap"
+                                 TextChanged="SectorYear_TextChanged">
+                            <TextBox.Text>
+                                <Binding Path="Year" Mode="TwoWay"
                                      UpdateSourceTrigger="PropertyChanged"/>
-                        </TextBox.Text>
-                    </TextBox>
-                    <StackPanel.LayoutTransform>
-                        <ScaleTransform ScaleX="1.2" ScaleY="1.2"/>
-                    </StackPanel.LayoutTransform>
-                </StackPanel>
+                            </TextBox.Text>
+                        </TextBox>
+                        <!--TODO: Accept number only-->
+                        <TextBox materialDesign:HintAssist.Hint="Số ứng cử viên cần bầu" x:Name="SectorMaxTextBox"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                 Margin="0 12 0 6" MaxLength="5" TextWrapping="Wrap"
+                                 PreviewTextInput="SectorMax_PreviewTextInput">
+                            <TextBox.Text>
+                                <Binding Path="Max" Mode="TwoWay"
+                                     UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <local:NotEmptyValidationRule ValidatesOnTargetUpdated="True"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Line X1="0" Y1="0" Y2="0" Margin="0 24 0 16" StrokeThickness="1"
+                          X2="{Binding ActualWidth, ElementName=PropertyPanel}" HorizontalAlignment="Center"
+                          Stroke="{DynamicResource MaterialDesignDarkSeparatorBackground}"/>
+                        <TextBlock Margin="0" Text="Màu nền"/>
+                        <TextBox materialDesign:HintAssist.Hint="Mã hex màu nền"
+                                 materialDesign:TextFieldAssist.PrefixText="#"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                 Margin="0 6" MaxLength="8" TextWrapping="Wrap"
+                                 TextChanged="SectorColor_TextChanged" CharacterCasing="Upper">
+                            <TextBox.Text>
+                                <Binding Path="Color" Mode="TwoWay"
+                                     UpdateSourceTrigger="PropertyChanged">
+                                    <Binding.ValidationRules>
+                                        <local:HexColorNoHashValidationRule ValidationStep="RawProposedValue" ValidatesOnTargetUpdated="True"/>
+                                    </Binding.ValidationRules>
+                                </Binding>
+                            </TextBox.Text>
+                        </TextBox>
+                        <Border Margin="0 24 0 0" Height="60" BorderThickness="1"
+                                Background="{Binding Color, Converter={StaticResource HexToBrush}, Mode=OneWay}"
+                                BorderBrush="{DynamicResource MaterialDesignBody}">
+                            <TextBlock Text="Chữ mẫu trên nền" TextAlignment="Center" VerticalAlignment="Center"
+                                       Width="{Binding ActualWidth, ElementName=PropertyPanel}" FontSize="20"/>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
             </Grid>
 
             <!--Bottom buttons-->
@@ -126,8 +168,6 @@
                         VerticalAlignment="Center" Click="ExportButton_Click"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="1">
-                <!--Edit buttons-->
-                
                 <!--Delete buttons-->
                 <Button Content="Xóa Sector" Margin="24" FontSize="14" x:Name="SectorRemoveButton"
                         VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"

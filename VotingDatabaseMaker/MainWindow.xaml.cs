@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,10 +33,7 @@ namespace VotingDatabaseMaker
         // Public properties for binding to XAML
         public string SelectedSector { get; set; }
         public Candidate SelectedCandidate { get; set; }
-        public string SectorTitle { get; set; }
-        public string SectorYear { get; set; }
-        public string SectorMax { get; set; }
-        public Color SectorColor { get; set; }
+        public PropertyBinding Property { get; } = new();
         public ObservableCollection<string> SectorStringList => sectorDict.Keys;
 
         public MainWindow()
@@ -44,6 +41,8 @@ namespace VotingDatabaseMaker
             InitializeComponent();
             DataContext = this;
             dialogs = new Dialogs(DialogHost);
+            // Disable pasting in SectorMax textbox
+            _ = SectorMaxTextBox.CommandBindings.Add(new(ApplicationCommands.Paste, DisablePasting));
         }
 
         private void ThemeButton_Click(object sender, RoutedEventArgs e)
@@ -75,13 +74,20 @@ namespace VotingDatabaseMaker
             bool result = (bool?)await DialogHost.ShowDialog(sectorDialog) ?? false;
             if (result == false) return;
 
-            if (!sectorDict.Keys.Contains(sectorDialog.NameInput))
+            if (sectorDict.Keys.Contains(sectorDialog.NameInput))
             {
                 dialogs.ShowTextDialog("Sector đã tồn tại, vui lòng kiểm tra lại", "OK", customScaleFactor: 1.5);
                 return;
             }
 
-            _ = sectorDict.Add(sectorDialog.NameInput, new());
+            Info info = new()
+            {
+                Color = "#FFFFFF",
+                Sector = sectorDialog.NameInput,
+                Title = "",
+                Year = ""
+            };
+            _ = sectorDict.Add(sectorDialog.NameInput, info);
             _ = candidates.Add(sectorDialog.NameInput, new());
             SectorList.SelectedItem = sectorDialog.NameInput;
             AddCandidateButton.IsEnabled = true;
@@ -172,7 +178,7 @@ namespace VotingDatabaseMaker
                 // Disable property panel on the right
                 PropertyTitle.IsEnabled = false;
                 PropertyPanel.IsEnabled = false;
-                // TODO: clear property panel value here
+                // TODO: clear property panel value here, if needed
             }
             else
             {
@@ -183,7 +189,11 @@ namespace VotingDatabaseMaker
                 // Enable property panel
                 PropertyTitle.IsEnabled = true;
                 PropertyPanel.IsEnabled = true;
-                // TODO: show current property here
+                // Show selected sector's property
+                Property.Title = sectorDict[SelectedSector].Title ?? "";
+                Property.Max = (sectorDict[SelectedSector].Max ?? 0).ToString();
+                Property.Year = sectorDict[SelectedSector].Year ?? "";
+                Property.Color = sectorDict[SelectedSector].ColorNoHash ?? "";
                 // Change candidate list source to selected sector's list
                 CandidateList.ItemsSource = candidates[SelectedSector].Values;
             }
@@ -200,9 +210,37 @@ namespace VotingDatabaseMaker
             CandidateEditButton.IsEnabled = true;
             CandidateRemoveButton.IsEnabled = true;
         }
-        private void SectorList_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+
+        private void SectorTitle_TextChanged(object sender, TextChangedEventArgs e)
         {
-            SectorList.Items.Refresh();
+            if (string.IsNullOrWhiteSpace(Property.Title)) return;
+            sectorDict[SelectedSector].Title = Property.Title;
+        }
+        private void SectorYear_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (string.IsNullOrEmpty(Property.Year)) Property.Year = "";
+            sectorDict[SelectedSector].Year = Property.Year;
+        }
+        // Number only regex
+        private static readonly Regex _notNumberOnlyRegex = new("[^0-9]+", RegexOptions.Compiled);
+        private void SectorMax_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = _notNumberOnlyRegex.IsMatch(e.Text);
+        }
+        private void DisablePasting(object sender, ExecutedRoutedEventArgs e)
+        {
+            e.Handled = true;
+        }
+        private void SectorColor_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (SelectedSector is null) return;
+            // If validation failed aka invalid color
+            if (Validation.GetHasError((TextBox)sender))
+            {
+                sectorDict[SelectedSector].Color = null;
+                return;
+            }
+            sectorDict[SelectedSector].ColorNoHash = Property.Color;
         }
     }
 
