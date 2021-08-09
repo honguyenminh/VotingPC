@@ -175,7 +175,10 @@ namespace VotingPC
         }
 
         [Ignore]
-        // Return true if all properties are not null
-        public bool IsValid => Sector != null && Color != null && Title != null && Year != null && Max != null;
+        // Return true if all properties are not null and empty
+        public bool IsValid => !string.IsNullOrWhiteSpace(Sector) &&
+            !string.IsNullOrWhiteSpace(Color) &&
+            !string.IsNullOrWhiteSpace(Title) &&
+            Year != null && Max != null;
     }
 }

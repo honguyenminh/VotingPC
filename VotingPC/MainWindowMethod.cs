@@ -57,6 +57,8 @@ namespace VotingPC
                 "PRIMARY KEY('Sector')\n)");
             _ = await cloneConnection.InsertOrReplaceAsync(info);
             // Create Sector table then add candidates
+            // Create a table named Candidate, hopefully no one use this name
+            // TODO: fix this
             _ = await cloneConnection.ExecuteAsync($"CREATE TABLE 'Candidate' (\n" +
                 "'Name' TEXT NOT NULL UNIQUE,\n" +
                 "'Votes'   INTEGER NOT NULL DEFAULT 0,\n" +

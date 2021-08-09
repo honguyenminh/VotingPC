@@ -88,7 +88,7 @@ namespace VotingPC
 
             dialogs.ShowLoadingDialog();
             // Check if folder can be written to or not
-            var directoryInfo = new DirectoryInfo(dialog.SelectedPath);
+            DirectoryInfo directoryInfo = new(dialog.SelectedPath);
             bool isReadonly = directoryInfo.Attributes.HasFlag(FileAttributes.ReadOnly);
             if (isReadonly)
             {

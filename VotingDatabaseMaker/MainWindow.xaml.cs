@@ -16,6 +16,8 @@ using System.Windows.Shapes;
 using SQLite;
 using VotingPC;
 using System.Collections.ObjectModel;
+using System.Text;
+using Microsoft.Win32;
 
 namespace VotingDatabaseMaker
 {
@@ -27,6 +29,7 @@ namespace VotingDatabaseMaker
         private readonly Dialogs dialogs;
         private readonly CandidateDialog candidateDialog = new();
         private readonly SectorDialog sectorDialog = new();
+        private readonly PasswordDialog passwordDialog = new();
         private readonly ObservableDictionary<string, ObservableDictionary<string, Candidate>> candidates = new();
         private readonly ObservableDictionary<string, Info> sectorDict = new();
 
@@ -55,7 +58,7 @@ namespace VotingDatabaseMaker
             DataContext = this;
             dialogs = new Dialogs(DialogHost);
             // Disable pasting in SectorMax textbox
-            _ = SectorMaxTextBox.CommandBindings.Add(new(ApplicationCommands.Paste, DisablePasting));
+            _ = SectorMaxTextBox.CommandBindings.Add(new(ApplicationCommands.Paste, (sender, e) => e.Handled = true));
         }
 
         private void ThemeButton_Click(object sender, RoutedEventArgs e)
@@ -92,13 +95,14 @@ namespace VotingDatabaseMaker
                 dialogs.ShowTextDialog("Sector đã tồn tại, vui lòng kiểm tra lại", "OK", customScaleFactor: 1.5);
                 return;
             }
-
+            // TODO: Add validation for invalid sector names and "Candidate" because im not smart
             Info info = new()
             {
                 Color = "#FFFFFF",
                 Sector = sectorDialog.NameInput,
-                Title = "",
-                Year = ""
+                //Title = "",
+                Year = "",
+                Max = 0
             };
             _ = sectorDict.Add(sectorDialog.NameInput, info);
             _ = candidates.Add(sectorDialog.NameInput, new());
@@ -128,7 +132,6 @@ namespace VotingDatabaseMaker
             };
             _ = candidates[SelectedSector].Add(candidate.Name, candidate);
             CandidateList.Items.Refresh();
-            //CandidateList.ItemsSource = candidates[SelectedSector].Values;
             CandidateList.SelectedItem = candidate;
         }
 
@@ -163,12 +166,6 @@ namespace VotingDatabaseMaker
             bool result = (bool)await DialogHost.ShowDialog(candidateDialog);
             if (result == false) return;
 
-            if (candidates[SelectedSector].Keys.Contains(candidateDialog.NameInput))
-            {
-                dialogs.ShowTextDialog("Ứng cử viên cùng tên đã tồn tại.", "OK", customScaleFactor: 1.5);
-                return;
-            }
-
             // Rename the key in dictionary
             _ = candidates[SelectedSector].Rename(SelectedCandidate.Name, candidateDialog.NameInput);
             // Change values
@@ -177,21 +174,99 @@ namespace VotingDatabaseMaker
             CandidateList.Items.Refresh();
         }
 
-        private void SectorRemoveButton_Click(object sender, RoutedEventArgs e)
+        private void RemoveSectorButton_Click(object sender, RoutedEventArgs e)
         {
-            // Nút xóa Sector
             _ = candidates.RemoveKey(SelectedSector);
             _ = sectorDict.RemoveKey(SelectedSector);
         }
-        private void CandidateRemoveButton_Click(object sender, RoutedEventArgs e)
+        private void RemoveCandidateButton_Click(object sender, RoutedEventArgs e)
         {
-            // Nút xóa ứng cử viên
             _ = candidates[SelectedSector].RemoveKey(SelectedCandidate.Name);
         }
 
-        private void ExportButton_Click(object sender, RoutedEventArgs e)
+        private async void ExportButton_Click(object sender, RoutedEventArgs e)
         {
-            // Nút xuất file
+            // Show loading dialog
+            dialogs.ShowLoadingDialog();
+            // Validate current inputted values
+            List<string> invalidSectors = new();
+            foreach (Info info in sectorDict.Values)
+            {
+                if (!info.IsValid)
+                {
+                    invalidSectors.Add(info.Sector);
+                }
+            }
+
+            if (invalidSectors.Count != 0)
+            {
+                StringBuilder stringBuilder = new("Thiếu thông tin trong các sector: \n");
+                int lastIndex = invalidSectors.Count - 1;
+                for (int i = 0; i < lastIndex; i++)
+                {
+                    _ = stringBuilder.Append(invalidSectors[i]).Append(", ");
+                }
+                _ = stringBuilder.Append(invalidSectors[lastIndex]);
+                dialogs.CloseDialog();
+                dialogs.ShowTextDialog(stringBuilder.ToString(), "OK", customScaleFactor: 1.5);
+                return;
+            }
+
+            // Save data to files
+            dialogs.CloseDialog();
+            // Ask where to save file
+            SaveFileDialog saveFileDialog = new()
+            {
+                Title = "Chọn nơi lưu file",
+                CreatePrompt = true,
+                Filter = "Database file|*.db",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                OverwritePrompt = true
+            };
+            if (saveFileDialog.ShowDialog() == false) return;
+
+            // Ask password
+            dialogs.CloseDialog();
+            bool result = (bool)await DialogHost.ShowDialog(passwordDialog);
+            if (!result)
+            {
+                // Reset the password box, you don't want old password to be there
+                passwordDialog.PasswordTextBox.Password = "";
+                return;
+            }
+            // Create new SQLite connection, with given password and file path
+            SQLiteConnectionString option = new(saveFileDialog.FileName, true, passwordDialog.PasswordTextBox.Password);
+            SQLiteAsyncConnection connection = new(option);
+
+            // Create Info table then add all info row to table
+            _ = await connection.ExecuteAsync("CREATE TABLE 'Info' (\n" +
+                "'Sector' TEXT NOT NULL UNIQUE,\n" +
+                "'Max'   INTEGER NOT NULL,\n" +
+                "'Color' TEXT NOT NULL DEFAULT '#111111',\n" +
+                "'Title' TEXT NOT NULL,\n" +
+                "'Year'  TEXT NOT NULL,\n" +
+                "PRIMARY KEY('Sector')\n)");
+            _ = await connection.InsertAllAsync(sectorDict.Values);
+
+            // Create Sector tables then add candidates for each sectors
+            // Create a table named Candidate, hopefully no one use this name
+            // TODO: fix this
+            foreach (string sector in candidates.Keys)
+            {
+                _ = await connection.ExecuteAsync($"CREATE TABLE 'Candidate' (\n" +
+                        "'Name' TEXT NOT NULL UNIQUE,\n" +
+                        "'Votes'   INTEGER NOT NULL DEFAULT 0,\n" +
+                        "'Gender' TEXT NOT NULL,\n" +
+                        "PRIMARY KEY('Name')\n)");
+                _ = await connection.InsertAllAsync(candidates[sector].Values);
+                // Escape sector name
+                string escaped = sector.Replace("\'", "\'\'");
+                _ = await connection.ExecuteAsync($"ALTER TABLE Candidate RENAME TO '{escaped}';");
+            }
+
+            await connection.CloseAsync();
+            dialogs.CloseDialog();
+            dialogs.ShowTextDialog("Hoàn tất!", "OK", customScaleFactor: 1.5);
         }
 
         private void SectorList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -255,11 +330,15 @@ namespace VotingDatabaseMaker
         private static readonly Regex _notNumberOnlyRegex = new("[^0-9]+", RegexOptions.Compiled);
         private void SectorMax_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = _notNumberOnlyRegex.IsMatch(e.Text);
+            bool invalid = _notNumberOnlyRegex.IsMatch(e.Text);
+            e.Handled = invalid;
+            // If not invalid or null or empty, save value, else save 0
+            sectorDict[SelectedSector].Max = invalid || string.IsNullOrEmpty(e.Text) ? 0 : int.Parse(e.Text);
         }
-        private void DisablePasting(object sender, ExecutedRoutedEventArgs e)
+        private void DisableSpaces(object sender, KeyEventArgs e)
         {
-            e.Handled = true;
+            // Don't allow key if is space
+            e.Handled = e.Key == Key.Space;
         }
         private void SectorColor_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -268,18 +347,19 @@ namespace VotingDatabaseMaker
             if (SelectedSector is null || !_isUserInvoked) return;
 
             // If validation failed aka invalid color
-           if (Validation.GetHasError((TextBox)sender))
+            if (Validation.GetHasError((TextBox)sender))
             {
                 sectorDict[SelectedSector].Color = null;
                 return;
             }
             sectorDict[SelectedSector].ColorNoHash = Property.Color;
         }
+
     }
 
-    public class Candidate
-    {
-        public string Name { get; set; }
-        public string Gender { get; set; }
-    }
+    //public class Candidate
+    //{
+    //    public string Name { get; set; }
+    //    public string Gender { get; set; }
+    //}
 }

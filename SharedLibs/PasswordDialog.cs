@@ -1,4 +1,5 @@
 ﻿using MaterialDesignThemes.Wpf;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -24,6 +25,8 @@ namespace VotingPC
         /// <param name="buttonClickHandler">Event to call on button click</param>
         public PasswordDialog(DialogHost dialogHost, string title, string wrongPasswordTitle, string buttonText, RoutedEventHandler buttonClickHandler)
         {
+            // This is utterly stupid
+            // TODO: Fix this mess, make it WPF
             this.dialogHost = dialogHost;
             this.wrongPasswordTitle = wrongPasswordTitle;
             stackPanel = new()
@@ -79,7 +82,7 @@ namespace VotingPC
             }
         }
         /// <summary>
-        /// Show password dialog
+        /// Show password dialog, WON'T WAIT FOR CLOSE
         /// </summary>
         /// <param name="falsePassword">Set to true to show wrong password title instead</param>
         public void Show(bool falsePassword = false)
