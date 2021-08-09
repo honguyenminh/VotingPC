@@ -30,6 +30,19 @@ namespace VotingDatabaseMaker
         private readonly ObservableDictionary<string, ObservableDictionary<string, Candidate>> candidates = new();
         private readonly ObservableDictionary<string, Info> sectorDict = new();
 
+        // This is utterly stupid, DO NOT attempt to do this to anywhere else, I beg you
+        // Determine if changes to SectorColor box is made in code or by user
+        private static bool _isUserInvoked = true;
+        // Code to programmatically change value in SectorColor box. Use this if needed to change it.
+        private void ChangeUIColorValue(string newValue)
+        {
+            _isUserInvoked = false;
+            Property.Color = newValue;
+            // Clear user invoked flag. This is stupid. But it works.
+            // Mission succeeded unsuccessfully.
+            _isUserInvoked = true;
+        }
+
         // Public properties for binding to XAML
         public string SelectedSector { get; set; }
         public Candidate SelectedCandidate { get; set; }
@@ -114,7 +127,9 @@ namespace VotingDatabaseMaker
                 Gender = candidateDialog.GenderInput
             };
             _ = candidates[SelectedSector].Add(candidate.Name, candidate);
-            CandidateList.ItemsSource = candidates[SelectedSector].Values;
+            CandidateList.Items.Refresh();
+            //CandidateList.ItemsSource = candidates[SelectedSector].Values;
+            CandidateList.SelectedItem = candidate;
         }
 
         private async void SectorEditButton_Click(object sender, RoutedEventArgs e)
@@ -123,7 +138,7 @@ namespace VotingDatabaseMaker
             sectorDialog.Title.Text = "Sửa tên Sector";
             sectorDialog.NameTextBox.Text = SelectedSector;
 
-            bool result = (bool?)await DialogHost.ShowDialog(sectorDialog) ?? false;
+            bool result = (bool)await DialogHost.ShowDialog(sectorDialog);
             if (result == false) return;
 
             if (sectorDict.Keys.Contains(sectorDialog.NameInput))
@@ -139,12 +154,27 @@ namespace VotingDatabaseMaker
             // Change candidate list item source to renamed item
             CandidateList.ItemsSource = candidates[SelectedSector].Values;
         }
-        private void CandidateEditButton_Click(object sender, RoutedEventArgs e)
+        private async void CandidateEditButton_Click(object sender, RoutedEventArgs e)
         {
             // Reset dialog
             candidateDialog.Title.Text = "Sửa ứng cử viên";
             candidateDialog.NameTextBox.Text = SelectedCandidate.Name;
             candidateDialog.GenderBox.Text = SelectedCandidate.Gender;
+            bool result = (bool)await DialogHost.ShowDialog(candidateDialog);
+            if (result == false) return;
+
+            if (candidates[SelectedSector].Keys.Contains(candidateDialog.NameInput))
+            {
+                dialogs.ShowTextDialog("Ứng cử viên cùng tên đã tồn tại.", "OK", customScaleFactor: 1.5);
+                return;
+            }
+
+            // Rename the key in dictionary
+            _ = candidates[SelectedSector].Rename(SelectedCandidate.Name, candidateDialog.NameInput);
+            // Change values
+            SelectedCandidate.Name = candidateDialog.NameInput;
+            SelectedCandidate.Gender = candidateDialog.GenderInput;
+            CandidateList.Items.Refresh();
         }
 
         private void SectorRemoveButton_Click(object sender, RoutedEventArgs e)
@@ -193,7 +223,7 @@ namespace VotingDatabaseMaker
                 Property.Title = sectorDict[SelectedSector].Title ?? "";
                 Property.Max = (sectorDict[SelectedSector].Max ?? 0).ToString();
                 Property.Year = sectorDict[SelectedSector].Year ?? "";
-                Property.Color = sectorDict[SelectedSector].ColorNoHash ?? "";
+                ChangeUIColorValue(sectorDict[SelectedSector].ColorNoHash ?? "");
                 // Change candidate list source to selected sector's list
                 CandidateList.ItemsSource = candidates[SelectedSector].Values;
             }
@@ -233,9 +263,12 @@ namespace VotingDatabaseMaker
         }
         private void SectorColor_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (SelectedSector is null) return;
+            // If no sector selected (which should not trigger this anyway, here just to be extra safe)
+            // or changed from code, don't do anything
+            if (SelectedSector is null || !_isUserInvoked) return;
+
             // If validation failed aka invalid color
-            if (Validation.GetHasError((TextBox)sender))
+           if (Validation.GetHasError((TextBox)sender))
             {
                 sectorDict[SelectedSector].Color = null;
                 return;

@@ -22,11 +22,10 @@ namespace VotingDatabaseMaker
         public string Title { get => title; set { title = value; OnPropertyChanged(); } }
         public string Year { get => year; set { year = value; OnPropertyChanged(); } }
         public string Max { get => max; set { max = value; OnPropertyChanged(); } }
+        /// <summary>
+        /// NEVER SET ANYTHING TO THIS. USE ChangeUIColorProperty() instead. I beg you.
+        /// </summary>
         public string Color { get => color; set { color = value; OnPropertyChanged(); } }
-        public Brush BGColor
-        {
-            get => (SolidColorBrush)new BrushConverter().ConvertFrom(color);
-        }
 
         public PropertyBinding() { }
 

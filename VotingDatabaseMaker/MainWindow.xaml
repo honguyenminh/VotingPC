@@ -139,10 +139,9 @@
                                  Margin="0 6" MaxLength="8" TextWrapping="Wrap"
                                  TextChanged="SectorColor_TextChanged" CharacterCasing="Upper">
                             <TextBox.Text>
-                                <Binding Path="Color" Mode="TwoWay"
-                                     UpdateSourceTrigger="PropertyChanged">
+                                <Binding Path="Color" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
                                     <Binding.ValidationRules>
-                                        <local:HexColorNoHashValidationRule ValidationStep="RawProposedValue" ValidatesOnTargetUpdated="True"/>
+                                        <local:HexColorNoHashValidationRule ValidatesOnTargetUpdated="True"/>
                                     </Binding.ValidationRules>
                                 </Binding>
                             </TextBox.Text>
