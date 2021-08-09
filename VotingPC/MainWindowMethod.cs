@@ -65,7 +65,7 @@ namespace VotingPC
                 "'Gender' TEXT NOT NULL,\n" +
                 "PRIMARY KEY('Name')\n)");
             _ = await cloneConnection.InsertAllAsync(candidateList);
-            _ = await cloneConnection.ExecuteAsync($"ALTER TABLE Candidate RENAME TO {info.Sector};");
+            _ = await cloneConnection.ExecuteAsync($"ALTER TABLE Candidate RENAME TO '{info.Sector.Replace("'", "''")}';");
         }
         private void InvalidDatabase()
         {

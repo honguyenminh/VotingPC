@@ -261,7 +261,7 @@ namespace VotingDatabaseMaker
                         "PRIMARY KEY('Name')\n)");
                 _ = await connection.InsertAllAsync(candidates[sector].Values);
                 // Escape sector name
-                string escaped = sector.Replace("\'", "\'\'");
+                string escaped = sector.Replace("'", "''");
                 _ = await connection.ExecuteAsync($"ALTER TABLE Candidate RENAME TO '{escaped}';");
             }
 
