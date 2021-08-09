@@ -119,10 +119,9 @@
                         <TextBox materialDesign:HintAssist.Hint="Số ứng cử viên cần bầu" x:Name="SectorMaxTextBox"
                                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                  Margin="0 12 0 6" MaxLength="5" TextWrapping="Wrap"
-                                 PreviewTextInput="SectorMax_PreviewTextInput">
+                                 PreviewTextInput="SectorMax_PreviewTextInput" PreviewKeyDown="DisableSpaces">
                             <TextBox.Text>
-                                <Binding Path="Max" Mode="TwoWay"
-                                     UpdateSourceTrigger="PropertyChanged">
+                                <Binding Path="Max" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged">
                                     <Binding.ValidationRules>
                                         <local:NotEmptyValidationRule ValidatesOnTargetUpdated="True"/>
                                     </Binding.ValidationRules>
@@ -170,11 +169,11 @@
                 <!--Delete buttons-->
                 <Button Content="Xóa Sector" Margin="24" FontSize="14" x:Name="SectorRemoveButton"
                         VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
-                        IsEnabled="False" d:IsEnabled="True" Click="SectorRemoveButton_Click"
+                        IsEnabled="False" d:IsEnabled="True" Click="RemoveSectorButton_Click"
                         Foreground="Red" BorderBrush="Red"/>
                 <Button Content="Xóa Ứng cử viên" Margin="12 24" FontSize="14" x:Name="CandidateRemoveButton"
                         VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
-                        IsEnabled="False" d:IsEnabled="True" Click="CandidateRemoveButton_Click"
+                        IsEnabled="False" d:IsEnabled="True" Click="RemoveCandidateButton_Click"
                         Foreground="Red" BorderBrush="Red"/>
             </StackPanel>
         </Grid>
