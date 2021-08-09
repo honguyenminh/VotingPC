@@ -234,6 +234,7 @@ namespace VotingDatabaseMaker
                 passwordDialog.PasswordTextBox.Password = "";
                 return;
             }
+            dialogs.ShowLoadingDialog();
             // Create new SQLite connection, with given password and file path
             SQLiteConnectionString option = new(saveFileDialog.FileName, true, passwordDialog.PasswordTextBox.Password);
             SQLiteAsyncConnection connection = new(option);
