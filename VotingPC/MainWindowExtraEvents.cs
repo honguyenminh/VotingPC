@@ -79,7 +79,7 @@ namespace VotingPC
                 InvalidDatabase();
                 return;
             }
-            
+
             // Separate the sector if save to multiple file
             if (saveToMultipleFile)
             {
@@ -87,6 +87,7 @@ namespace VotingPC
                 await connection?.CloseAsync();
                 for (int i = 0; i < infoList.Count; i++)
                 {
+                    // TODO: Check if we have write priviledge
                     string path = $"{folderPath}\\{infoList[i].Sector}.db";
                     try { if (File.Exists(path)) File.Delete(path); }
                     catch
@@ -99,7 +100,17 @@ namespace VotingPC
 
                     SQLiteConnectionString newOptions = new(path, storeDateTimeAsTicks: true, passwordDialog.Password);
                     SQLiteAsyncConnection newConnection = new(newOptions);
-                    await CreateCloneTable(newConnection, infoList[i], sectionList[i]);
+                    try
+                    {
+                        await CreateCloneTable(newConnection, infoList[i], sectionList[i]);
+                    }
+                    catch
+                    {
+                        dialogs.CloseDialog();
+                        dialogs.ShowTextDialog("Lỗi tạo file cơ sở dữ liệu.\n" +
+                            "Kiểm tra xem tên sector có hợp lệ để tạo tên tệp không và thử lại.", "OK", Close);
+                        return;
+                    }
 
                     connectionList.Add(newConnection);
                 }
@@ -157,13 +168,14 @@ namespace VotingPC
                 for (int i = 0; i < infoList.Count; i++)
                 {
                     if (saveToMultipleFile) connection = connectionList[i];
+                    string escapedSector = infoList[i].Sector.Replace("'", "''");
                     // For each candidate in sector
                     for (int j = 0; j < sectionList[i].Count; j++)
                     {
-                        // Escape the quotes in string name
-                        string name = sectionList[i][j].Name.Replace("\'", "\'\'");
+                        // Escape the quotes in strings
+                        string name = sectionList[i][j].Name.Replace("'", "''");
                         // Add details to query command
-                        string query = $"UPDATE {infoList[i].Sector} SET Votes = {sectionList[i][j].Votes} WHERE Name = '{name}';";
+                        string query = $"UPDATE '{escapedSector}' SET Votes = {sectionList[i][j].Votes} WHERE Name = '{name}';";
                         await connection.ExecuteAsync(query);
                     }
                 }

@@ -18,6 +18,7 @@ using VotingPC;
 using System.Collections.ObjectModel;
 using System.Text;
 using Microsoft.Win32;
+using System.IO;
 
 namespace VotingDatabaseMaker
 {
@@ -218,10 +219,8 @@ namespace VotingDatabaseMaker
             SaveFileDialog saveFileDialog = new()
             {
                 Title = "Chọn nơi lưu file",
-                CreatePrompt = true,
                 Filter = "Database file|*.db",
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
-                OverwritePrompt = true
             };
             if (saveFileDialog.ShowDialog() == false) return;
 
@@ -235,6 +234,21 @@ namespace VotingDatabaseMaker
                 return;
             }
             dialogs.ShowLoadingDialog();
+
+            string path = saveFileDialog.FileName;
+
+            // TODO: Check if we have write priviledge
+            // Delete file if already exists
+            try { if (File.Exists(path)) File.Delete(path); }
+            // In case file is write-locked
+            catch
+            {
+                dialogs.ShowTextDialog("File cơ sở dữ liệu đã tồn tại và đang được\n" +
+                    "sử dụng bởi ứng dụng khác, không thế ghi đè.\n" +
+                    "Đóng ứng dụng khác có thể đang sử dụng file và thử lại.", "OK", Close);
+                return;
+            }
+
             // Create new SQLite connection, with given password and file path
             SQLiteConnectionString option = new(saveFileDialog.FileName, true, passwordDialog.PasswordTextBox.Password);
             SQLiteAsyncConnection connection = new(option);

@@ -27,6 +27,7 @@ namespace VoteCounter
     public partial class MainWindow : Window
     {
         #region Global variables
+        // TODO: Change password dialog to MVVM user control, not a class
         private readonly PasswordDialog passwordDialog;
         private static string[] databasePath;
         private readonly Dialogs dialogs;
