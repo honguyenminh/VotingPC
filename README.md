@@ -10,11 +10,11 @@ Nói ngắn gọn là, ông cần một con mạch như thế để xài app :)
 - Qua tab release bên phía tay phải trên trang này
 - Tải phiên bản mới nhất về, file cài có tên `VotingPC-vX.X.X.exe`
 - Mở file đã tải về và làm theo hướng dẫn cài đặt trên màn hình
-- Sau khi cài xong, biểu tượng 2 ứng dụng sẽ xuất hiện trên Desktop
+- Sau khi cài xong, biểu tượng các ứng dụng sẽ xuất hiện trên Desktop
 
 
 # Lưu ý
-Với board Arduino Uno R3 chính hãng sẽ không chạy ổn định, nhất là trên Windows 8.1. Để tránh lỗi vui lòng không rút dây USB trong quá trình ứng dụng chạy. Chỉ rút sau khi đã hoàn tất công việc trên ứng dụng.
+Với board Arduino Uno R3 chính hãng sẽ không chạy ổn định, nhất là trên Windows 8.1 (nghe vô lý không?). Để tránh lỗi vui lòng không rút dây USB trong quá trình ứng dụng chạy. Chỉ rút sau khi đã hoàn tất công việc trên ứng dụng. Tất nhiên rồi.
 Board clone sử dụng CH340G sẽ ổn định hơn, nhưng yêu cầu cài driver.
 Trường hợp sử dụng clone CH340G vui lòng chọn cài `CH34X Driver` khi cài ứng dụng, rồi ấn nút Install trong ô cửa sổ hiện lên.
 
@@ -47,4 +47,4 @@ TL;DR: You need one like that to open this app :)
 - Open downloaded file, then follow the instructions on the installer
 - After the installation has completed, app icons should appear on your Desktop
 ## Other stuff
-No one's gonna read this english section anyway, if you need to, copy the vietnamese section to Google Translate. Or contact me on Discord (`Someone#9554`). I'm willing to help.
+No one's gonna read this english section anyway, if you need to, copy the vietnamese section to Google Translate. Or contact me on Discord (`Someone#9954`). I'm willing to help.
