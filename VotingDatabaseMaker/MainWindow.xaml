@@ -115,7 +115,6 @@
                                      UpdateSourceTrigger="PropertyChanged"/>
                             </TextBox.Text>
                         </TextBox>
-                        <!--TODO: Accept number only-->
                         <TextBox materialDesign:HintAssist.Hint="Số ứng cử viên cần bầu" x:Name="SectorMaxTextBox"
                                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                  Margin="0 12 0 6" MaxLength="5" TextWrapping="Wrap"
@@ -149,7 +148,7 @@
                                 Background="{Binding Color, Converter={StaticResource HexToBrush}, Mode=OneWay}"
                                 BorderBrush="{DynamicResource MaterialDesignBody}">
                             <TextBlock Text="Chữ mẫu trên nền" TextAlignment="Center" VerticalAlignment="Center"
-                                       Width="{Binding ActualWidth, ElementName=PropertyPanel}" FontSize="20"/>
+                                       Width="{Binding ActualWidth, ElementName=PropertyPanel}" FontSize="20" Foreground="Black"/>
                         </Border>
                     </StackPanel>
                 </ScrollViewer>

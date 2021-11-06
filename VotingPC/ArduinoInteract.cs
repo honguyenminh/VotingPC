@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace VotingPC
 {
-    public class ArduinoInteract
+    public static class ArduinoInteract
     {
         /// <summary>
         /// Get SerialPort object linked to the Arduino. Return null if no Arduino found.
