@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace AsyncDialog
 {
+    /// <summary>
+    /// Main driver class to use AsyncDialog
+    /// </summary>
     public class AsyncDialog
     {
         // TODO: add documentation
@@ -15,11 +18,20 @@ namespace AsyncDialog
         private bool isOpen;
         private readonly TextDialog textDialog = new();
         private readonly LoadingDialog loadingDialog = new();
+        /// <summary>
+        /// Create a new AsyncDialog instance
+        /// </summary>
+        /// <param name="dialogHost">The DialogHost instance from MDIX inside your UI that you want dialogs to open in</param>
         public AsyncDialog(DialogHost dialogHost)
         {
             this.dialogHost = dialogHost;
         }
 
+        /// <summary>
+        /// Show a text dialog with a button to close it
+        /// </summary>
+        /// <param name="text">Text to show</param>
+        /// <param name="buttonLabel">(Optional) Custom label for button, default is "OK"</param>
         public async Task ShowTextDialog(string text, string buttonLabel = "OK")
         {
             textDialog.Text = text;

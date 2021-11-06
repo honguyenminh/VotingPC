@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 namespace AsyncDialog
 {
     /// <summary>
-    /// Interaction logic for UserControl1.xaml
+    /// Don't use this class, use AsyncDialog instead.
     /// </summary>
     public partial class LoadingDialog : UserControl
     {

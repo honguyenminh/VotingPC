@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 namespace AsyncDialog
 {
     /// <summary>
-    /// Text dialog class
+    /// Don't use this class, use AsyncDialog instead.
     /// </summary>
     public partial class TextDialog : UserControl
     {
