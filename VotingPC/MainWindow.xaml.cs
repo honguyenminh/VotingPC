@@ -17,7 +17,7 @@ namespace VotingPC
         private readonly PasswordDialog passwordDialog;
         private string databasePath;
         private string folderPath;
-        private readonly Dialogs dialogs;
+        private readonly SyncDialog dialogs;
         private readonly string[] supportedIconExt = { ".png", ".jpg", ".jpeg", ".jpe", ".gif", ".ico", ".tiff", ".bmp" };
         public MainWindow()
         {

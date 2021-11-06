@@ -27,7 +27,7 @@ namespace VotingDatabaseMaker
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly Dialogs dialogs;
+        private readonly SyncDialog dialogs;
         private readonly CandidateDialog candidateDialog = new();
         private readonly SectorDialog sectorDialog = new();
         private readonly PasswordDialog passwordDialog = new();
@@ -57,7 +57,7 @@ namespace VotingDatabaseMaker
         {
             InitializeComponent();
             DataContext = this;
-            dialogs = new Dialogs(DialogHost);
+            dialogs = new SyncDialog(DialogHost);
             // Disable pasting in SectorMax textbox
             _ = SectorMaxTextBox.CommandBindings.Add(new(ApplicationCommands.Paste, (sender, e) => e.Handled = true));
         }

@@ -30,7 +30,7 @@ namespace VoteCounter
         // TODO: Change password dialog to MVVM user control, not a class
         private readonly PasswordDialog passwordDialog;
         private static string[] databasePath;
-        private readonly Dialogs dialogs;
+        private readonly SyncDialog dialogs;
         private static readonly Dictionary<string, List<Candidate>> sections = new();
         // List of information about sections (each sector is a list of candidates)
         private static Dictionary<string, Info> infos;

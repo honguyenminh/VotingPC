@@ -1,5 +1,6 @@
 ﻿using MaterialDesignThemes.Wpf;
 using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -7,13 +8,13 @@ using System.Windows.Media;
 namespace VotingPC
 {
     /// <summary>
-    /// Dialog methods. Should be run from an async method.
+    /// [DEPRECATED] Old synchronous dialog methods. Moved to AsyncDialog.
     /// </summary>
-    public class Dialogs
+    public class SyncDialog
     {
         private readonly DialogHost dialogHost;
 
-        public Dialogs(DialogHost dialogHost)
+        public SyncDialog(DialogHost dialogHost)
         {
             this.dialogHost = dialogHost;
         }
@@ -58,7 +59,6 @@ namespace VotingPC
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Margin = new Thickness(32),
                 IsIndeterminate = true,
-                Value = 0,
                 LayoutTransform = new ScaleTransform(2, 2),
                 IsTabStop = false,
                 FocusVisualStyle = null

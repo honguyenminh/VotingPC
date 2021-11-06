@@ -10,7 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)DatabaseMapClass.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Dialogs.cs" />
+    <Compile Include="..\SharedLibs\SyncDialog.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PasswordDialog.cs" />
   </ItemGroup>
 </Project>
