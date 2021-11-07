@@ -18,6 +18,7 @@ namespace AsyncDialog
         private bool isOpen;
         private readonly TextDialog textDialog = new();
         private readonly LoadingDialog loadingDialog = new();
+
         /// <summary>
         /// Create a new AsyncDialog instance
         /// </summary>
@@ -31,12 +32,21 @@ namespace AsyncDialog
         /// Show a text dialog with a button to close it
         /// </summary>
         /// <param name="text">Text to show</param>
+        /// <param name="title">(Optional) Title of dialog</param>
         /// <param name="buttonLabel">(Optional) Custom label for button, default is "OK"</param>
-        public async Task ShowTextDialog(string text, string buttonLabel = "OK")
+        /// <param name="scaleFactor">Scale factor to scale the dialog</param>
+        public async Task ShowTextDialog(string text, string title = null, string buttonLabel = "OK", double scaleFactor = 1)
         {
             textDialog.Text = text;
+            textDialog.Title= title;
+            textDialog.SetScaling(scaleFactor);
             textDialog.ButtonLabel = buttonLabel;
             _ = await dialogHost.ShowDialog(textDialog);
+        }
+
+        public async Task ShowConfirmDialog(string text)
+        {
+
         }
 
         /// <summary>
@@ -48,6 +58,7 @@ namespace AsyncDialog
             _ = dialogHost.ShowDialog(loadingDialog);
             isOpen = true;
         }
+
         /// <summary>
         /// Close dialog
         /// </summary>

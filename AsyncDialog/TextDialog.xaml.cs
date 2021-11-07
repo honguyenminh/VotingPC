@@ -23,6 +23,19 @@ namespace AsyncDialog
         // Fake Bindings
         public string Text { get => textBox.Text; set => textBox.Text = value; }
         public string ButtonLabel { get => (string)button.Content; set => button.Content = value; }
+        public string Title
+        {
+            get => titleBox.Text;
+            set
+            {
+                if (value is null) titleBox.Visibility = Visibility.Collapsed;
+                else
+                {
+                    titleBox.Visibility = Visibility.Visible;
+                    titleBox.Text = value;
+                }
+            }
+        }
 
         public TextDialog()
         {
