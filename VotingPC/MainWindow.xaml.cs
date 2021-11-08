@@ -1,5 +1,4 @@
 ﻿using MaterialDesignThemes.Wpf.Transitions;
-using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Security.AccessControl;

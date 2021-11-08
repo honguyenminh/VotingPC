@@ -15,6 +15,10 @@
     <PackageReference Include="sqlite-net-sqlcipher" Version="1.8.116" />
     <PackageReference Include="System.IO.Ports" Version="5.0.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AsyncDialog\AsyncDialog.csproj" />
+  </ItemGroup>
   
   <ItemGroup>
     <Resource Include="assets\Emblem_of_Vietnam.png" />

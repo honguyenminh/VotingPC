@@ -1,0 +1,18 @@
+﻿{
+    "iconPath": "path",
+    "header": {
+        "text": "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM",
+        "size": "64px",
+        "style": "bold"
+    },
+    "subheader": {
+        "text": "Độc lập - Tự do - Hạnh phúc",
+        "size": "42px",
+        "style": ""
+    },
+    "title": {
+        "text": "Vui lòng chạm ngón tay đã đăng ký lên máy quét vân tay",
+        "size": "76px",
+        "style": ""
+    }
+}
