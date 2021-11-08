@@ -23,6 +23,7 @@ namespace AsyncDialog
         // Fake Bindings
         public string Text { get => textBox.Text; set => textBox.Text = value; }
         public string ButtonLabel { get => (string)button.Content; set => button.Content = value; }
+        public string LeftButtonLabel { get => (string)leftButton.Content; set => leftButton.Content = value; }
         public string Title
         {
             get => titleBox.Text;
@@ -35,6 +36,12 @@ namespace AsyncDialog
                     titleBox.Text = value;
                 }
             }
+        }
+        public bool EnableLeftButton
+        {
+            get => leftButton.Visibility == Visibility.Visible;
+            // Enable button if true, else disable it
+            set => leftButton.Visibility = value ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public TextDialog()

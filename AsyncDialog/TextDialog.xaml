@@ -29,10 +29,29 @@
             TextWrapping="Wrap" x:FieldModifier="private" Margin="24 10 24 24"
             d:Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."/>
         <!-- Button -->
-        <Button Margin="8" FocusVisualStyle="{x:Null}" x:FieldModifier="private"
-            FontFamily="Roboto" FontWeight="Medium" x:Name="button" IsDefault="True"
-            Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
-            HorizontalAlignment="Right" MinWidth="64" FontSize="14"
-            Content="OK" Style="{StaticResource MaterialDesignFlatButton}"/>
+        <StackPanel Orientation="Horizontal" Margin="8" HorizontalAlignment="Right">
+            <Button Margin="0 0 8 0" FocusVisualStyle="{x:Null}" x:FieldModifier="private"
+                FontFamily="Roboto" FontWeight="Medium" x:Name="leftButton"
+                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                MinWidth="64" FontSize="14" d:Visibility="Visible" Visibility="Collapsed"
+                Content="Optional" Style="{StaticResource MaterialDesignFlatButton}">
+                <Button.CommandParameter>
+                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                        False
+                    </system:Boolean>
+                </Button.CommandParameter>
+            </Button>
+            <Button FocusVisualStyle="{x:Null}" x:FieldModifier="private"
+                FontFamily="Roboto" FontWeight="Medium" x:Name="button"
+                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                MinWidth="64" FontSize="14" d:Visibility="Visible" IsDefault="True"
+                Content="OK" Style="{StaticResource MaterialDesignFlatButton}">
+                <Button.CommandParameter>
+                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                        True
+                    </system:Boolean>
+                </Button.CommandParameter>
+            </Button>
+        </StackPanel>
     </StackPanel>
 </UserControl>
