@@ -67,6 +67,7 @@ namespace AsyncDialog
         /// Open a dialog with loading animation
         /// This does not await until the dialog stops, please call <see cref="CloseDialog()">CloseDialog()</see> to close it
         /// </summary>
+        /// 
         public void ShowLoadingDialog()
         {
             if (isOpen) CloseDialog();
