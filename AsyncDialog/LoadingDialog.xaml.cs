@@ -24,5 +24,11 @@ namespace AsyncDialog
         {
             InitializeComponent();
         }
+
+        public void SetScaling(double scaleFactor)
+        {
+            scale.ScaleX = scaleFactor;
+            scale.ScaleY = scaleFactor;
+        }
     }
 }

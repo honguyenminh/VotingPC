@@ -18,7 +18,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <UserControl.LayoutTransform>
-        <ScaleTransform ScaleX="1" ScaleY="1" x:Name="scale" x:FieldModifier="private"/>
+        <ScaleTransform x:Name="scale" x:FieldModifier="private"/>
     </UserControl.LayoutTransform>
     <StackPanel Margin="0 10 0 0">
         <!-- Title -->

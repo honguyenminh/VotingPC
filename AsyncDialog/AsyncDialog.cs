@@ -15,7 +15,9 @@ namespace AsyncDialog
         private readonly DialogHost dialogHost;
 
         private bool isOpen;
+        private double scaleFactor = 1;
         private readonly TextDialog textDialog = new();
+        private readonly PasswordDialog passwordDialog = new();
         private readonly LoadingDialog loadingDialog = new();
 
         /// <summary>
@@ -28,17 +30,30 @@ namespace AsyncDialog
         }
 
         /// <summary>
+        /// Change the factor used to scale the dialogs
+        /// </summary>
+        public double ScaleFactor
+        {
+            get => scaleFactor;
+            set
+            {
+                scaleFactor = value;
+                textDialog.SetScaling(value);
+                passwordDialog.SetScaling(value);
+                loadingDialog.SetScaling(value);
+            }
+        }
+
+        /// <summary>
         /// Show a text dialog with a button to close it and optional title
         /// </summary>
         /// <param name="text">Text to show</param>
-        /// <param name="title">(Optional) Title of dialog</param>
+        /// <param name="title">(Optional) Title of the dialog</param>
         /// <param name="buttonLabel">(Optional) Custom label for button, default is "OK"</param>
-        /// <param name="scaleFactor">(Optional) Scale factor to scale the dialog</param>
-        public async Task ShowTextDialog(string text, string title = null, string buttonLabel = "OK",  double scaleFactor = 1)
+        public async Task ShowTextDialog(string text, string title = null, string buttonLabel = "OK")
         {
             textDialog.Text = text;
-            textDialog.Title= title;
-            textDialog.SetScaling(scaleFactor);
+            textDialog.Title = title;
             textDialog.ButtonLabel = buttonLabel;
             textDialog.EnableLeftButton = false;
             _ = await dialogHost.ShowDialog(textDialog);
@@ -47,20 +62,38 @@ namespace AsyncDialog
         /// Show a text dialog with an optional title and two button which CLOSES DIALOG ON CLICK
         /// </summary>
         /// <param name="text">Text to show</param>
-        /// <param name="title"></param>
-        /// <param name="leftButtonLabel"></param>
-        /// <param name="rightButtonLabel"></param>
-        /// <param name="scaleFactor"></param>
+        /// <param name="title">Title of the dialog</param>
+        /// <param name="leftButtonLabel">Custom label for left button, default is "CANCEL"</param>
+        /// <param name="rightButtonLabel">Custom label for right button, default is "OK"</param>
         /// <returns><see langword="true"/> if user clicked right button, <see langword="false"/> otherwise</returns>
-        public async Task<bool> ShowConfirmTextDialog(string text, string title = null, string leftButtonLabel = "Cancel", string rightButtonLabel = "OK", double scaleFactor = 1)
+        public async Task<bool> ShowConfirmTextDialog(string text, string title = null, string leftButtonLabel = "CANCEL", string rightButtonLabel = "OK")
         {
             textDialog.Text = text;
             textDialog.Title = title;
-            textDialog.SetScaling(scaleFactor);
             textDialog.EnableLeftButton = true;
             textDialog.LeftButtonLabel = leftButtonLabel;
             textDialog.ButtonLabel = rightButtonLabel;
             return (bool)await dialogHost.ShowDialog(textDialog);
+        }
+
+        /// <summary>
+        /// Show a password dialog
+        /// </summary>
+        /// <param name="title">Title of the dialog</param>
+        /// <param name="passwordBoxLabel">Label of the password box</param>
+        /// <param name="passwordBoxHelperText">Helper text under password box</param>
+        /// <param name="confirmButtonLabel">Custom label for confirm button, default is "OK"</param>
+        /// <param name="cancelButtonLabel">Custom label for cancel button, default is "CANCEL"</param>
+        /// <returns><see langword="null"/> if user cancelled. Else return the password.</returns>
+        public async Task<string> ShowPasswordDialog(string title, string passwordBoxLabel,
+            string passwordBoxHelperText = null, string confirmButtonLabel = "OK", string cancelButtonLabel = "CANCEL")
+        {
+            passwordDialog.Title = title;
+            passwordDialog.PasswordBoxLabel = passwordBoxLabel;
+            passwordDialog.PasswordBoxHelperText = passwordBoxHelperText;
+            passwordDialog.ConfirmButtonLabel = confirmButtonLabel;
+            passwordDialog.CancelButtonLabel = cancelButtonLabel;
+            return (string)await dialogHost.ShowDialog(passwordDialog);
         }
 
         /// <summary>
