@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 namespace AsyncDialog
 {
     /// <summary>
-    /// Main driver class to use AsyncDialog
+    /// Helper class to manage and show frequently used dialog
+    /// in MaterialDesignInXaml DialogHost
     /// </summary>
     public class AsyncDialog
     {
@@ -98,7 +99,7 @@ namespace AsyncDialog
 
         /// <summary>
         /// Open a dialog with loading animation
-        /// This does not await until the dialog stops, please call <see cref="CloseDialog()">CloseDialog()</see> to close it
+        /// This does not await until the dialog stops, please call <see cref="CloseDialog()"/> to close it
         /// </summary>
         /// 
         public void ShowLoadingDialog()
@@ -109,8 +110,11 @@ namespace AsyncDialog
         }
 
         /// <summary>
-        /// Close dialog, to be used with <see cref="ShowLoadingDialog()">ShowLoadingDialog()</see>
+        /// Close dialog
         /// </summary>
+        /// <remarks>
+        /// Intended to be used with <see cref="ShowLoadingDialog()"/>
+        /// </remarks>
         public void CloseDialog()
         {
             if (!isOpen) return;
