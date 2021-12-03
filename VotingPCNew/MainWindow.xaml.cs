@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MaterialDesignThemes.Wpf.Transitions;
+using SQLite;
 
 namespace VotingPCNew
 {
@@ -23,13 +24,18 @@ namespace VotingPCNew
     /// </summary>
     public partial class MainWindow : Window
     {
+        private const int dialogDelayDuration = 400;
+        private bool connectionOpened;
+
         private readonly AsyncDialog.AsyncDialog dialogs;
+        private SQLiteAsyncConnection connection;
         private readonly string[] supportedIconExt = { ".png", ".jpg", ".jpeg", ".jpe", ".gif", ".ico", ".tiff", ".bmp" };
         public MainWindow()
         {
             SQLitePCL.Batteries_V2.Init();
             InitializeComponent();
             dialogs = new(dialogHost);
+            dialogs.ScaleFactor = 1.5;
 
             // Replace logo with custom image in app folder if exists and is valid
             string filePathWithoutExt = AppDomain.CurrentDomain.BaseDirectory + "\\logo";
@@ -55,16 +61,15 @@ namespace VotingPCNew
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
             string databasePath = ShowOpenDatabaseDialog();
-            if (databasePath is null)
-            {
-                Close(); return;
-            }
+            if (databasePath is null) { Close(); return; }
 
-            bool saveToMultipleFile = await dialogs.ShowConfirmTextDialog(
+            bool saveToMultipleFile = await dialogs.ShowConfirmTextDialog
+            (
                 title: "Chọn kiểu lưu",
                 text: "Lưu kết quả vào file ban đầu hay tách các cấp thành nhiều file?",
                 leftButtonLabel: "FILE BAN ĐẦU",
-                rightButtonLabel: "NHIỀU FILE");
+                rightButtonLabel: "NHIỀU FILE"
+            );
 
             dialogs.ShowLoadingDialog();
             // Check if file can be written to or not. Exit if read-only
@@ -95,23 +100,51 @@ namespace VotingPCNew
             if (isReadOnly)
             {
                 dialogs.CloseDialog();
-                await Task.Delay(400);
+                await Task.Delay(dialogDelayDuration);
                 await dialogs.ShowTextDialog(
                     title: "File/thư mục chỉ đọc",
                     text: "Thiếu quyền Admin hoặc phân quyền sai.\n" +
-                    "Vui lòng chạy lại chương trình với quyền Admin hoặc\n" +
-                    "chuyển file/thư mục vào nơi có thể ghi được như Desktop.");
+                    "Vui lòng chạy lại chương trình với quyền Admin, sửa quyền truy cập file\n" +
+                    "hoặc chuyển file/thư mục vào nơi có thể ghi được như Desktop.");
                 Close(); return;
             }
 
             dialogs.CloseDialog();
-            await Task.Delay(400);
-            // TODO: show password dialog here
+            await Task.Delay(dialogDelayDuration);
+
+            string password;
+            while (true)
+            {
+                // Get password
+                password = await dialogs.ShowPasswordDialog
+                (
+                    title: "Nhập mật khẩu cơ sở dữ liệu",
+                    passwordBoxLabel: "Mật khẩu",
+                    passwordBoxHelperText: "Để trống nếu không có mật khẩu",
+                    cancelButtonLabel: "THOÁT ỨNG DỤNG"
+                );
+                // Quit app if user cancelled
+                if (password is null) { Close(); return; }
+
+                // Try to open connection to db
+                dialogs.ShowLoadingDialog();
+                connection = await OpenDatabaseAsync(databasePath, password);
+                if (connection is null) // Wrong password
+                {
+                    await Task.Delay(3000); // Avoid brute-force
+                    dialogs.CloseDialog();
+                    await Task.Delay(dialogDelayDuration);
+                    await dialogs.ShowTextDialog("Mật khẩu sai, vui lòng nhập lại.");
+                }
+                else break;
+            }
+            connectionOpened = true;
+            dialogs.CloseDialog();
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-
+            if (connectionOpened) await connection.CloseAsync();
         }
 
         /// <summary>
