@@ -16,11 +16,9 @@
             <!--Change text fonts-->
             <Style TargetType="AccessText">
                 <Setter Property="FontFamily" Value="Quicksand"/>
-                <Setter Property="FontWeight" Value="Medium"/>
             </Style>
             <Style TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="Quicksand"/>
-                <Setter Property="FontWeight" Value="Medium"/>
             </Style>
 
             <!--An attempt at removing the annoying tab stop shape-->

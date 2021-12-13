@@ -23,4 +23,9 @@
   <ItemGroup>
     <Resource Include="assets\Emblem_of_Vietnam.png" />
   </ItemGroup>
+  
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy $(ProjectDir)assets\config.json $(ProjectDir)$(OutDir)" />
+  </Target>
+  
 </Project>
