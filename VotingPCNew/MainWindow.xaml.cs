@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -29,8 +28,6 @@ namespace VotingPCNew
         private const string ConfigPath = "config.json";
 
         private readonly AsyncDialog.AsyncDialog dialogs;
-        private SQLiteAsyncConnection connection;
-        private readonly string[] supportedIconExt = { ".png", ".jpg", ".jpeg", ".jpe", ".gif", ".ico", ".tiff", ".bmp" };
         private readonly ScannerManager scanner;
         private readonly string _configParseError;
 
@@ -86,10 +83,16 @@ namespace VotingPCNew
             if (_configParseError != null)
             {
                 await dialogs.ShowTextDialog(_configParseError, "Lỗi file config.json");
-                Close(); return;
+                Close();
+                return;
             }
+
             string databasePath = ShowOpenDatabaseDialog();
-            if (databasePath is null) { Close(); return; }
+            if (databasePath == null)
+            {
+                Close();
+                return;
+            }
 
             bool saveToMultipleFile = await dialogs.ShowConfirmTextDialog
             (
@@ -108,39 +111,49 @@ namespace VotingPCNew
                 {
                     using FileStream file = new(databasePath, FileMode.Open, FileAccess.ReadWrite);
                 }
-                catch { isReadOnly = true; }
+                catch
+                {
+                    isReadOnly = true;
+                }
             }
             else
             {
                 // Show open folder dialog
                 Ookii.Dialogs.Wpf.VistaFolderBrowserDialog dialog = new()
                 {
-                    Description = "Chọn thư mục chứa file cơ sở dữ liệu xuất ra",
+                    Description = @"Chọn thư mục chứa file cơ sở dữ liệu xuất ra",
                     UseDescriptionForTitle = true
                 };
                 // If cancelled, exit the app
-                if (!(bool)dialog.ShowDialog()) { Close(); return; }
+                if (!(bool) dialog.ShowDialog())
+                {
+                    Close();
+                    return;
+                }
 
                 // Check if folder can be written to or not
                 DirectoryInfo directoryInfo = new(dialog.SelectedPath);
                 isReadOnly = directoryInfo.Attributes.HasFlag(FileAttributes.ReadOnly);
             }
+
             if (isReadOnly)
             {
                 dialogs.CloseDialog();
                 await Task.Delay(DialogDelayDuration);
                 await dialogs.ShowTextDialog(
                     title: "File/thư mục chỉ đọc",
-                    text: "Thiếu quyền Admin hoặc phân quyền sai.\n" +
-                    "Vui lòng chạy lại chương trình với quyền Admin, sửa quyền truy cập file\n" +
-                    "hoặc chuyển file/thư mục vào nơi có thể ghi được như Desktop.");
-                Close(); return;
+                    text: @"Thiếu quyền Admin hoặc phân quyền sai.\n"
+                          + @"Vui lòng chạy lại chương trình với quyền Admin, sửa quyền truy cập file\n"
+                          + @"hoặc chuyển file/thư mục vào nơi có thể ghi được như Desktop.");
+                Close();
+                return;
             }
 
             dialogs.CloseDialog();
             await Task.Delay(DialogDelayDuration);
 
             string password;
+            SQLiteAsyncConnection connection;
             while (true)
             {
                 // Get password
@@ -152,7 +165,11 @@ namespace VotingPCNew
                     cancelButtonLabel: "THOÁT ỨNG DỤNG"
                 );
                 // Quit app if user cancelled
-                if (password is null) { Close(); return; }
+                if (password is null)
+                {
+                    Close();
+                    return;
+                }
 
                 // Try to open connection to db
                 dialogs.ShowLoadingDialog();
@@ -161,18 +178,17 @@ namespace VotingPCNew
                 {
                     await Task.Delay(3000); // Avoid brute-force
                     dialogs.CloseDialog();
-                    await Task.Delay(dialogDelayDuration);
+                    await Task.Delay(DialogDelayDuration);
                     await dialogs.ShowTextDialog("Mật khẩu sai, vui lòng nhập lại.");
                 }
                 else break;
             }
-            connectionOpened = true;
+
             dialogs.CloseDialog();
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-
         }
 
         /// <summary>
@@ -200,6 +216,7 @@ namespace VotingPCNew
         {
             Transitioner.MoveNextCommand.Execute(0, TransitionerObj);
         }
+
         /// <summary>
         /// Move to previous Slide
         /// </summary>
