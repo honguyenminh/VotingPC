@@ -25,12 +25,15 @@ namespace VotingPCNew
     /// </summary>
     public partial class MainWindow : Window
     {
-        private const int dialogDelayDuration = 400;
-        private bool connectionOpened;
+        private const int DialogDelayDuration = 400;
+        private const string ConfigPath = "config.json";
 
         private readonly AsyncDialog.AsyncDialog dialogs;
         private SQLiteAsyncConnection connection;
         private readonly string[] supportedIconExt = { ".png", ".jpg", ".jpeg", ".jpe", ".gif", ".ico", ".tiff", ".bmp" };
+        private readonly ScannerManager scanner;
+        private readonly string _configParseError;
+
         public MainWindow()
         {
             SQLitePCL.Batteries_V2.Init();
@@ -38,29 +41,53 @@ namespace VotingPCNew
             dialogs = new(dialogHost);
             dialogs.ScaleFactor = 1.5;
 
-            // Replace logo with custom image in app folder if exists and is valid
-            string filePathWithoutExt = AppDomain.CurrentDomain.BaseDirectory + "\\logo";
-            foreach (string extension in supportedIconExt)
+            // Init scanner manager
+            ScannerSignalTable signalTable = new()
             {
-                string filePath = filePathWithoutExt + extension;
-                if (File.Exists(filePath))
+                Acknowledgement = 'N',
+                Receive = new()
                 {
-                    try
-                    {
-                        Uri fullPath = new(filePath, UriKind.Absolute);
-                        BitmapImage image = new(fullPath);
-                        slide1.IconPath = filePath;
-                        break;
-                    }
-                    catch (Exception) { }
+                    FingerFound = 'F'
+                },
+                Send = new()
+                {
+                    StartScanning = 'S',
+                    AcknowledgedFinger = 'K',
+                    Close = 'C'
                 }
-            }
+            };
+            scanner = new(signalTable);
 
-            // TODO: add json config file parsing
+
+            // Read config.json config file
+            try
+            {
+                string configFile = File.ReadAllText(ConfigPath);
+                var config = JsonSerializer.Deserialize<Config>(configFile);
+
+                //slide1.TitleConfig = config.title;
+                slide1.TopHeaderConfig = config.header;
+                slide1.TopSubheaderConfig = config.subheader;
+                // Replace logo with custom image in app folder if exists and is valid
+                if (File.Exists(config.iconPath))
+                {
+                    slide1.IconPath = config.iconPath;
+                }
+                else _configParseError = "Không tìm thấy file logo. Kiểm tra lại đường dẫn.";
+            }
+            catch (Exception e)
+            {
+                _configParseError = e.Message;
+            }
         }
 
         private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            if (_configParseError != null)
+            {
+                await dialogs.ShowTextDialog(_configParseError, "Lỗi file config.json");
+                Close(); return;
+            }
             string databasePath = ShowOpenDatabaseDialog();
             if (databasePath is null) { Close(); return; }
 
@@ -101,7 +128,7 @@ namespace VotingPCNew
             if (isReadOnly)
             {
                 dialogs.CloseDialog();
-                await Task.Delay(dialogDelayDuration);
+                await Task.Delay(DialogDelayDuration);
                 await dialogs.ShowTextDialog(
                     title: "File/thư mục chỉ đọc",
                     text: "Thiếu quyền Admin hoặc phân quyền sai.\n" +
@@ -111,7 +138,7 @@ namespace VotingPCNew
             }
 
             dialogs.CloseDialog();
-            await Task.Delay(dialogDelayDuration);
+            await Task.Delay(DialogDelayDuration);
 
             string password;
             while (true)
@@ -143,9 +170,9 @@ namespace VotingPCNew
             dialogs.CloseDialog();
         }
 
-        private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (connectionOpened) await connection.CloseAsync();
+
         }
 
         /// <summary>

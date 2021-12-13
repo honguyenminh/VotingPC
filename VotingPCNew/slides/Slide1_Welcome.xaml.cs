@@ -20,11 +20,11 @@ namespace VotingPCNew
     /// </summary>
     public partial class Slide1 : UserControl
     {
-        #region Binding
-        public string IconPath { get; set; } = "/assets/Emblem_of_Vietnam.png";
-        public string TopTitle { get; set; } = "CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM";
-        public string TopSubtitle { get; set; } = "Độc lập - Tự do - Hạnh phúc";
-        #endregion
+        public TextConfig TitleConfig { set => title.SetConfig(value); }
+        public string IconPath { set => image.SetSource(value); }
+        public TextConfig TopHeaderConfig { set => topHeader.SetConfig(value); }
+        public TextConfig TopSubheaderConfig { set => topSubheader.SetConfig(value); }
+
         public Slide1()
         {
             InitializeComponent();

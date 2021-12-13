@@ -12,7 +12,7 @@ namespace VotingPCNew
     public partial class MainWindow : Window
     {
         /// <summary>
-        /// Try to open a new SQLite database connection.
+        /// Open a new SQLite database connection.
         /// </summary>
         /// <param name="databasePath">Path to SQLite database file</param>
         /// <param name="password">Password of database, leave empty string if none was set</param>

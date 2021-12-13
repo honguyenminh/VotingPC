@@ -5,29 +5,29 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:local="clr-namespace:VotingPCNew"
     mc:Ignorable="d" FocusVisualStyle="{x:Null}"
-    d:DesignHeight="720" d:DesignWidth="1280"
-    DataContext="{Binding Mode=OneWay, RelativeSource={RelativeSource Mode=Self}}">
+    d:DesignHeight="720" d:DesignWidth="1280">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Image Height="140" Width="140" Grid.Row="0" Margin="36 28" Source="{Binding IconPath}"
-            VerticalAlignment="Center" HorizontalAlignment="Left"/>
-        <StackPanel Margin="0 36" Orientation="Vertical"
+        <Image Height="140" Width="140" Grid.Row="0" Margin="36 28" x:FieldModifier="private"
+            VerticalAlignment="Center" HorizontalAlignment="Left" x:Name="image"/>
+        <StackPanel Grid.Row="0" Margin="0 36" Orientation="Vertical"
             HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock d:Text="CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM"
-                HorizontalAlignment="Center" Margin="0 0 0 8"
-                FontWeight="Bold" FontSize="40" Text="{Binding TopTitle}"/>
+                HorizontalAlignment="Center" Margin="0 0 0 8" x:FieldModifier="private"
+                FontWeight="Bold" FontSize="40" x:Name="topHeader"/>
             <Line Stroke="Black" StrokeThickness="3" Margin="0 10"
                 HorizontalAlignment="Center" X1="0" X2="300"/>
             <TextBlock d:Text="Độc lập - Tự do - Hạnh phúc" FontSize="36"
                 HorizontalAlignment="Center" FontWeight="Normal"
-                Text="{Binding TopSubtitle}"/>
+                x:FieldModifier="private" x:Name="topSubheader"/>
         </StackPanel>
 
         <TextBlock Text="Vui lòng chạm ngón tay đã đăng ký lên máy quét vân tay"
             HorizontalAlignment="Center" VerticalAlignment="Center" Margin="200 0"
-            FontSize="60" TextWrapping="Wrap" TextAlignment="Center" Grid.Row="1"/>
+            FontSize="60" TextWrapping="Wrap" TextAlignment="Center" Grid.Row="1"
+            x:FieldModifier="private" x:Name="title" FontWeight="Medium"/>
     </Grid>
 </UserControl>
