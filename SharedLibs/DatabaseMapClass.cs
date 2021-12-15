@@ -2,9 +2,6 @@
 using System;
 using System.Text.RegularExpressions;
 
-// TODO: finish making database error logs
-// TODO: throw after all error found.
-
 namespace VotingPC
 {
     internal static class GlobalVariable
@@ -16,8 +13,8 @@ namespace VotingPC
     public class Candidate
     {
         // Private fields
-        private string name;
-        private string gender;
+        private string _name;
+        private string _gender;
 
         // Public field
         [Ignore]
@@ -27,15 +24,15 @@ namespace VotingPC
         [Column("Name")]
         public string Name
         {
-            get => name;
+            get => _name;
             // Cut the string if longer than StringMaxLength
             set
             {
                 if (value.Length > GlobalVariable.StringMaxLength)
                 {
-                    name = value[..GlobalVariable.StringMaxLength];
+                    _name = value[..GlobalVariable.StringMaxLength];
                 }
-                else name = value;
+                else _name = value;
             }
         }
 
@@ -47,15 +44,15 @@ namespace VotingPC
         [Column("Gender")]
         public string Gender
         {
-            get => gender;
+            get => _gender;
             // Cut the string if longer than SmallStringMaxLength
             set
             {
                 if (value.Length > GlobalVariable.SmallStringMaxLength)
                 {
-                    gender = value[..GlobalVariable.SmallStringMaxLength];
+                    _gender = value[..GlobalVariable.SmallStringMaxLength];
                 }
-                else gender = value;
+                else _gender = value;
             }
         }
 
@@ -68,12 +65,12 @@ namespace VotingPC
     public class Info
     {
         // Private fields
-        private string sector;
-        private string color;
-        private string title;
-        private string year;
+        private string _sector;
+        private string _color;
+        private string _title;
+        private string _year;
         // Hex color regex
-        private static readonly Regex hexColorRegex = new("^#([0-9A-F]{8}|[0-9A-F]{6})$", RegexOptions.Compiled);
+        private static readonly Regex s_hexColorRegex = new("^#([0-9A-F]{8}|[0-9A-F]{6})$", RegexOptions.Compiled);
 
         [Ignore]
         public string Error { get; private set; } = "";
@@ -84,14 +81,14 @@ namespace VotingPC
         [Column("Sector")]
         public string Sector
         {
-            get => sector;
+            get => _sector;
             set
             {
                 if (value.Length > GlobalVariable.SmallStringMaxLength)
                 {
                     Error += $"Tên Sector quá dài (hơn {GlobalVariable.SmallStringMaxLength} ký tự).\n";
                 }
-                else sector = value;
+                else _sector = value;
             }
         }
 
@@ -103,32 +100,32 @@ namespace VotingPC
         [Column("Color")]
         public string Color
         {
-            get => color;
+            get => _color;
             set
             {
                 if (value is null)
                 {
-                    color = null;
+                    _color = null;
                     return;
                 }
 
                 value = value.Trim().ToUpper();
                 if (value.Length is 7 or 9)
                 {
-                    if (hexColorRegex.IsMatch(value))
+                    if (s_hexColorRegex.IsMatch(value))
                     {
-                        color = value;
+                        _color = value;
                     }
                     else
                     {
                         Error += $"Màu nền RGB không hợp lệ tại Sector {Sector}.\n";
-                        color = null;
+                        _color = null;
                     }
                 }
                 else
                 {
                     Error += $"Màu nền không hợp lệ tại Sector {Sector}.\nVui lòng kiểm tra lại độ dài mã màu.\n";
-                    color = null;
+                    _color = null;
                 }
             }
         }
@@ -137,15 +134,15 @@ namespace VotingPC
         [Column("Title")]
         public string Title
         {
-            get => title;
+            get => _title;
             set
             {
                 if (value.Length > GlobalVariable.StringMaxLength)
                 {
                     Warning += $"Tiêu đề Sector {Sector} quá dài (hơn {GlobalVariable.StringMaxLength} ký tự). Đã tự động cắt.\n";
-                    title = value.Substring(0, GlobalVariable.StringMaxLength);
+                    _title = value.Substring(0, GlobalVariable.StringMaxLength);
                 }
-                else title = value;
+                else _title = value;
             }
         }
 
@@ -153,15 +150,15 @@ namespace VotingPC
         [Column("Year")]
         public string Year
         {
-            get => year;
+            get => _year;
             set
             {
                 if (value.Length > GlobalVariable.SmallStringMaxLength)
                 {
                     Warning += $"Phụ đề niên khóa của Sector {Sector} quá dài (hơn {GlobalVariable.SmallStringMaxLength} ký tự). Đã tự động cắt.\n";
-                    year = value[..GlobalVariable.SmallStringMaxLength];
+                    _year = value[..GlobalVariable.SmallStringMaxLength];
                 }
-                else year = value;
+                else _year = value;
             }
         }
 
