@@ -14,7 +14,7 @@ namespace VotingPCNew.Scanner
 
         public ScannerManager(ScannerSignalTable signalTable)
         {
-            this._signalTable = signalTable;
+            _signalTable = signalTable;
         }
 
         /// <summary>
