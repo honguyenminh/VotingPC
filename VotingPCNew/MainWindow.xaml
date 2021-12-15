@@ -18,7 +18,7 @@
         Width="1280" Height="720"
         FocusVisualStyle="{x:Null}">
     <materialDesign:DialogHost x:Name="dialogHost" IsTabStop="False" FocusVisualStyle="{x:Null}">
-        <materialDesign:Transitioner x:Name="TransitionerObj" SelectedIndex="0">
+        <materialDesign:Transitioner x:Name="transitionerObj" SelectedIndex="0">
             <materialDesign:TransitionerSlide>
                 <local:Slide1 x:Name="slide1"/>
             </materialDesign:TransitionerSlide>

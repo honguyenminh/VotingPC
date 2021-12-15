@@ -63,18 +63,23 @@ namespace VotingPCNew
             _scanner = new ScannerManager(signalTable);
 
             // Read config.json config file
+            // TODO: fix error handling for json
             try
             {
                 string configFile = File.ReadAllText(ConfigPath);
-                var config = JsonSerializer.Deserialize<Config>(configFile);
-
-                slide1.TitleConfig = config.title;
-                slide1.TopHeaderConfig = config.header;
-                slide1.TopSubheaderConfig = config.subheader;
-                // Replace logo with custom image in app folder if exists and is valid
-                if (File.Exists(config.iconPath))
+                JsonSerializerOptions options = new()
                 {
-                    slide1.IconPath = config.iconPath;
+                    PropertyNameCaseInsensitive = true
+                };
+                var config = JsonSerializer.Deserialize<Config>(configFile, options);
+
+                slide1.TitleConfig = config.Title;
+                slide1.TopHeaderConfig = config.Header;
+                slide1.TopSubheaderConfig = config.Subheader;
+                // Replace logo with custom image in app folder if exists and is valid
+                if (File.Exists(config.IconPath))
+                {
+                    slide1.IconPath = config.IconPath;
                 }
                 else _configParseError = @"Không tìm thấy file logo. Kiểm tra lại đường dẫn.";
             }
@@ -220,7 +225,7 @@ namespace VotingPCNew
         /// </summary>
         private void NextPage()
         {
-            Transitioner.MoveNextCommand.Execute(null, TransitionerObj);
+            Transitioner.MoveNextCommand.Execute(null, transitionerObj);
         }
 
         /// <summary>
@@ -228,7 +233,7 @@ namespace VotingPCNew
         /// </summary>
         private void PreviousPage()
         {
-            Transitioner.MovePreviousCommand.Execute(null, TransitionerObj);
+            Transitioner.MovePreviousCommand.Execute(null, transitionerObj);
         }
     }
 }

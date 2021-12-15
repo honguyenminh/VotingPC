@@ -11,10 +11,10 @@ namespace VotingPCNew
         private static readonly ImageSourceConverter imageConverter = new();
         public static void SetConfig(this TextBlock textBlock, TextConfig config)
         {
-            textBlock.Text = config.text ?? "";
-            if (config.size != -1) textBlock.FontSize = config.size;
-            textBlock.FontStyle = config.style;
-            textBlock.FontWeight = config.weight;
+            textBlock.Text = config.Text ?? "";
+            if (config.Size != -1) textBlock.FontSize = config.Size;
+            textBlock.FontStyle = config.Style;
+            textBlock.FontWeight = config.Weight;
         }
         public static void SetSource(this Image image, string path)
         {

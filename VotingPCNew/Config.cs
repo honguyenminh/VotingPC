@@ -1,28 +1,24 @@
 ﻿using System.Windows;
 using System.Text.Json.Serialization;
-// ReSharper disable InconsistentNaming
 
 namespace VotingPCNew
 {
-#pragma warning disable IDE1006 // JavaScript style name for json
     public struct Config
     {
-        //[JsonConverter(typeof(JsonConverter.ImageSource))]
-        public string iconPath { get; set; }
-        public TextConfig header { get; set; }
-        public TextConfig subheader { get; set; }
-        public TextConfig title { get; set; }
+        public string IconPath { get; set; }
+        public TextConfig Header { get; set; }
+        public TextConfig Subheader { get; set; }
+        public TextConfig Title { get; set; }
     }
 
-    public class TextConfig
+    public struct TextConfig
     {
-        public string text { get; set; }
+        public string Text { get; set; }
         [JsonConverter(typeof(JsonConverter.FontSizeJsonConverter))]
-        public double size { get; set; }
+        public double Size { get; set; }
         [JsonConverter(typeof(JsonConverter.FontStyleJsonConverter))]
-        public FontStyle style { get; set; }
+        public FontStyle Style { get; set; }
         [JsonConverter(typeof(JsonConverter.FontWeightJsonConverter))]
-        public FontWeight weight { get; set; }
+        public FontWeight Weight { get; set; }
     }
-#pragma warning restore IDE1006 // JavaScript style name for json
 }
