@@ -5,11 +5,11 @@ using System.Linq;
 using System.Windows;
 using SQLite;
 using System.IO;
+using System.Threading.Tasks;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
 using MaterialDesignThemes.Wpf.Transitions;
 using AsyncDialog;
-using PasswordDialog = VotingPC.PasswordDialog;
 
 namespace VoteCounter
 {
@@ -19,8 +19,6 @@ namespace VoteCounter
     public partial class MainWindow
     {
         #region Global variables
-        // TODO: Change password dialog to MVVM user control, not a class
-        private readonly PasswordDialog passwordDialog;
         private static string[] s_databasePath;
         private readonly AsyncDialogManager _dialogs;
         private static readonly Dictionary<string, List<Candidate>> s_sections = new();
@@ -35,11 +33,7 @@ namespace VoteCounter
 
             // Init Dialogs classes for MaterialDesign dialogs
             _dialogs = new AsyncDialogManager(dialogHost);
-            passwordDialog = new(dialogHost,
-                "Nhập mật khẩu cơ sở dữ liệu:",
-                "Mật khẩu không chính xác hoặc cơ sở dữ liệu không hợp lệ!",
-                "Hoàn tất", PasswordDialogButton_Click);
-
+            
             // Set click event handlers for buttons in slides
             slideLanding.SingleFileButton.Click += SingleFileButton_Click;
             slideLanding.MultipleFileButton.Click += MultipleFileButton_Click;
@@ -48,19 +42,19 @@ namespace VoteCounter
         }
 
         // Button click events
-        private void SingleFileButton_Click(object sender, RoutedEventArgs e)
+        private async void SingleFileButton_Click(object sender, RoutedEventArgs e)
         {
             // Open file dialog
             if (!ShowOpenDatabaseFileDialog()) return;
             // TODO: show "Cancel" button on the password dialog as well
-            passwordDialog.Show();
+            await ParseDbFiles();
         }
-        private void MultipleFileButton_Click(object sender, RoutedEventArgs e)
+        private async void MultipleFileButton_Click(object sender, RoutedEventArgs e)
         {
             // Allow multiple file, then open file dialog
             if (!ShowOpenDatabaseFileDialog(multiFile: true)) return;
 
-            passwordDialog.Show();
+            await ParseDbFiles();
         }
         private async void FolderButton_Click(object sender, RoutedEventArgs e)
         {
@@ -84,7 +78,7 @@ namespace VoteCounter
             }
             s_databasePath = filePaths;
 
-            passwordDialog.Show();
+            await ParseDbFiles();
         }
 
         /// <summary>
@@ -98,60 +92,103 @@ namespace VoteCounter
             {
                 Filter = "Database file (*.db)|*.db",
                 Title = "Chọn tệp cơ sở dữ liệu",
-                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                Multiselect = multiFile
             };
 
-            openFileDialog.Multiselect = multiFile;
-
-            if (openFileDialog.ShowDialog() == true)
-            {
-                s_databasePath = openFileDialog.FileNames;
-                return true;
-            }
-            else return false;
+            if (openFileDialog.ShowDialog() != true) return false;
+            s_databasePath = openFileDialog.FileNames;
+            return true;
         }
 
         /// <summary>
-        /// Click handler for the Password Dialog button.
+        /// Show PasswordDialog to get password from user
         /// </summary>
-        private async void PasswordDialogButton_Click(object sender, RoutedEventArgs e)
+        /// <returns><see langword="null"/> if user cancelled, else return the entered password as string</returns>
+        private async Task<string> GetPassword()
         {
-            _dialogs.CloseDialog();
-            _dialogs.ShowLoadingDialog();
+            string password;
+            while (true)
+            {
+                password = await _dialogs.ShowPasswordDialog(
+                    "Nhập mật khẩu cơ sở dữ liệu:",
+                    "Mật khẩu",
+                    "Để trống nếu không có mật khẩu",
+                    "HOÀN TẤT",
+                    "HỦY VÀ THOÁT ỨNG DỤNG"
+                );
+                // Quit app if user cancelled
+                if (password is null)
+                {
+                    Close();
+                    return null;
+                }
+                _dialogs.ShowLoadingDialog();
+                // Create new SQLite database connection for each file
+                SQLiteConnectionString options = new(s_databasePath[0], true, password);
+                SQLiteAsyncConnection connection = new(options);
+
+                // Check password
+                try
+                {
+                    // This will try to query the SQLite Schema Database
+                    // if the key is correct then no error is raised
+                    _ = await connection.QueryAsync<int>("SELECT count(*) FROM sqlite_master");
+                    await connection.CloseAsync();
+                    break;
+                }
+                catch (SQLiteException) // Wrong password
+                {
+                    _dialogs.CloseDialog();
+                    await connection.CloseAsync();
+                }
+            }
+            return password;
+        }
+        private async Task ParseDbFiles()
+        {
+            string password = await GetPassword();
+            if (password is null) return;
 
             foreach (string database in s_databasePath)
             {
                 // Check if file can be read or not. Exit if can't be read or not exist
                 try
                 {
-                    using FileStream file = new(database, FileMode.Open, FileAccess.Read);
+                    await using FileStream file = new(database, FileMode.Open, FileAccess.Read);
                 }
                 catch
                 {
                     _dialogs.CloseDialog();
-                    await _dialogs.ShowTextDialog("Không đủ quyền đọc file đã chọn",
-                        "Vui lòng chạy lại chương trình với quyền admin hoặc\n" +
-                        "chuyển file vào nơi có thể đọc được như Desktop.");
+                    await _dialogs.ShowTextDialog(
+                        title: "Không đủ quyền đọc file " + database,
+                        text: "Vui lòng chạy lại chương trình với quyền admin hoặc\n" +
+                        "chuyển file vào nơi có thể đọc được như Desktop."
+                    );
                     Close();
                     return;
                 }
 
                 // Create new SQLite database connection for each file
-                SQLiteConnectionString options = new(database, storeDateTimeAsTicks: true, passwordDialog.Password);
+                SQLiteConnectionString options = new(database, true, password);
                 SQLiteAsyncConnection connection = new(options);
 
-                // Check password
+                // Check password again, just to be sure
                 try
                 {
-                    //This will try to query the SQLite Schema Database, if the key is correct then no error is raised
                     _ = await connection.QueryAsync<int>("SELECT count(*) FROM sqlite_master");
                 }
                 catch (SQLiteException) // Wrong password
                 {
                     _dialogs.CloseDialog();
                     await connection.CloseAsync();
-                    // Request password from user again, don't run init code
-                    passwordDialog.Show(true);
+                    // Just throw tbh
+                    // TODO: add option to enter custom password
+                    await _dialogs.ShowTextDialog(
+                        title: "Sai mật khẩu tại file " + database,
+                        text: "Vui lòng kiểm tra lại mật khẩu các file, đảm bảo mật khẩu trùng nhau"
+                    );
+                    Close();
                     return;
                 }
 
@@ -231,7 +268,6 @@ namespace VoteCounter
         }
         private static bool ValidateData(List<Candidate> candidateList)
         {
-
             foreach (Candidate candidate in candidateList)
             {
                 if (!candidate.IsValid) return false;
@@ -246,12 +282,12 @@ namespace VoteCounter
         private void PopulateUi()
         {
             bool left = true;
-            foreach (var info in s_infos)
+            foreach (var (_, value) in s_infos)
             {
                 // Sort the candidate list
-                SortByHighestVotes(s_sections[info.Value.Sector]);
+                SortByHighestVotes(s_sections[value.Sector]);
 
-                DisplayCard displayCard = new(info.Value, s_sections[info.Value.Sector]);
+                DisplayCard displayCard = new(value, s_sections[value.Sector]);
                 if (left)
                 {
                     displayCard.Margin = new(0, 16, 56, 16);
@@ -263,7 +299,8 @@ namespace VoteCounter
                     left = true;
                 }
 
-                displayCard.Click += (sender, e) => {
+
+                displayCard.Click += (sender, _) => {
                     slideDetail.ChangeData(((DisplayCard)sender).SectionInfo, ((DisplayCard)sender).Candidates);
                     NextPage();
                 };
@@ -277,27 +314,24 @@ namespace VoteCounter
         /// <param name="candidates">List of candidates to sort</param>
         private static void SortByHighestVotes(in List<Candidate> candidates)
         {
-            // Compare function, hover over new() for more info on how this works
-            Comparison<Candidate> comparison = new((x, y) => (int)y.Votes - (int)x.Votes);
-            candidates.Sort(comparison);
+            // Compare function that compares the votes inside candidates to sort candidates
+            int Comparison(Candidate x, Candidate y) => (int) y.Votes - (int) x.Votes;
+            candidates.Sort(Comparison);
         }
         private static void FindMaxVote(in List<Candidate> candidates)
         {
             if (candidates.Count == 0) throw new ArgumentException("Empty candidate list as parameter");
             long max = candidates[0].Votes;
-            List<int> winningCandidates = new();
-            winningCandidates.Add(0);
+            List<int> winningCandidates = new() {0};
             for (int i = 1; i < candidates.Count; i++)
             {
-                if (candidates[i].Votes >= max)
+                if (candidates[i].Votes < max) continue;
+                if (candidates[i].Votes > max)
                 {
-                    if (candidates[i].Votes > max)
-                    {
-                        winningCandidates.Clear();
-                        max = candidates[i].Votes;
-                    }
-                    winningCandidates.Add(i);
+                    winningCandidates.Clear();
+                    max = candidates[i].Votes;
                 }
+                winningCandidates.Add(i);
             }
 
             foreach (int index in winningCandidates)
@@ -314,14 +348,14 @@ namespace VoteCounter
         {
             // 0 is argument, meaning no arg
             // Pass object as second argument
-            Transitioner.MoveNextCommand.Execute(0, TransitionerObj);
+            Transitioner.MoveNextCommand.Execute(null, TransitionerObj);
         }
         /// <summary>
         /// Move to previous Slide
         /// </summary>
         private void PreviousPage()
         {
-            Transitioner.MovePreviousCommand.Execute(0, TransitionerObj);
+            Transitioner.MovePreviousCommand.Execute(null, TransitionerObj);
         }
         #endregion
     }
