@@ -26,6 +26,7 @@
   
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="copy $(ProjectDir)assets\config.json $(ProjectDir)$(OutDir)" />
+    <Exec Command="copy $(ProjectDir)assets\Emblem_of_Vietnam.png $(ProjectDir)$(OutDir)" />
   </Target>
   
 </Project>

@@ -1,60 +1,66 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using AsyncDialog;
 using MaterialDesignThemes.Wpf.Transitions;
+using Microsoft.Win32;
+using Ookii.Dialogs.Wpf;
 using SQLite;
+using SQLitePCL;
 using VotingPCNew.Scanner;
+
+// using System.Collections.Generic;
+// using System.Windows.Controls;
+// using System.Windows.Data;
+// using System.Windows.Documents;
+// using System.Windows.Input;
+// using System.Windows.Media;
+// using System.Windows.Media.Imaging;
+// using System.Windows.Navigation;
+// using System.Windows.Shapes;
 
 namespace VotingPCNew
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    ///     Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         private const int DialogDelayDuration = 400;
         private const string ConfigPath = "config.json";
-
-        private readonly AsyncDialog.AsyncDialog dialogs;
-        private readonly ScannerManager scanner;
         private readonly string _configParseError;
+
+        private readonly AsyncDialogManager _dialogs;
+        private readonly ScannerManager _scanner;
 
         public MainWindow()
         {
-            SQLitePCL.Batteries_V2.Init();
+            Batteries_V2.Init();
             InitializeComponent();
-            dialogs = new(dialogHost);
-            dialogs.ScaleFactor = 1.5;
+            _dialogs = new AsyncDialogManager(dialogHost)
+            {
+                ScaleFactor = 1.5
+            };
 
             // Init scanner manager
             ScannerSignalTable signalTable = new()
             {
                 Acknowledgement = 'N',
-                Receive = new()
+                Receive = new ReceiveSignalTable
                 {
                     FingerFound = 'F'
                 },
-                Send = new()
+                Send = new SendSignalTable
                 {
                     StartScanning = 'S',
                     AcknowledgedFinger = 'K',
                     Close = 'C'
                 }
             };
-            scanner = new(signalTable);
-
+            _scanner = new ScannerManager(signalTable);
 
             // Read config.json config file
             try
@@ -62,7 +68,7 @@ namespace VotingPCNew
                 string configFile = File.ReadAllText(ConfigPath);
                 var config = JsonSerializer.Deserialize<Config>(configFile);
 
-                //slide1.TitleConfig = config.title;
+                slide1.TitleConfig = config.title;
                 slide1.TopHeaderConfig = config.header;
                 slide1.TopSubheaderConfig = config.subheader;
                 // Replace logo with custom image in app folder if exists and is valid
@@ -70,7 +76,7 @@ namespace VotingPCNew
                 {
                     slide1.IconPath = config.iconPath;
                 }
-                else _configParseError = "Không tìm thấy file logo. Kiểm tra lại đường dẫn.";
+                else _configParseError = @"Không tìm thấy file logo. Kiểm tra lại đường dẫn.";
             }
             catch (Exception e)
             {
@@ -82,7 +88,7 @@ namespace VotingPCNew
         {
             if (_configParseError != null)
             {
-                await dialogs.ShowTextDialog(_configParseError, "Lỗi file config.json");
+                await _dialogs.ShowTextDialog(_configParseError, @"Lỗi file config.json");
                 Close();
                 return;
             }
@@ -94,22 +100,22 @@ namespace VotingPCNew
                 return;
             }
 
-            bool saveToMultipleFile = await dialogs.ShowConfirmTextDialog
+            bool saveToMultipleFile = await _dialogs.ShowConfirmTextDialog
             (
-                title: "Chọn kiểu lưu",
-                text: "Lưu kết quả vào file ban đầu hay tách các cấp thành nhiều file?",
-                leftButtonLabel: "FILE BAN ĐẦU",
-                rightButtonLabel: "NHIỀU FILE"
+                title: @"Chọn kiểu lưu",
+                text: @"Lưu kết quả vào file ban đầu hay tách các cấp thành nhiều file?",
+                leftButtonLabel: @"FILE BAN ĐẦU",
+                rightButtonLabel: @"NHIỀU FILE"
             );
 
-            dialogs.ShowLoadingDialog();
+            _dialogs.ShowLoadingDialog();
             // Check if file can be written to or not. Exit if read-only
             bool isReadOnly = false;
             if (!saveToMultipleFile)
             {
                 try
                 {
-                    using FileStream file = new(databasePath, FileMode.Open, FileAccess.ReadWrite);
+                    await using FileStream file = new(databasePath, FileMode.Open, FileAccess.ReadWrite);
                 }
                 catch
                 {
@@ -119,7 +125,7 @@ namespace VotingPCNew
             else
             {
                 // Show open folder dialog
-                Ookii.Dialogs.Wpf.VistaFolderBrowserDialog dialog = new()
+                VistaFolderBrowserDialog dialog = new()
                 {
                     Description = @"Chọn thư mục chứa file cơ sở dữ liệu xuất ra",
                     UseDescriptionForTitle = true
@@ -138,9 +144,9 @@ namespace VotingPCNew
 
             if (isReadOnly)
             {
-                dialogs.CloseDialog();
+                _dialogs.CloseDialog();
                 await Task.Delay(DialogDelayDuration);
-                await dialogs.ShowTextDialog(
+                await _dialogs.ShowTextDialog(
                     title: "File/thư mục chỉ đọc",
                     text: @"Thiếu quyền Admin hoặc phân quyền sai.\n"
                           + @"Vui lòng chạy lại chương trình với quyền Admin, sửa quyền truy cập file\n"
@@ -149,7 +155,7 @@ namespace VotingPCNew
                 return;
             }
 
-            dialogs.CloseDialog();
+            _dialogs.CloseDialog();
             await Task.Delay(DialogDelayDuration);
 
             string password;
@@ -157,12 +163,12 @@ namespace VotingPCNew
             while (true)
             {
                 // Get password
-                password = await dialogs.ShowPasswordDialog
+                password = await _dialogs.ShowPasswordDialog
                 (
-                    title: "Nhập mật khẩu cơ sở dữ liệu",
-                    passwordBoxLabel: "Mật khẩu",
-                    passwordBoxHelperText: "Để trống nếu không có mật khẩu",
-                    cancelButtonLabel: "THOÁT ỨNG DỤNG"
+                    @"Nhập mật khẩu cơ sở dữ liệu",
+                    @"Mật khẩu",
+                    @"Để trống nếu không có mật khẩu",
+                    cancelButtonLabel: @"THOÁT ỨNG DỤNG"
                 );
                 // Quit app if user cancelled
                 if (password is null)
@@ -172,30 +178,30 @@ namespace VotingPCNew
                 }
 
                 // Try to open connection to db
-                dialogs.ShowLoadingDialog();
+                _dialogs.ShowLoadingDialog();
                 connection = await OpenDatabaseAsync(databasePath, password);
                 if (connection is null) // Wrong password
                 {
                     await Task.Delay(3000); // Avoid brute-force
-                    dialogs.CloseDialog();
+                    _dialogs.CloseDialog();
                     await Task.Delay(DialogDelayDuration);
-                    await dialogs.ShowTextDialog("Mật khẩu sai, vui lòng nhập lại.");
+                    await _dialogs.ShowTextDialog(@"Mật khẩu sai, vui lòng nhập lại.");
                 }
                 else break;
             }
 
-            dialogs.CloseDialog();
+            _dialogs.CloseDialog();
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closing(object sender, CancelEventArgs e)
         {
         }
 
         /// <summary>
-        /// Show a dialog to select database file
+        ///     Show a dialog to select database file
         /// </summary>
         /// <returns>A path to selected file, null if not selected or canceled</returns>
-        private static string ShowOpenDatabaseDialog(string title = "Chọn tệp cơ sở dữ liệu")
+        private static string ShowOpenDatabaseDialog(string title = @"Chọn tệp cơ sở dữ liệu")
         {
             OpenFileDialog openFileDialog = new()
             {
@@ -210,19 +216,19 @@ namespace VotingPCNew
 
         // Transition methods
         /// <summary>
-        /// Move to next Slide
+        ///     Move to next Slide
         /// </summary>
         private void NextPage()
         {
-            Transitioner.MoveNextCommand.Execute(0, TransitionerObj);
+            Transitioner.MoveNextCommand.Execute(null, TransitionerObj);
         }
 
         /// <summary>
-        /// Move to previous Slide
+        ///     Move to previous Slide
         /// </summary>
         private void PreviousPage()
         {
-            Transitioner.MovePreviousCommand.Execute(0, TransitionerObj);
+            Transitioner.MovePreviousCommand.Execute(null, TransitionerObj);
         }
     }
 }

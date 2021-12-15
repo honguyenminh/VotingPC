@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace VotingPCNew
 {
 #pragma warning disable IDE1006 // JavaScript style name for json
-    public class Config
+    public struct Config
     {
         //[JsonConverter(typeof(JsonConverter.ImageSource))]
         public string iconPath { get; set; }
