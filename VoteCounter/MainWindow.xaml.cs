@@ -2,38 +2,30 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using SQLite;
 using System.IO;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
 using MaterialDesignThemes.Wpf.Transitions;
+using AsyncDialog;
+using PasswordDialog = VotingPC.PasswordDialog;
 
 namespace VoteCounter
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow
     {
         #region Global variables
         // TODO: Change password dialog to MVVM user control, not a class
         private readonly PasswordDialog passwordDialog;
-        private static string[] databasePath;
-        private readonly SyncDialog dialogs;
-        private static readonly Dictionary<string, List<Candidate>> sections = new();
+        private static string[] s_databasePath;
+        private readonly AsyncDialogManager _dialogs;
+        private static readonly Dictionary<string, List<Candidate>> s_sections = new();
         // List of information about sections (each sector is a list of candidates)
-        private static Dictionary<string, Info> infos;
+        private static Dictionary<string, Info> s_infos;
         #endregion
 
         public MainWindow()
@@ -42,7 +34,7 @@ namespace VoteCounter
             InitializeComponent();
 
             // Init Dialogs classes for MaterialDesign dialogs
-            dialogs = new(dialogHost);
+            _dialogs = new AsyncDialogManager(dialogHost);
             passwordDialog = new(dialogHost,
                 "Nhập mật khẩu cơ sở dữ liệu:",
                 "Mật khẩu không chính xác hoặc cơ sở dữ liệu không hợp lệ!",
@@ -52,7 +44,7 @@ namespace VoteCounter
             slideLanding.SingleFileButton.Click += SingleFileButton_Click;
             slideLanding.MultipleFileButton.Click += MultipleFileButton_Click;
             slideLanding.FolderButton.Click += FolderButton_Click;
-            slideDetail.backButton.Click += (sender, e) => PreviousPage();
+            slideDetail.backButton.Click += (_, _) => PreviousPage();
         }
 
         // Button click events
@@ -70,11 +62,11 @@ namespace VoteCounter
 
             passwordDialog.Show();
         }
-        private void FolderButton_Click(object sender, RoutedEventArgs e)
+        private async void FolderButton_Click(object sender, RoutedEventArgs e)
         {
             VistaFolderBrowserDialog dialog = new()
             {
-                Description = "Chọn thư mục chứa file .db",
+                Description = @"Chọn thư mục chứa file .db",
                 UseDescriptionForTitle = true
             };
 
@@ -84,10 +76,13 @@ namespace VoteCounter
 
             if (filePaths.Length == 0)
             {
-                dialogs.ShowTextDialog("Không tìm thấy file .db trong thư mục đã chọn.\nVui lòng kiểm tra lại.", "OK", Close);
+                await _dialogs.ShowTextDialog("Không tìm thấy file cơ sở dữ liệu",
+                    "Không tìm thấy file .db trong thư mục đã chọn.\n" 
+                    + "Vui lòng kiểm tra lại.");
+                Close();
                 return;
             }
-            databasePath = filePaths;
+            s_databasePath = filePaths;
 
             passwordDialog.Show();
         }
@@ -110,7 +105,7 @@ namespace VoteCounter
 
             if (openFileDialog.ShowDialog() == true)
             {
-                databasePath = openFileDialog.FileNames;
+                s_databasePath = openFileDialog.FileNames;
                 return true;
             }
             else return false;
@@ -121,10 +116,10 @@ namespace VoteCounter
         /// </summary>
         private async void PasswordDialogButton_Click(object sender, RoutedEventArgs e)
         {
-            dialogs.CloseDialog();
-            dialogs.ShowLoadingDialog();
+            _dialogs.CloseDialog();
+            _dialogs.ShowLoadingDialog();
 
-            foreach (string database in databasePath)
+            foreach (string database in s_databasePath)
             {
                 // Check if file can be read or not. Exit if can't be read or not exist
                 try
@@ -133,10 +128,11 @@ namespace VoteCounter
                 }
                 catch
                 {
-                    dialogs.CloseDialog();
-                    dialogs.ShowTextDialog("Không đủ quyền đọc file đã chọn.\n" +
+                    _dialogs.CloseDialog();
+                    await _dialogs.ShowTextDialog("Không đủ quyền đọc file đã chọn",
                         "Vui lòng chạy lại chương trình với quyền admin hoặc\n" +
-                        "chuyển file vào nơi có thể đọc được như Desktop.", "OK", Close);
+                        "chuyển file vào nơi có thể đọc được như Desktop.");
+                    Close();
                     return;
                 }
 
@@ -152,7 +148,7 @@ namespace VoteCounter
                 }
                 catch (SQLiteException) // Wrong password
                 {
-                    dialogs.CloseDialog();
+                    _dialogs.CloseDialog();
                     await connection.CloseAsync();
                     // Request password from user again, don't run init code
                     passwordDialog.Show(true);
@@ -168,19 +164,19 @@ namespace VoteCounter
                     // Validate the parsed file
                     if (ValidateData(currentFileInfos) == false) throw new InvalidDataException();
                     // If infos is not read before, just save the object
-                    if (infos == null)
-                        infos = currentFileInfos.ToDictionary(x => x.Sector, x => x);
+                    if (s_infos == null)
+                        s_infos = currentFileInfos.ToDictionary(x => x.Sector, x => x);
                     // Merge two infos if infos is read already
                     else
                     {
                         foreach (Info info in currentFileInfos)
                         {
-                            if (infos.ContainsKey(info.Sector)) continue;
-                            infos.Add(info.Sector, info);
+                            if (s_infos.ContainsKey(info.Sector)) continue;
+                            s_infos.Add(info.Sector, info);
                         }
                     }
-
-                    query = $"SELECT * FROM \"";
+                    
+                    query = "SELECT * FROM \"";
                     foreach (Info sector in currentFileInfos)
                     {
                         List<Candidate> candidateList = await connection.QueryAsync<Candidate>(query + sector.Sector + "\"");
@@ -189,15 +185,15 @@ namespace VoteCounter
                         FindMaxVote(candidateList);
 
                         // If sector not yet saved, save new sector into sections collection
-                        if (!sections.ContainsKey(sector.Sector))
+                        if (!s_sections.ContainsKey(sector.Sector))
                         {
-                            sections.Add(sector.Sector, candidateList);
+                            s_sections.Add(sector.Sector, candidateList);
                             continue;
                         }
 
                         // Else merge with current file's sector
                         Dictionary<string, Candidate> candidateDict = candidateList.ToDictionary(x => x.Name, x => x);
-                        foreach (Candidate candidate in sections[sector.Sector])
+                        foreach (Candidate candidate in s_sections[sector.Sector])
                         {
                             candidate.Votes += candidateDict[candidate.Name].Votes;
                             candidate.TotalWinningPlaces += candidateDict[candidate.Name].TotalWinningPlaces;
@@ -207,15 +203,16 @@ namespace VoteCounter
                 catch
                 {
                     // TODO: Add detailed error report if possible
-                    dialogs.CloseDialog();
-                    dialogs.ShowTextDialog("Cơ sở dữ liệu không hợp lệ, vui lòng kiểm tra lại.", "Đóng", Close);
+                    _dialogs.CloseDialog();
+                    await _dialogs.ShowTextDialog("Cơ sở dữ liệu không hợp lệ, vui lòng kiểm tra lại.", buttonLabel: "Đóng");
+                    Close();
                     return;
                 }
             }
 
             // The line below equals to await Task.Run(PopulateUI); but WPF is stupid so...
-            Application.Current.Dispatcher.Invoke(PopulateUI);
-            dialogs.CloseDialog();
+            Application.Current.Dispatcher.Invoke(PopulateUi);
+            _dialogs.CloseDialog();
             NextPage();
         }
 
@@ -246,15 +243,15 @@ namespace VoteCounter
         /// <summary>
         /// Use loaded database lists to populate vote UI
         /// </summary>
-        private void PopulateUI()
+        private void PopulateUi()
         {
             bool left = true;
-            foreach (var info in infos)
+            foreach (var info in s_infos)
             {
                 // Sort the candidate list
-                SortByHighestVotes(sections[info.Value.Sector]);
+                SortByHighestVotes(s_sections[info.Value.Sector]);
 
-                DisplayCard displayCard = new(info.Value, sections[info.Value.Sector]);
+                DisplayCard displayCard = new(info.Value, s_sections[info.Value.Sector]);
                 if (left)
                 {
                     displayCard.Margin = new(0, 16, 56, 16);
