@@ -7,10 +7,13 @@ using System.Threading.Tasks;
 
 namespace VotingPCNew.Scanner
 {
-    public class ScannerManager
+    public class ScannerManager : IDisposable
     {
-        public int BaudRate { get; set; } = 115200;
+        public int BaudRate { get; internal set; }
+
+        // Pre-defined characters, used by scanner to communicate 
         private readonly ScannerSignalTable _signalTable;
+        private SerialPort _port;
 
         public ScannerManager(ScannerSignalTable signalTable)
         {
@@ -20,16 +23,15 @@ namespace VotingPCNew.Scanner
         /// <summary>
         /// Get <see cref="SerialPort"/> object linked to the Scanner
         /// </summary>
-        /// <returns><see cref="SerialPort"/> object if found device, <see langword="null"/> otherwise</returns>
-        private async Task<SerialPort> GetArduinoSerialPort(int maxRetry)
+        public async Task Init(int baudRate, int maxRetry)
         {
+            BaudRate = baudRate;
             string[] comPorts = SerialPort.GetPortNames();
             // Send ACK signal to each COM port for given retry count
             foreach (string comPort in comPorts)
             {
                 SerialPort serialPort = new(comPort, BaudRate);
                 serialPort.Open();
-                // Pre-defined character, used by scanner to acknowledge the PC 
                 serialPort.Write(_signalTable.Acknowledgement.ToString());
                 for (int i = 0; i < maxRetry; i++)
                 {
@@ -40,20 +42,35 @@ namespace VotingPCNew.Scanner
                     }
                     else break;
                 }
+
                 if (serialPort.BytesToRead == 0)
                 {
                     serialPort.Dispose();
                     continue;
                 }
+
                 int response = serialPort.ReadByte();
                 // If received ACK signal back, return the serial port
                 if (response == _signalTable.Acknowledgement)
                 {
-                    return serialPort;
+                    _port = serialPort;
+                    return;
                 }
+
                 serialPort.Dispose();
             }
-            return null;
+
+            throw new InvalidOperationException("Cannot find Scanner with given signal table");
+        }
+
+        private bool _disposed;
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+            _port.Dispose();
+            _disposed = true;
+            GC.SuppressFinalize(this);
         }
     }
 }

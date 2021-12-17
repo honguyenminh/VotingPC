@@ -30,6 +30,7 @@ namespace VotingPCNew
     public partial class MainWindow
     {
         private const int DialogDelayDuration = 400;
+        private const int BaudRate = 115200;
         private const string ConfigPath = "config.json";
         private readonly string _configParseError;
 
@@ -81,7 +82,7 @@ namespace VotingPCNew
                 {
                     slide1.IconPath = config.IconPath;
                 }
-                else _configParseError = @"Không tìm thấy file logo. Kiểm tra lại đường dẫn.";
+                else _configParseError = "Không tìm thấy file logo. Kiểm tra lại đường dẫn.";
             }
             catch (Exception e)
             {
@@ -93,24 +94,22 @@ namespace VotingPCNew
         {
             if (_configParseError != null)
             {
-                await _dialogs.ShowTextDialog(_configParseError, @"Lỗi file config.json");
-                Close();
-                return;
+                await _dialogs.ShowTextDialog(_configParseError, "Lỗi file config.json");
+                Close(); return;
             }
 
             string databasePath = ShowOpenDatabaseDialog();
             if (databasePath == null)
             {
-                Close();
-                return;
+                Close(); return;
             }
 
             bool saveToMultipleFile = await _dialogs.ShowConfirmTextDialog
             (
-                title: @"Chọn kiểu lưu",
-                text: @"Lưu kết quả vào file ban đầu hay tách các cấp thành nhiều file?",
-                leftButtonLabel: @"FILE BAN ĐẦU",
-                rightButtonLabel: @"NHIỀU FILE"
+                title: "Chọn kiểu lưu",
+                text: "Lưu kết quả vào file ban đầu hay tách các cấp thành nhiều file?",
+                leftButtonLabel: "FILE BAN ĐẦU",
+                rightButtonLabel: "NHIỀU FILE"
             );
 
             _dialogs.ShowLoadingDialog();
@@ -132,14 +131,13 @@ namespace VotingPCNew
                 // Show open folder dialog
                 VistaFolderBrowserDialog dialog = new()
                 {
-                    Description = @"Chọn thư mục chứa file cơ sở dữ liệu xuất ra",
+                    Description = "Chọn thư mục chứa file cơ sở dữ liệu xuất ra",
                     UseDescriptionForTitle = true
                 };
                 // If cancelled, exit the app
-                if (!(bool) dialog.ShowDialog())
+                if (dialog.ShowDialog() == false)
                 {
-                    Close();
-                    return;
+                    Close(); return;
                 }
 
                 // Check if folder can be written to or not
@@ -153,11 +151,10 @@ namespace VotingPCNew
                 await Task.Delay(DialogDelayDuration);
                 await _dialogs.ShowTextDialog(
                     title: "File/thư mục chỉ đọc",
-                    text: @"Thiếu quyền Admin hoặc phân quyền sai.\n"
-                          + @"Vui lòng chạy lại chương trình với quyền Admin, sửa quyền truy cập file\n"
-                          + @"hoặc chuyển file/thư mục vào nơi có thể ghi được như Desktop.");
-                Close();
-                return;
+                    text: "Thiếu quyền Admin hoặc phân quyền sai.\n"
+                          + "Vui lòng chạy lại chương trình với quyền Admin, sửa quyền truy cập file\n"
+                          + "hoặc chuyển file/thư mục vào nơi có thể ghi được như Desktop.");
+                Close(); return;
             }
 
             _dialogs.CloseDialog();
@@ -170,16 +167,15 @@ namespace VotingPCNew
                 // Get password
                 password = await _dialogs.ShowPasswordDialog
                 (
-                    @"Nhập mật khẩu cơ sở dữ liệu",
-                    @"Mật khẩu",
-                    @"Để trống nếu không có mật khẩu",
-                    cancelButtonLabel: @"THOÁT ỨNG DỤNG"
+                    "Nhập mật khẩu cơ sở dữ liệu",
+                    "Mật khẩu",
+                    "Để trống nếu không có mật khẩu",
+                    cancelButtonLabel: "THOÁT ỨNG DỤNG"
                 );
                 // Quit app if user cancelled
                 if (password is null)
                 {
-                    Close();
-                    return;
+                    Close(); return;
                 }
 
                 // Try to open connection to db
@@ -190,11 +186,26 @@ namespace VotingPCNew
                     await Task.Delay(3000); // Avoid brute-force
                     _dialogs.CloseDialog();
                     await Task.Delay(DialogDelayDuration);
-                    await _dialogs.ShowTextDialog(@"Mật khẩu sai, vui lòng nhập lại.");
+                    await _dialogs.ShowTextDialog("Mật khẩu sai, vui lòng nhập lại.");
                 }
                 else break;
             }
 
+            try
+            {
+                await _scanner.Init(BaudRate, 10);
+            }
+            catch (Exception err)
+            {
+                _dialogs.CloseDialog();
+                await _dialogs.ShowTextDialog(
+                    title: "Lỗi tìm thiết bị Arduino",
+                    text: "Mã lỗi: " + err.Message
+                );
+                // TODO: add retry here
+                Close(); return;
+            }
+            
             _dialogs.CloseDialog();
         }
 
@@ -216,7 +227,12 @@ namespace VotingPCNew
                 InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.Desktop)
             };
 
-            return openFileDialog.ShowDialog() == true ? openFileDialog.FileName : null;
+            // ReSharper disable once ConvertIfStatementToReturnStatement
+            if (openFileDialog.ShowDialog() == true)
+            {
+                return openFileDialog.FileName;
+            }
+            return null;
         }
 
         // Transition methods
