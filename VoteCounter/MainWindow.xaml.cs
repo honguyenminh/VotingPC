@@ -46,7 +46,6 @@ namespace VoteCounter
         {
             // Open file dialog
             if (!ShowOpenDatabaseFileDialog()) return;
-            // TODO: show "Cancel" button on the password dialog as well
             await ParseDbFiles();
         }
         private async void MultipleFileButton_Click(object sender, RoutedEventArgs e)
@@ -73,7 +72,6 @@ namespace VoteCounter
                 await _dialogs.ShowTextDialog("Không tìm thấy file cơ sở dữ liệu",
                     "Không tìm thấy file .db trong thư mục đã chọn.\n" 
                     + "Vui lòng kiểm tra lại.");
-                Close();
                 return;
             }
             s_databasePath = filePaths;
@@ -115,12 +113,11 @@ namespace VoteCounter
                     "Mật khẩu",
                     "Để trống nếu không có mật khẩu",
                     "HOÀN TẤT",
-                    "HỦY VÀ THOÁT ỨNG DỤNG"
+                    "HỦY"
                 );
-                // Quit app if user cancelled
+                // User cancelled
                 if (password is null)
                 {
-                    Close();
                     return null;
                 }
                 _dialogs.ShowLoadingDialog();
@@ -165,7 +162,6 @@ namespace VoteCounter
                         text: "Vui lòng chạy lại chương trình với quyền admin hoặc\n" +
                         "chuyển file vào nơi có thể đọc được như Desktop."
                     );
-                    Close();
                     return;
                 }
 
@@ -188,7 +184,6 @@ namespace VoteCounter
                         title: "Sai mật khẩu tại file " + database,
                         text: "Vui lòng kiểm tra lại mật khẩu các file, đảm bảo mật khẩu trùng nhau"
                     );
-                    Close();
                     return;
                 }
 
@@ -242,7 +237,8 @@ namespace VoteCounter
                     // TODO: Add detailed error report if possible
                     _dialogs.CloseDialog();
                     await _dialogs.ShowTextDialog("Cơ sở dữ liệu không hợp lệ, vui lòng kiểm tra lại.", buttonLabel: "Đóng");
-                    Close();
+                    s_infos.Clear();
+                    s_sections.Clear();
                     return;
                 }
             }
