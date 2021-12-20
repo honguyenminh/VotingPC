@@ -13,35 +13,34 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace AsyncDialog
+namespace AsyncDialog;
+
+/// <summary>
+/// Dialog with a loading icon and optional progress text
+/// </summary>
+public partial class LoadingDialog
 {
-    /// <summary>
-    /// Don't use this class, use AsyncDialog instead.
-    /// </summary>
-    public partial class LoadingDialog
+    public LoadingDialog()
     {
-        public LoadingDialog()
+        InitializeComponent();
+    }
+    
+    public double ScaleFactor
+    {
+        set
         {
-            InitializeComponent();
+            scale.ScaleX = value;
+            scale.ScaleY = value;
         }
+    }
 
-        public double ScaleFactor
+    public string Text {
+        set
         {
-            set
-            {
-                scale.ScaleX = value;
-                scale.ScaleY = value;
-            }
-        }
-
-        public string Text {
-            set
-            {
-                title.Text = value;
-                Thickness margin = title.Margin;
-                margin.Left = value is null ? 0 : 32;
-                title.Margin = margin;    
-            }
+            title.Text = value;
+            Thickness margin = title.Margin;
+            margin.Left = value is null ? 0 : 32;
+            title.Margin = margin;    
         }
     }
 }
