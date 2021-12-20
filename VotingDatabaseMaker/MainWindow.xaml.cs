@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using Microsoft.Win32;
 using System.IO;
+using AsyncDialog;
 
 namespace VotingDatabaseMaker;
 
@@ -19,7 +20,7 @@ namespace VotingDatabaseMaker;
 /// </summary>
 public partial class MainWindow
 {
-    private readonly SyncDialog _dialogs;
+    private readonly AsyncDialogManager _dialogs;
     private readonly CandidateDialog _candidateDialog = new();
     private readonly SectorDialog _sectorDialog = new();
     private readonly PasswordDialog _passwordDialog = new();
@@ -49,7 +50,7 @@ public partial class MainWindow
     {
         InitializeComponent();
         DataContext = this;
-        _dialogs = new SyncDialog(dialogHost);
+        _dialogs = new AsyncDialogManager(dialogHost);
         // Disable pasting in SectorMax textbox
         _ = sectorMaxTextBox.CommandBindings.Add(new CommandBinding(ApplicationCommands.Paste,
             (_, e) => e.Handled = true));
@@ -86,7 +87,7 @@ public partial class MainWindow
 
         if (_sectorDict.Keys.Contains(_sectorDialog.NameInput))
         {
-            _dialogs.ShowTextDialog("Sector đã tồn tại, vui lòng kiểm tra lại", "OK", customScaleFactor: 1.5);
+            await _dialogs.ShowTextDialog("Sector đã tồn tại, vui lòng kiểm tra lại");
             return;
         }
         // TODO: Add validation for invalid sector names and "Candidate" because im not smart
@@ -115,7 +116,7 @@ public partial class MainWindow
 
         if (_candidates[SelectedSector].Keys.Contains(_candidateDialog.NameInput))
         {
-            _dialogs.ShowTextDialog("Ứng cử viên đã tồn tại", "OK", customScaleFactor: 1.5);
+            await _dialogs.ShowTextDialog("Ứng cử viên đã tồn tại");
             return;
         }
 
@@ -140,7 +141,7 @@ public partial class MainWindow
 
         if (_sectorDict.Keys.Contains(_sectorDialog.NameInput))
         {
-            _dialogs.ShowTextDialog("Sector cùng tên đã tồn tại.", "OK", customScaleFactor: 1.5);
+            await _dialogs.ShowTextDialog("Sector cùng tên đã tồn tại.");
             return;
         }
 
@@ -181,7 +182,7 @@ public partial class MainWindow
     private async void ExportButton_Click(object sender, RoutedEventArgs e)
     {
         // Show loading dialog
-        _dialogs.ShowLoadingDialog();
+        _dialogs.ShowLoadingDialog("Kiểm tra thông tin đã nhập");
         // Validate current inputted values
         List<string> invalidSectors = new();
         foreach (Info info in _sectorDict.Values)
@@ -194,20 +195,21 @@ public partial class MainWindow
 
         if (invalidSectors.Count != 0)
         {
-            StringBuilder stringBuilder = new("Thiếu thông tin trong các sector: \n");
+            StringBuilder stringBuilder = new();
             int lastIndex = invalidSectors.Count - 1;
             for (int i = 0; i < lastIndex; i++)
             {
                 _ = stringBuilder.Append(invalidSectors[i]).Append(", ");
             }
             _ = stringBuilder.Append(invalidSectors[lastIndex]);
-            _dialogs.CloseDialog();
-            _dialogs.ShowTextDialog(stringBuilder.ToString(), "OK", customScaleFactor: 1.5);
+            await _dialogs.CloseDialog();
+            await _dialogs.ShowTextDialog(stringBuilder.ToString(), "Thiếu thông tin trong các sector");
             return;
         }
 
         // Save data to files
-        _dialogs.CloseDialog();
+        await _dialogs.CloseDialog();
+        await _dialogs.ShowTextDialog("Chọn nơi lưu file cơ sở dữ liệu");
         // Ask where to save file
         SaveFileDialog saveFileDialog = new()
         {
@@ -217,8 +219,8 @@ public partial class MainWindow
         };
         if (saveFileDialog.ShowDialog() == false) return;
 
+        // TODO: swap for new password dialog from asyncdialog
         // Ask password
-        _dialogs.CloseDialog();
         bool result = (bool)(await dialogHost.ShowDialog(_passwordDialog))!;
         if (!result)
         {
@@ -226,19 +228,21 @@ public partial class MainWindow
             _passwordDialog.passwordTextBox.Password = "";
             return;
         }
-        _dialogs.ShowLoadingDialog();
+        
+        _dialogs.ShowLoadingDialog("Lưu dữ liệu đã nhập vào tệp");
 
         string path = saveFileDialog.FileName;
 
         // TODO: Check if we have write priviledge
+        // TODO: ask for confirm before deleting
         // Delete file if already exists
         try { if (File.Exists(path)) File.Delete(path); }
         // In case file is write-locked
         catch
         {
-            _dialogs.ShowTextDialog("File cơ sở dữ liệu đã tồn tại và đang được\n" +
+            await _dialogs.ShowTextDialog("File cơ sở dữ liệu đã tồn tại và đang được\n" +
                                    "sử dụng bởi ứng dụng khác, không thế ghi đè.\n" +
-                                   "Đóng ứng dụng khác có thể đang sử dụng file và thử lại.", "OK", Close);
+                                   "Đóng ứng dụng khác có thể đang sử dụng file và thử lại.");
             return;
         }
 
@@ -273,8 +277,8 @@ public partial class MainWindow
         }
 
         await connection.CloseAsync();
-        _dialogs.CloseDialog();
-        _dialogs.ShowTextDialog("Hoàn tất!", "OK", customScaleFactor: 1.5);
+        await _dialogs.CloseDialog();
+        await _dialogs.ShowTextDialog("Hoàn tất!");
     }
 
     private void SectorList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -364,9 +368,3 @@ public partial class MainWindow
     }
 
 }
-
-//public class Candidate
-//{
-//    public string Name { get; set; }
-//    public string Gender { get; set; }
-//}

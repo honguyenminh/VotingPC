@@ -1,6 +1,5 @@
 ﻿using MaterialDesignThemes.Wpf;
 using System;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -12,11 +11,11 @@ namespace VotingPC
     /// </summary>
     public class SyncDialog
     {
-        private readonly DialogHost dialogHost;
+        private readonly DialogHost _dialogHost;
 
         public SyncDialog(DialogHost dialogHost)
         {
-            this.dialogHost = dialogHost;
+            this._dialogHost = dialogHost;
         }
 
         /// <summary>
@@ -26,6 +25,7 @@ namespace VotingPC
         /// <param name="text">Text to show</param>
         /// <param name="buttonContent">Content of button</param>
         /// <param name="clickMethod">Method to execute on button click</param>
+        /// <param name="customScaleFactor"></param>
         public void ShowTextDialog(string text, string buttonContent, Action clickMethod = null, double customScaleFactor = 2)
         {
             StackPanel stackPanel = new() { Margin = new Thickness(32) };
@@ -46,7 +46,7 @@ namespace VotingPC
             _ = stackPanel.Children.Add(textBlock);
             _ = stackPanel.Children.Add(button);
             stackPanel.LayoutTransform = new ScaleTransform(customScaleFactor, customScaleFactor);
-            _ = dialogHost.ShowDialog(stackPanel);
+            _ = _dialogHost.ShowDialog(stackPanel);
         }
         /// <summary>
         /// Show a circular loading dialog. Should be run from an async method.
@@ -65,7 +65,7 @@ namespace VotingPC
                 //RenderTransform = new ScaleTransform(2, 2),
                 //RenderTransformOrigin = new Point(0.5, 0.5)
             };
-            _ = dialogHost.ShowDialog(progressBar);
+            _ = _dialogHost.ShowDialog(progressBar);
         }
         /// <summary>
         /// Show a text dialog with 2 button, which run the provided click method on click.
@@ -106,7 +106,7 @@ namespace VotingPC
             _ = stackPanel.Children.Add(textBlock);
             _ = stackPanel.Children.Add(buttonStack);
             stackPanel.LayoutTransform = new ScaleTransform(2, 2);
-            _ = dialogHost.ShowDialog(stackPanel);
+            _ = _dialogHost.ShowDialog(stackPanel);
         }
 
         /// <summary>
@@ -114,9 +114,9 @@ namespace VotingPC
         /// </summary>
         public void CloseDialog()
         {
-            if (dialogHost.IsOpen)
+            if (_dialogHost.IsOpen)
             {
-                DialogHost.Close(dialogHost.Identifier);
+                DialogHost.Close(_dialogHost.Identifier);
             }
         }
     }
