@@ -11,6 +11,7 @@ namespace VotingPCNew
     // Contains extra Init/Parse methods for main window
     public partial class MainWindow
     {
+        // TODO: move to external DB class?
         /// <summary>
         /// Open a new SQLite database connection.
         /// </summary>
