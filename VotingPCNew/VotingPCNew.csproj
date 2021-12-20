@@ -4,18 +4,17 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
-    <LangVersion>10</LangVersion>
     <ApplicationIcon>assets\vpc-icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <Import Project="..\SharedLibs\SharedLibs.projitems" Label="Shared" />
 
   <ItemGroup>
-    <PackageReference Include="MaterialDesignThemes" Version="4.2.1" />
-    <PackageReference Include="Ookii.Dialogs.Wpf" Version="4.0.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="4.3.0" />
+    <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
     <PackageReference Include="ShowMeTheXAML.MSBuild" Version="2.0.0" />
     <PackageReference Include="sqlite-net-sqlcipher" Version="1.8.116" />
-    <PackageReference Include="System.IO.Ports" Version="5.0.1" />
+    <PackageReference Include="System.IO.Ports" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
