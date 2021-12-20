@@ -14,15 +14,15 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <TextBlock x:Name="PositionTextBlock" d:Text="1" Margin="36 8" FontSize="64"
+            <TextBlock x:Name="positionTextBlock" d:Text="1" Margin="36 8" FontSize="64"
                        VerticalAlignment="Center"/>
 
-            <TextBlock Grid.Column="1" d:Text="Nguyễn Văn A" FontSize="42" x:Name="NameTextBlock"
+            <TextBlock Grid.Column="1" d:Text="Nguyễn Văn A" FontSize="42" x:Name="nameTextBlock"
                        VerticalAlignment="Center" Margin="32 0" TextWrapping="Wrap"/>
 
             <DockPanel Grid.Column="2" Margin="22">
                 <TextBlock Text="Tổng phiếu" FontSize="21" DockPanel.Dock="Top"/>
-                <TextBlock d:Text="256" DockPanel.Dock="Bottom" FontSize="46" x:Name="TotalVotesTextBlock"
+                <TextBlock d:Text="256" DockPanel.Dock="Bottom" FontSize="46" x:Name="totalVotesTextBlock"
                            VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </DockPanel>
         </Grid>

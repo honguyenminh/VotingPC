@@ -29,7 +29,7 @@
             <materialDesign:PackIcon Kind="ArrowLeft"/>
         </Button>
 
-        <Line X1="0" Y1="0" Y2="0" Margin="36 0"
+        <Line Grid.Row="0" X1="0" Y1="0" Y2="0" Margin="36 0"
               HorizontalAlignment="Right" VerticalAlignment="Bottom"
               StrokeThickness="3" Stroke="{DynamicResource MaterialDesignDarkSeparatorBackground}"
               X2="{Binding ActualWidth, ElementName=userControl, Mode=OneWay}"/>

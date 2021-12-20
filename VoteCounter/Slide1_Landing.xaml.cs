@@ -13,16 +13,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace VoteCounter
+namespace VoteCounter;
+
+/// <summary>
+/// Interaction logic for Slide1_Landing.xaml
+/// </summary>
+public partial class Slide1_Landing
 {
-    /// <summary>
-    /// Interaction logic for Slide1_Landing.xaml
-    /// </summary>
-    public partial class Slide1_Landing : UserControl
+    public Slide1_Landing()
     {
-        public Slide1_Landing()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }
