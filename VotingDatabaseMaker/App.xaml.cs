@@ -6,12 +6,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace VotingDatabaseMaker
+namespace VotingDatabaseMaker;
+
+/// <summary>
+/// Interaction logic for App.xaml
+/// </summary>
+public partial class App
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
-    {
-    }
 }

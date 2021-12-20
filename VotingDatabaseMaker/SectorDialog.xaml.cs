@@ -13,17 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace VotingDatabaseMaker
+namespace VotingDatabaseMaker;
+
+/// <summary>
+/// Interaction logic for SectorDialog.xaml
+/// </summary>
+public partial class SectorDialog
 {
-    /// <summary>
-    /// Interaction logic for SectorDialog.xaml
-    /// </summary>
-    public partial class SectorDialog : UserControl
+    public string NameInput { get; set; } = "";
+    public SectorDialog()
     {
-        public string NameInput { get; set; } = "";
-        public SectorDialog()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

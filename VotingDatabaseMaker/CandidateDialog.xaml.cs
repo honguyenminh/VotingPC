@@ -13,20 +13,19 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace VotingDatabaseMaker
-{
-    /// <summary>
-    /// Interaction logic for CandidateDialog.xaml
-    /// </summary>
-    public partial class CandidateDialog : UserControl
-    {
-        // Public properties
-        public string NameInput { get; set; } = "";
-        public string GenderInput { get; set; } = "";
+namespace VotingDatabaseMaker;
 
-        public CandidateDialog()
-        {
-            InitializeComponent();
-        }
+/// <summary>
+/// Interaction logic for CandidateDialog.xaml
+/// </summary>
+public partial class CandidateDialog
+{
+    // Public properties
+    public string NameInput { get; set; } = "";
+    public string GenderInput { get; set; } = "";
+
+    public CandidateDialog()
+    {
+        InitializeComponent();
     }
 }

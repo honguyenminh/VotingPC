@@ -9,8 +9,8 @@
              d:DesignHeight="220" Width="460"
              DataContext="{Binding RelativeSource={RelativeSource Self}}">
     <StackPanel Margin="32">
-        <TextBlock Text="Thêm Sector" FontSize="20" Margin="6 0 6 12" x:Name="Title"/>
-        <TextBox x:Name="NameTextBox" materialDesign:HintAssist.Hint="Tên Sector (cấp bầu cử, chức vụ,...)"
+        <TextBlock Text="Thêm Sector" FontSize="20" Margin="6 0 6 12" x:Name="title"/>
+        <TextBox x:Name="nameTextBox" materialDesign:HintAssist.Hint="Tên Sector (cấp bầu cử, chức vụ,...)"
                  Margin="6" MaxLength="128" TextWrapping="Wrap">
             <TextBox.Text>
                 <Binding Path="NameInput" UpdateSourceTrigger="PropertyChanged">
@@ -39,7 +39,7 @@
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Text.Length, ElementName=NameTextBox, UpdateSourceTrigger=PropertyChanged}" Value="0">
+                            <DataTrigger Binding="{Binding Text.Length, ElementName=nameTextBox, UpdateSourceTrigger=PropertyChanged}" Value="0">
                                 <Setter Property="IsEnabled" Value="False"/>
                             </DataTrigger>
                         </Style.Triggers>
