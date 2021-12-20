@@ -46,22 +46,23 @@ namespace VotingPCNew
                 ScaleFactor = 1.5
             };
 
-            // Init scanner manager
-            ScannerSignalTable signalTable = new()
+        // Init scanner manager
+        ScannerSignalTable signalTable = new()
+        {
+            Acknowledgement = 'V',
+            Receive = new ReceiveSignalTable
             {
-                Acknowledgement = 'N',
-                Receive = new ReceiveSignalTable
-                {
-                    FingerFound = 'F'
-                },
-                Send = new SendSignalTable
-                {
-                    StartScanning = 'S',
-                    AcknowledgedFinger = 'K',
-                    Close = 'C'
-                }
-            };
-            _scanner = new ScannerManager(signalTable);
+                FingerFound = 'F',
+                InvalidFinger = 'I'
+            },
+            Send = new SendSignalTable
+            {
+                StartScan = 'S',
+                AcknowledgedFinger = 'K',
+                Close = 'C'
+            }
+        };
+        _scanner = new ScannerManager(signalTable);
 
             // Read config.json config file
             // TODO: fix error handling for json

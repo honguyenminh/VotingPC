@@ -50,10 +50,11 @@ namespace VotingPCNew.Scanner
                 }
 
                 int response = serialPort.ReadByte();
-                // If received ACK signal back, return the serial port
+                // If received ACK signal back, set the serial port
                 if (response == _signalTable.Acknowledgement)
                 {
                     _port = serialPort;
+                    _port.DiscardInBuffer();
                     return;
                 }
 
@@ -62,15 +63,24 @@ namespace VotingPCNew.Scanner
 
             throw new InvalidOperationException("Cannot find Scanner with given signal table");
         }
+        
+        public void StartScan() {
+            _port.Write(_signalTable.Send.StartScan.ToString());
+        }
 
         private bool _disposed;
-
         public void Dispose()
         {
+            GC.SuppressFinalize(this);
             if (_disposed) return;
             _port.Dispose();
             _disposed = true;
-            GC.SuppressFinalize(this);
+        }
+        
+        ~ScannerManager()
+        {
+            if (_disposed) return;
+            _port.Dispose();
         }
     }
 }
