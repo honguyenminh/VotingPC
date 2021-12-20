@@ -13,16 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace VotingPCNew
+namespace VotingPCNew;
+/// <summary>
+/// Interaction logic for Slide2_Vote.xaml
+/// </summary>
+public partial class Slide2
 {
-    /// <summary>
-    /// Interaction logic for Slide2_Vote.xaml
-    /// </summary>
-    public partial class Slide2 : UserControl
+    public Slide2()
     {
-        public Slide2()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

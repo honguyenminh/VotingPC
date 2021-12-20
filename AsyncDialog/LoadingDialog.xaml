@@ -17,10 +17,16 @@
     <UserControl.LayoutTransform>
         <ScaleTransform x:Name="scale" x:FieldModifier="private" />
     </UserControl.LayoutTransform>
-    <ProgressBar Margin="32" HorizontalAlignment="Center" IsIndeterminate="True" IsTabStop="False"
+    <StackPanel Orientation="Horizontal" Margin="32">
+        <ProgressBar VerticalAlignment="Top" IsIndeterminate="True" IsTabStop="False"
         Style="{StaticResource MaterialDesignCircularProgressBar}" FocusVisualStyle="{x:Null}">
-        <ProgressBar.LayoutTransform>
-            <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
-        </ProgressBar.LayoutTransform>
-    </ProgressBar>
+            <ProgressBar.LayoutTransform>
+                <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+            </ProgressBar.LayoutTransform>
+        </ProgressBar>
+        <TextBlock Name="title" TextWrapping="Wrap" MaxWidth="360px" x:FieldModifier="private"
+            FontFamily="Roboto" FontSize="16px" VerticalAlignment="Center"
+            d:Margin="32 0 0 0" d:Text="Test title lorem ipsum">
+        </TextBlock>
+    </StackPanel>
 </UserControl>

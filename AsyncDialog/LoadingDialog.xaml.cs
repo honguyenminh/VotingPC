@@ -18,17 +18,30 @@ namespace AsyncDialog
     /// <summary>
     /// Don't use this class, use AsyncDialog instead.
     /// </summary>
-    public partial class LoadingDialog : UserControl
+    public partial class LoadingDialog
     {
         public LoadingDialog()
         {
             InitializeComponent();
         }
 
-        public void SetScaling(double scaleFactor)
+        public double ScaleFactor
         {
-            scale.ScaleX = scaleFactor;
-            scale.ScaleY = scaleFactor;
+            set
+            {
+                scale.ScaleX = value;
+                scale.ScaleY = value;
+            }
+        }
+
+        public string Text {
+            set
+            {
+                title.Text = value;
+                Thickness margin = title.Margin;
+                margin.Left = value is null ? 0 : 32;
+                title.Margin = margin;    
+            }
         }
     }
 }

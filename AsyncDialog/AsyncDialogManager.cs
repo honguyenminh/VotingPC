@@ -10,8 +10,9 @@ namespace AsyncDialog
     /// </summary>
     public class AsyncDialogManager
     {
-        private readonly DialogHost _dialogHost;
+        private const int DialogDelayDuration = 400; 
 
+        private readonly DialogHost _dialogHost;
         private bool _isOpen;
         private double _scaleFactor = 1;
         private readonly TextDialog _textDialog = new();
@@ -36,9 +37,9 @@ namespace AsyncDialog
             set
             {
                 _scaleFactor = value;
-                _textDialog.SetScaling(value);
-                _passwordDialog.SetScaling(value);
-                _loadingDialog.SetScaling(value);
+                _textDialog.ScaleFactor = value;
+                _passwordDialog.ScaleFactor = value;
+                _loadingDialog.ScaleFactor = value;
             }
         }
 
@@ -95,13 +96,15 @@ namespace AsyncDialog
         }
 
         /// <summary>
-        /// Open a dialog with loading animation
+        /// Open a dialog with loading animation and optional text.<br/>
+        /// If a dialog is already opened, only change the text instead.<br/>
         /// This does not await until the dialog stops, please call <see cref="CloseDialog()"/> to close it
         /// </summary>
-        /// 
-        public void ShowLoadingDialog()
+        /// <param name="text">(Optional) Text to show</param>
+        public void ShowLoadingDialog(string text = null)
         {
-            if (_isOpen) CloseDialog();
+            _loadingDialog.Text = text;
+            if (_isOpen) return;
             _ = _dialogHost.ShowDialog(_loadingDialog);
             _isOpen = true;
         }
@@ -110,14 +113,15 @@ namespace AsyncDialog
         /// Close dialog
         /// </summary>
         /// <remarks>
-        /// Intended to be used with <see cref="ShowLoadingDialog()"/>
+        /// Intended to be used with <see cref="ShowLoadingDialog"/>
         /// </remarks>
         /// <exception cref="NullReferenceException">Thrown if Identifier of dialog host is null</exception>
-        public void CloseDialog()
+        public async Task CloseDialog()
         {
             if (!_isOpen) return;
             DialogHost.Close(_dialogHost.Identifier!);
             _isOpen = false;
+            await Task.Delay(DialogDelayDuration);
         }
     }
 }

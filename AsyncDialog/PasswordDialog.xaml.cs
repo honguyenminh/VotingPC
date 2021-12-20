@@ -37,10 +37,13 @@ namespace AsyncDialog
             passwordBox.Password = string.Empty;
         }
 
-        public void SetScaling(double scaleFactor)
+        public double ScaleFactor
         {
-            scale.ScaleX = scaleFactor;
-            scale.ScaleY = scaleFactor;
+            set
+            {
+                scale.ScaleX = value;
+                scale.ScaleY = value;
+            }
         }
     }
 }

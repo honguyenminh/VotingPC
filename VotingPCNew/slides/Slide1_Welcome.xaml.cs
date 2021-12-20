@@ -13,21 +13,19 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace VotingPCNew
+namespace VotingPCNew;
+/// <summary>
+/// Interaction logic for Slide1_Welcome.xaml
+/// </summary>
+public partial class Slide1
 {
-    /// <summary>
-    /// Interaction logic for Slide1_Welcome.xaml
-    /// </summary>
-    public partial class Slide1 : UserControl
-    {
-        public TextConfig TitleConfig { set => title.SetConfig(value); }
-        public string IconPath { set => image.SetSource(value); }
-        public TextConfig TopHeaderConfig { set => topHeader.SetConfig(value); }
-        public TextConfig TopSubheaderConfig { set => topSubheader.SetConfig(value); }
+    public TextConfig TitleConfig { set => title.SetConfig(value); }
+    public string IconPath { set => image.SetSource(value); }
+    public TextConfig TopHeaderConfig { set => topHeader.SetConfig(value); }
+    public TextConfig TopSubheaderConfig { set => topSubheader.SetConfig(value); }
 
-        public Slide1()
-        {
-            InitializeComponent();
-        }
+    public Slide1()
+    {
+        InitializeComponent();
     }
 }

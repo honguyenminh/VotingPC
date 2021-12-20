@@ -29,7 +29,6 @@ namespace VotingPCNew;
 /// </summary>
 public partial class MainWindow
 {
-    private const int DialogDelayDuration = 400;
     private const int BaudRate = 115200;
     private const string ConfigPath = "config.json";
     private readonly string _configParseError;
@@ -96,16 +95,11 @@ public partial class MainWindow
         if (_configParseError != null)
         {
             await _dialogs.ShowTextDialog(_configParseError, "Lỗi file config.json");
-            Close();
-            return;
+            Close(); return;
         }
 
         string databasePath = ShowOpenDatabaseDialog();
-        if (databasePath == null)
-        {
-            Close();
-            return;
-        }
+        if (databasePath == null) { Close(); return; }
 
         bool saveToMultipleFile = await _dialogs.ShowConfirmTextDialog
         (
@@ -115,7 +109,7 @@ public partial class MainWindow
             rightButtonLabel: "NHIỀU FILE"
         );
 
-        _dialogs.ShowLoadingDialog();
+        _dialogs.ShowLoadingDialog("Kiểm tra file .db và đường dẫn lưu kết quả");
         // Check if file can be written to or not. Exit if read-only
         bool isReadOnly = false;
         if (!saveToMultipleFile)
@@ -138,11 +132,7 @@ public partial class MainWindow
                 UseDescriptionForTitle = true
             };
             // If cancelled, exit the app
-            if (dialog.ShowDialog() == false)
-            {
-                Close();
-                return;
-            }
+            if (dialog.ShowDialog() == false) { Close(); return; }
 
             // Check if folder can be written to or not
             DirectoryInfo directoryInfo = new(dialog.SelectedPath);
@@ -151,19 +141,16 @@ public partial class MainWindow
 
         if (isReadOnly)
         {
-            _dialogs.CloseDialog();
-            await Task.Delay(DialogDelayDuration);
+            await _dialogs.CloseDialog();
             await _dialogs.ShowTextDialog(
                 title: "File/thư mục chỉ đọc",
                 text: "Thiếu quyền Admin hoặc phân quyền sai.\n"
                       + "Vui lòng chạy lại chương trình với quyền Admin, sửa quyền truy cập file\n"
                       + "hoặc chuyển file/thư mục vào nơi có thể ghi được như Desktop.");
-            Close();
-            return;
+            Close(); return;
         }
 
-        _dialogs.CloseDialog();
-        await Task.Delay(DialogDelayDuration);
+        await _dialogs.CloseDialog();
 
         string password;
         SQLiteAsyncConnection connection;
@@ -175,35 +162,31 @@ public partial class MainWindow
                 "Nhập mật khẩu cơ sở dữ liệu",
                 "Mật khẩu",
                 "Để trống nếu không có mật khẩu",
-                cancelButtonLabel: "THOÁT ỨNG DỤNG"
+                cancelButtonLabel: "THOÁT"
             );
             // Quit app if user cancelled
-            if (password is null)
-            {
-                Close();
-                return;
-            }
+            if (password is null) { Close(); return; }
 
             // Try to open connection to db
-            _dialogs.ShowLoadingDialog();
+            _dialogs.ShowLoadingDialog("Giải mã và mở kết nối đến file .db");
             connection = await OpenDatabaseAsync(databasePath, password);
             if (connection is null) // Wrong password
             {
                 await Task.Delay(3000); // Avoid brute-force
-                _dialogs.CloseDialog();
-                await Task.Delay(DialogDelayDuration);
+                await _dialogs.CloseDialog();
                 await _dialogs.ShowTextDialog("Mật khẩu sai, vui lòng nhập lại.");
             }
             else break;
         }
-
+        
+        _dialogs.ShowLoadingDialog("Tìm và kết nối với máy quét vân tay");
         try
         {
             await _scanner.Init(BaudRate, 10);
         }
         catch (InvalidOperationException)
         {
-            _dialogs.CloseDialog();
+            await _dialogs.CloseDialog();
             await _dialogs.ShowTextDialog("Không tìm thấy thiết bị Arduino");
             // TODO: add retry here
             Close();
@@ -211,17 +194,16 @@ public partial class MainWindow
         }
         catch (Exception err)
         {
-            _dialogs.CloseDialog();
+            await _dialogs.CloseDialog();
             await _dialogs.ShowTextDialog(
                 title: "Lỗi tìm thiết bị Arduino",
                 text: "Mã lỗi: " + err.Message
             );
             // TODO: add retry here
-            Close();
-            return;
+            Close(); return;
         }
 
-        _dialogs.CloseDialog();
+        await _dialogs.CloseDialog();
 
         _scanner.StartScan();
     }
