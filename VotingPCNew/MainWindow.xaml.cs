@@ -184,7 +184,8 @@ public partial class MainWindow
         {
             await _scanner.Init(BaudRate, 10);
         }
-        catch (InvalidOperationException)
+        // Not found
+        catch (DriveNotFoundException)
         {
             await _dialogs.CloseDialog();
             await _dialogs.ShowTextDialog("Không tìm thấy thiết bị Arduino");
@@ -192,6 +193,7 @@ public partial class MainWindow
             Close();
             return;
         }
+        // Other exceptions that we don't know, just in case
         catch (Exception err)
         {
             await _dialogs.CloseDialog();

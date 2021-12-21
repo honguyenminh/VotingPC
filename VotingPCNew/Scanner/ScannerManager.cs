@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.Ports;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,9 @@ public class ScannerManager : IDisposable
     /// <summary>
     /// Get <see cref="SerialPort"/> object linked to the Scanner
     /// </summary>
+    /// <param name="baudRate">Baud rate to use to connect</param>
+    /// <param name="maxRetry">Times to retry connection before timing out</param>
+    /// <exception cref="DriveNotFoundException">Thrown when cannot find scanner</exception>
     public async Task Init(int baudRate, int maxRetry)
     {
         BaudRate = baudRate;
@@ -61,7 +65,7 @@ public class ScannerManager : IDisposable
             serialPort.Dispose();
         }
 
-        throw new InvalidOperationException("Cannot find Scanner with given signal table");
+        throw new DriveNotFoundException("Cannot find Scanner with given signal table");
     }
 
     public void StartScan()
