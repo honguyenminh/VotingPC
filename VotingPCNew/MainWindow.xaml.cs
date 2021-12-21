@@ -35,6 +35,7 @@ public partial class MainWindow
 
     private readonly AsyncDialogManager _dialogs;
     private readonly ScannerManager _scanner;
+    private AsyncDatabaseManager _db;
 
     public MainWindow()
     {
@@ -109,19 +110,13 @@ public partial class MainWindow
             rightButtonLabel: "NHIỀU FILE"
         );
 
+        _db = new AsyncDatabaseManager(saveToMultipleFile);
+        
         _dialogs.ShowLoadingDialog("Kiểm tra file .db và đường dẫn lưu kết quả");
-        // Check if file can be written to or not. Exit if read-only
-        bool isReadOnly = false;
+        bool isReadOnly;
         if (!saveToMultipleFile)
         {
-            try
-            {
-                await using FileStream file = new(databasePath, FileMode.Open, FileAccess.ReadWrite);
-            }
-            catch
-            {
-                isReadOnly = true;
-            }
+            isReadOnly = await FileIsReadOnly(databasePath);
         }
         else
         {
@@ -129,14 +124,13 @@ public partial class MainWindow
             VistaFolderBrowserDialog dialog = new()
             {
                 Description = "Chọn thư mục chứa file cơ sở dữ liệu xuất ra",
-                UseDescriptionForTitle = true
+                UseDescriptionForTitle = true,
+                Multiselect = false
             };
             // If cancelled, exit the app
             if (dialog.ShowDialog() == false) { Close(); return; }
 
-            // Check if folder can be written to or not
-            DirectoryInfo directoryInfo = new(dialog.SelectedPath);
-            isReadOnly = directoryInfo.Attributes.HasFlag(FileAttributes.ReadOnly);
+            isReadOnly = FolderIsReadOnly(dialog.SelectedPath);
         }
 
         if (isReadOnly)
@@ -152,12 +146,10 @@ public partial class MainWindow
 
         await _dialogs.CloseDialog();
 
-        string password;
-        SQLiteAsyncConnection connection;
         while (true)
         {
             // Get password
-            password = await _dialogs.ShowPasswordDialog
+            string password = await _dialogs.ShowPasswordDialog
             (
                 "Nhập mật khẩu cơ sở dữ liệu",
                 "Mật khẩu",
@@ -169,8 +161,8 @@ public partial class MainWindow
 
             // Try to open connection to db
             _dialogs.ShowLoadingDialog("Giải mã và mở kết nối đến file .db");
-            connection = await OpenDatabaseAsync(databasePath, password);
-            if (connection is null) // Wrong password
+            bool wrongPassword = await _db.Open(databasePath, password);
+            if (wrongPassword)
             {
                 await Task.Delay(3000); // Avoid brute-force
                 await _dialogs.CloseDialog();
@@ -204,6 +196,24 @@ public partial class MainWindow
             // TODO: add retry here
             Close(); return;
         }
+        
+        _dialogs.ShowLoadingDialog("Load và xác thực file cơ sở dữ liệu");
+        try
+        {
+            await _db.Load();
+            if (_db.Validate() == false)
+                throw new InvalidDataException();
+        }
+        catch (Exception)
+        {
+            await _dialogs.CloseDialog();
+            await _dialogs.ShowTextDialog(
+                title: "Cơ sở dữ liệu không hợp lệ", 
+                text: "Vui lòng kiểm tra lại, hoặc sử dụng DbMaker để tạo file mới", 
+                buttonLabel: "Đóng"
+            );
+            Close(); return;
+        }
 
         await _dialogs.CloseDialog();
 
@@ -212,6 +222,8 @@ public partial class MainWindow
 
     private void Window_Closing(object sender, CancelEventArgs e)
     {
+        _scanner.Dispose();
+        _db.Dispose();
     }
 
     /// <summary>
