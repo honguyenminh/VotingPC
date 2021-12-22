@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using SQLite;
 using VotingPC;
@@ -59,6 +60,8 @@ public class AsyncDatabaseManager : IDisposable
             string escaped = info.Sector.Replace("\"", "\"\"");
             SectionList.Add(await _inputConnection.QueryAsync<Candidate>($"SELECT * FROM \"{escaped}\""));
         }
+
+        if (_multipleFile) await _inputConnection.CloseAsync();
     }
 
     public bool Validate()
@@ -78,9 +81,61 @@ public class AsyncDatabaseManager : IDisposable
         }
         return true;
     }
-    
-    
 
+    public async Task SplitFiles(string folderPath, string password)
+    {
+        if (!_multipleFile) return;
+        if (Extensions.FolderIsReadOnly(folderPath)) throw new IOException("Folder is readonly");
+        for (int i = 0; i < InfoList.Count; i++)
+        {
+            string path = Path.Join(folderPath, InfoList[i].Sector + ".db");
+            if (File.Exists(path)) File.Delete(path);
+
+            SQLiteConnectionString newOptions = new(path, true, password);
+            SQLiteAsyncConnection newConnection = new(newOptions);
+            
+            await CreateCloneTable(newConnection, InfoList[i], SectionList[i]);
+
+            _connections.Add(newConnection);
+        }
+    }
+
+    private static async Task CreateCloneTable(SQLiteAsyncConnection connection,
+        Info info, List<Candidate> candidateList)
+    {
+        // Create Info table then add info row to table
+        await connection.CreateTableAsync<Info>();
+        await connection.InsertOrReplaceAsync(info);
+        // Create Sector table then add candidates
+        string escapedTableName = info.Sector.Replace("'", "''");
+        await connection.ExecuteAsync($"CREATE TABLE IF NOT EXISTS '{escapedTableName}' (" +
+                                               "'Name' TEXT NOT NULL UNIQUE," +
+                                               "'Votes' INTEGER NOT NULL DEFAULT 0," +
+                                               "'Gender' TEXT NOT NULL," +
+                                               "PRIMARY KEY('Name'))");
+        await InsertAllCandidateAsync(connection, escapedTableName, candidateList);
+    }
+
+    /// <summary>
+    /// Insert all candidates into the provided table name. Because SQLite-net is stupid and doesn't have this.
+    /// </summary>
+    /// <param name="connection">SQLite connection to insert into</param>
+    /// <param name="escapedTableName">The table name to insert into with ' characters escaped</param>
+    /// <param name="candidates">Candidates to insert into table</param>
+    private static async Task InsertAllCandidateAsync(SQLiteAsyncConnection connection,
+        string escapedTableName, IEnumerable<Candidate> candidates)
+    {
+        List<string> data = new();
+        foreach (var candidate in candidates)
+        {
+            string escapedName = candidate.Name.Replace("'", "''");
+            data.Add($"({escapedName}, {candidate.Votes}, {candidate.Gender})");
+        }
+        string dataString = string.Join(',', data);
+        string query = $"INSERT INTO '{escapedTableName}' (Name, Votes, Gender) VALUES {dataString}";
+        await connection.ExecuteAsync(query);
+    }
+    
     public void Dispose()
     {
         GC.SuppressFinalize(this);

@@ -100,6 +100,7 @@ public partial class MainWindow
         }
 
         string databasePath = ShowOpenDatabaseDialog();
+        string outputPath;
         if (databasePath == null) { Close(); return; }
 
         bool saveToMultipleFile = await _dialogs.ShowConfirmTextDialog
@@ -116,9 +117,10 @@ public partial class MainWindow
         bool isReadOnly;
         if (!saveToMultipleFile)
         {
-            isReadOnly = await FileIsReadOnly(databasePath);
+            isReadOnly = await Extensions.FileIsReadOnly(databasePath);
+            outputPath = databasePath;
         }
-        else
+        else while (true)
         {
             // Show open folder dialog
             VistaFolderBrowserDialog dialog = new()
@@ -130,7 +132,30 @@ public partial class MainWindow
             // If cancelled, exit the app
             if (dialog.ShowDialog() == false) { Close(); return; }
 
-            isReadOnly = FolderIsReadOnly(dialog.SelectedPath);
+            if (!Directory.Exists(dialog.SelectedPath))
+            {
+                bool result = await _dialogs.ShowConfirmTextDialog(
+                    title: "Lỗi tìm thư mục",
+                    text: "Thư mục không tồn tại. Chọn lại?",
+                    leftButtonLabel: "THOÁT", 
+                    rightButtonLabel: "OK");
+                if (result) continue;
+                Close(); return;
+            }
+
+            if (Directory.GetFiles(dialog.SelectedPath).Length == 0)
+            {
+                bool result = await _dialogs.ShowConfirmTextDialog(
+                    title: "Lỗi lưu kết quả",
+                    text: "Thư mục lưu kết quả đã chọn không phải thư mục trống. Chọn lại?",
+                    leftButtonLabel: "THOÁT", 
+                    rightButtonLabel: "OK");
+                if (result) continue;
+                Close(); return;
+            }
+            isReadOnly = Extensions.FolderIsReadOnly(dialog.SelectedPath);
+            outputPath = dialog.SelectedPath;
+            break;
         }
 
         if (isReadOnly)
@@ -146,10 +171,11 @@ public partial class MainWindow
 
         await _dialogs.CloseDialog();
 
+        string password;
         while (true)
         {
             // Get password
-            string password = await _dialogs.ShowPasswordDialog
+            password = await _dialogs.ShowPasswordDialog
             (
                 "Nhập mật khẩu cơ sở dữ liệu",
                 "Mật khẩu",
@@ -215,6 +241,35 @@ public partial class MainWindow
             Close(); return;
         }
 
+        string resultPassword = await _dialogs.ShowPasswordDialog
+        (
+            "Nhập mật khẩu cơ sở dữ liệu",
+            "Mật khẩu",
+            "Để trống nếu không có mật khẩu",
+            cancelButtonLabel: "Dùng mật khẩu ban đầu"
+        );
+        // Use original password
+        if (resultPassword is null) resultPassword = password;
+
+        if (saveToMultipleFile) while (true)
+        {
+            
+            try
+            {
+                await _db.SplitFiles(outputPath, resultPassword);
+                break;
+            }
+            catch (IOException)
+            {
+                await _dialogs.ShowTextDialog(title: "Lỗi lưu file", text: "Thư mục chỉ đọc, vui lòng kiểm tra lại");
+                Close();
+                return;
+            }
+            catch (SQLiteException)
+            {
+                // TODO: implement this
+            }
+        }
         await _dialogs.CloseDialog();
 
         _scanner.StartScan();
