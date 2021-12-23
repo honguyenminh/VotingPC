@@ -135,18 +135,20 @@ public partial class MainWindow
 
             if (!Directory.Exists(dialog.SelectedPath))
             {
+                await _dialogs.CloseDialog();
                 bool result = await _dialogs.ShowConfirmTextDialog(
                     title: "Lỗi tìm thư mục",
                     text: "Thư mục không tồn tại. Chọn lại?",
-                    leftButtonLabel: "THOÁT", 
+                    leftButtonLabel: "THOÁT",
                     rightButtonLabel: "OK");
                 if (result) continue;
                 Close(); return;
             }
 
             // Folder is not empty
-            if (!Directory.EnumerateFiles(dialog.SelectedPath).Any())
+            if (Directory.EnumerateFiles(dialog.SelectedPath).Any())
             {
+                await _dialogs.CloseDialog();
                 bool result = await _dialogs.ShowConfirmTextDialog(
                     title: "Lỗi lưu kết quả",
                     text: "Thư mục lưu kết quả đã chọn không phải thư mục trống. Chọn lại?",
@@ -189,8 +191,8 @@ public partial class MainWindow
 
             // Try to open connection to db
             _dialogs.ShowLoadingDialog("Giải mã và mở kết nối đến file .db");
-            bool wrongPassword = await _db.Open(databasePath, password);
-            if (wrongPassword)
+            bool success = await _db.Open(databasePath, password);
+            if (!success)
             {
                 await Task.Delay(3000); // Avoid brute-force
                 await _dialogs.CloseDialog();
@@ -242,32 +244,34 @@ public partial class MainWindow
             );
             Close(); return;
         }
-
-        string resultPassword = await _dialogs.ShowPasswordDialog
-        (
-            "Nhập mật khẩu cơ sở dữ liệu",
-            "Mật khẩu",
-            "Để trống nếu không có mật khẩu",
-            cancelButtonLabel: "Dùng mật khẩu ban đầu"
-        );
-        // Use original password
-        if (resultPassword is null) resultPassword = password;
-
-        if (saveToMultipleFile) while (true)
+        
+        if (saveToMultipleFile)
         {
-
+            await _dialogs.CloseDialog();
+            string resultPassword = await _dialogs.ShowPasswordDialog
+            (
+                "Nhập mật khẩu cơ sở dữ liệu",
+                "Mật khẩu",
+                "Để trống nếu không có mật khẩu",
+                cancelButtonLabel: "Dùng mật khẩu ban đầu"
+            );
+            // Use original password
+            // ReSharper disable once ConvertIfStatementToNullCoalescingExpression
+            if (resultPassword is null) resultPassword = password;
+            _dialogs.ShowLoadingDialog("Tách mỗi section ra file .db tương ứng");
             try
             {
                 await _db.SplitFiles(outputPath, resultPassword);
-                break;
             }
             catch (IOException)
             {
+                await _dialogs.CloseDialog();
                 await _dialogs.ShowTextDialog(title: "Lỗi lưu file", text: "Thư mục chỉ đọc, vui lòng kiểm tra lại");
                 Close(); return;
             }
             catch (UnauthorizedAccessException)
             {
+                await _dialogs.CloseDialog();
                 await _dialogs.ShowTextDialog(
                     title: "Lỗi truy cập file",
                     text: "Không đủ quyền, hoặc thư mục đã bị sửa đổi trong quá trình chạy.\n" +
@@ -277,6 +281,7 @@ public partial class MainWindow
             }
             catch (SQLiteException err)
             {
+                await _dialogs.CloseDialog();
                 await _dialogs.ShowTextDialog(
                     title: "Lỗi ghi cơ sở dữ liệu",
                     text: "Thông báo lỗi: " + err.Message

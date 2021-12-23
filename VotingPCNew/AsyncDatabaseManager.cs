@@ -44,6 +44,7 @@ public class AsyncDatabaseManager : IDisposable
         catch (SQLiteException)
         {
             await connection.CloseAsync();
+            _inputConnection = null;
             return false;
         }
         _inputConnection = connection;
@@ -129,7 +130,7 @@ public class AsyncDatabaseManager : IDisposable
         foreach (var candidate in candidates)
         {
             string escapedName = candidate.Name.Replace("'", "''");
-            data.Add($"({escapedName}, {candidate.Votes}, {candidate.Gender})");
+            data.Add($"('{escapedName}', {candidate.Votes}, '{candidate.Gender}')");
         }
         string dataString = string.Join(',', data);
         string query = $"INSERT INTO '{escapedTableName}' (Name, Votes, Gender) VALUES {dataString}";
