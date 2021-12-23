@@ -15,6 +15,7 @@ public class ScannerManager : IDisposable
     // Pre-defined characters, used by scanner to communicate 
     private readonly ScannerSignalTable _signalTable;
     private SerialPort _port;
+    private bool _isListening = false;
 
     public ScannerManager(ScannerSignalTable signalTable)
     {
@@ -68,18 +69,32 @@ public class ScannerManager : IDisposable
         throw new DriveNotFoundException("Cannot find Scanner with given signal table");
     }
 
-    public void StartScan()
+    public async Task StartScan(Action onValidFinger)
     {
+        if (_port is null) return;
         _port.Write(_signalTable.Send.StartScan.ToString());
+        while (_isListening && _port.IsOpen)
+        {
+            while (_isListening && _port.IsOpen && _port.BytesToRead < 1)
+            {
+                await Task.Delay(100);
+            }
+            if (_port.IsOpen && (_port.ReadByte() == _signalTable.Receive.FingerFound))
+            {
+                _port.Write(_signalTable.Send.AcknowledgedFinger.ToString());
+                onValidFinger();
+                break;
+            }
+        }
     }
-
+    
     private bool _disposed;
 
     public void Dispose()
     {
         GC.SuppressFinalize(this);
         if (_disposed) return;
-        _port.Dispose();
+        _port?.Dispose();
         _disposed = true;
     }
 

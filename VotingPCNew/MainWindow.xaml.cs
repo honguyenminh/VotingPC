@@ -291,7 +291,10 @@ public partial class MainWindow
         }
         await _dialogs.CloseDialog();
 
-        _scanner.StartScan();
+        await _scanner.StartScan(() =>
+        {
+            _dialogs.ShowTextDialog("Đã tìm thấy dấu vân tay! Chuyển trang kế...");
+        });
     }
 
     private void Window_Closing(object sender, CancelEventArgs e)
