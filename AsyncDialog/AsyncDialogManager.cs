@@ -56,6 +56,7 @@ public class AsyncDialogManager
         _textDialog.EnableLeftButton = false;
         _ = await _dialogHost.ShowDialog(_textDialog);
     }
+    
     /// <summary>
     /// Show a text dialog with an optional title and two button which CLOSES DIALOG ON CLICK
     /// </summary>

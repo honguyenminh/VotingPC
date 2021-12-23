@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -143,7 +144,8 @@ public partial class MainWindow
                 Close(); return;
             }
 
-            if (Directory.GetFiles(dialog.SelectedPath).Length == 0)
+            // Folder is not empty
+            if (!Directory.EnumerateFiles(dialog.SelectedPath).Any())
             {
                 bool result = await _dialogs.ShowConfirmTextDialog(
                     title: "Lỗi lưu kết quả",
@@ -162,8 +164,8 @@ public partial class MainWindow
         {
             await _dialogs.CloseDialog();
             await _dialogs.ShowTextDialog(
-                title: "File/thư mục chỉ đọc",
-                text: "Thiếu quyền Admin hoặc phân quyền sai.\n"
+                "File/thư mục chỉ đọc",
+                "Thiếu quyền Admin hoặc phân quyền sai.\n"
                       + "Vui lòng chạy lại chương trình với quyền Admin, sửa quyền truy cập file\n"
                       + "hoặc chuyển file/thư mục vào nơi có thể ghi được như Desktop.");
             Close(); return;
@@ -253,7 +255,7 @@ public partial class MainWindow
 
         if (saveToMultipleFile) while (true)
         {
-            
+
             try
             {
                 await _db.SplitFiles(outputPath, resultPassword);
@@ -262,12 +264,24 @@ public partial class MainWindow
             catch (IOException)
             {
                 await _dialogs.ShowTextDialog(title: "Lỗi lưu file", text: "Thư mục chỉ đọc, vui lòng kiểm tra lại");
-                Close();
-                return;
+                Close(); return;
             }
-            catch (SQLiteException)
+            catch (UnauthorizedAccessException)
             {
-                // TODO: implement this
+                await _dialogs.ShowTextDialog(
+                    title: "Lỗi truy cập file",
+                    text: "Không đủ quyền, hoặc thư mục đã bị sửa đổi trong quá trình chạy.\n" +
+                    "Vui lòng chọn thư mục trống khác"
+                );
+                Close(); return;
+            }
+            catch (SQLiteException err)
+            {
+                await _dialogs.ShowTextDialog(
+                    title: "Lỗi ghi cơ sở dữ liệu",
+                    text: "Thông báo lỗi: " + err.Message
+                );
+                Close(); return;
             }
         }
         await _dialogs.CloseDialog();
