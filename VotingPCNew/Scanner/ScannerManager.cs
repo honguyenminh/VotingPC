@@ -71,15 +71,16 @@ public class ScannerManager : IDisposable
 
     public async Task StartScan(Action onValidFinger)
     {
-        if (_port is null) return;
+        if (_port is null) throw new InvalidOperationException("No port is opened yet");
         _port.Write(_signalTable.Send.StartScan.ToString());
+        _isListening = true;
         while (_isListening && _port.IsOpen)
         {
             while (_isListening && _port.IsOpen && _port.BytesToRead < 1)
             {
                 await Task.Delay(100);
             }
-            if (_port.IsOpen && (_port.ReadByte() == _signalTable.Receive.FingerFound))
+            if (_port.IsOpen && _port.ReadByte() == _signalTable.Receive.FingerFound)
             {
                 _port.Write(_signalTable.Send.AcknowledgedFinger.ToString());
                 onValidFinger();
@@ -94,6 +95,7 @@ public class ScannerManager : IDisposable
     {
         GC.SuppressFinalize(this);
         if (_disposed) return;
+        _port.Write(_signalTable.Send.Close.ToString());
         _port?.Dispose();
         _disposed = true;
     }
