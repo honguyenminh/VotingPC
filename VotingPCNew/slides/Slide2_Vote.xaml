@@ -4,63 +4,88 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:controls="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
+    xmlns:model="clr-namespace:MaterialDesignExtensions.Model;assembly=MaterialDesignExtensions"
     xmlns:local="clr-namespace:VotingPCNew"
     mc:Ignorable="d" FocusVisualStyle="{x:Null}"
+    Focusable="False" Background="White"
     d:DesignHeight="720" d:DesignWidth="1280"
     DataContext="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}">
     <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.86*"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <!-- Sector Picker -->
-            <ScrollViewer Margin="36 28 36 28"
-                VerticalScrollBarVisibility="Disabled"
-                HorizontalScrollBarVisibility="Auto">
-                <materialDesign:Card Margin="10" Height="56"
-                    Width="{Binding ActualWidth, ElementName=votePanel, Mode=OneWay}">
-                    <VirtualizingStackPanel Orientation="Horizontal" Name="votePanel"
-                        Margin="10 4" HorizontalAlignment="Center">
-                        <VirtualizingStackPanel.LayoutTransform>
-                            <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
-                        </VirtualizingStackPanel.LayoutTransform>
-                    </VirtualizingStackPanel>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <Border BorderBrush="{DynamicResource MaterialDesignDarkSeparatorBackground}" BorderThickness="1">
+            <TextBlock Name="topTitle" x:FieldModifier="private"
+                FontSize="32" Margin="24" HorizontalAlignment="Center">
+                Lorem Ipsum asdj jkl jonwqej ajsd i asodasodasmd
+            </TextBlock>
+        </Border>
+
+        <Grid Grid.Row="1" Margin="0 16 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="0.2*"/>
+                <ColumnDefinition Width="0.5*"/>
+                <ColumnDefinition Width="0.3*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left column -->
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                VerticalScrollBarVisibility="Auto" Focusable="False"
+                Grid.Column="0" x:Name="view" Margin="0 16 0 0">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Name="listLabel" Text="Các cấp bầu"
+                        Margin="72 0 0 0" FontSize="20" FontWeight="SemiBold"/>
+                    <controls:SideNavigation x:Name="sideNav"
+                        NavigationItemSelected="NavigationItemSelected"
+                        Style="{DynamicResource MaterialSideNavigationDefault}" />
+                    <Button Margin="20 10">Hoàn tất</Button>
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Middle column -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1"
+                HorizontalScrollBarVisibility="Disabled" Focusable="False"
+                VerticalAlignment="Top">
+                <materialDesign:Card  Margin="32 16 16 32" Focusable="False">
+                    <StackPanel>
+                        <VirtualizingStackPanel Orientation="Vertical" Margin="32" Name="voteStack"
+                        TextBlock.FontSize="32" TextBlock.TextAlignment="Center">
+                            <TextBlock>|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||</TextBlock>
+                            <TextBlock>asd as lsdas d</TextBlock>
+                            <TextBlock>asd as asdasjda lsdas d</TextBlock>
+                            <TextBlock>asd as jda l asasd asdsdas d</TextBlock>
+                            <TextBlock>asd as jda ls as ddas d</TextBlock>
+                            <TextBlock>asd as jda lsdas dsad</TextBlock>
+                            <TextBlock>asd as 123 1212 21 312  jda lsdas d</TextBlock>
+                            <TextBlock>asd as lsdas d</TextBlock>
+                            <TextBlock>asd as asdasjda lsdas d</TextBlock>
+                            <TextBlock>asd as jda l asasd asdsdas d</TextBlock>
+                            <TextBlock>asd as jda ls as ddas d</TextBlock>
+                            <TextBlock>asd as jda lsdas dsad</TextBlock>
+                        </VirtualizingStackPanel>
+                    </StackPanel>
                 </materialDesign:Card>
             </ScrollViewer>
-            <ScrollViewer HorizontalScrollBarVisibility="Disabled"
-                VerticalScrollBarVisibility="Auto" Grid.Row="1" VerticalAlignment="Center">
-                <VirtualizingStackPanel Grid.Column="0" Orientation="Vertical">
-                    <TextBlock Text="PHIẾU BẦU CỬ"
-                        HorizontalAlignment="Center"
-                        FontSize="64" FontWeight="Bold"/>
-                    <TextBlock TextWrapping="Wrap" TextAlignment="Center"
-                        Text="Cấp Vũ trụ Trần Dần" Margin="25 32 25 10"
-                        HorizontalAlignment="Center" FontSize="56"/>
-                    <TextBlock Text="Chọn n người" HorizontalAlignment="Center" 
-                        FontSize="50" FontWeight="Normal" Margin="15 0 15 15"/>
-                </VirtualizingStackPanel>
-            </ScrollViewer>
-            <Button Content="Hoàn tất" Background="#C02F1D" 
-                materialDesign:ShadowAssist.ShadowDepth="Depth2"
-                Style="{StaticResource MaterialDesignRaisedButton}"
-                Width="200" Height="60" Margin="0 30 0 50" Grid.Row="2"
-                FontSize="30" BorderBrush="#C02F1D"/>
+
+            <!-- Right column -->
+            <StackPanel Grid.Column="2" Margin="16" VerticalAlignment="Center">
+                <TextBlock Name="title" Text="Cấp tiên tri
+                           Vũ trụ Trần Dần"
+                    FontSize="42" FontWeight="Bold" TextWrapping="Wrap"
+                    TextAlignment="Center" />
+                <TextBlock Name="subtitle" Text="Năm nhiệm kỳ 3000M"
+                    FontSize="26" FontWeight="Medium" Margin="0 16"
+                    TextAlignment="Center" />
+                <Separator Height="2" Margin="20"
+                    Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"
+                    Background="{DynamicResource MaterialDesignDarkSeparatorBackground}" />
+                <TextBlock Name="maxVote" Text="Chọn tối đa 1 người"
+                    FontSize="32" FontWeight="SemiBold"
+                    TextAlignment="Center" Margin="0 16"/>
+            </StackPanel>
         </Grid>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" 
-            Grid.Column="1" HorizontalScrollBarVisibility="Disabled">
-            <materialDesign:Card Margin="50" HorizontalAlignment="Left"
-                Width="{Binding ActualWidth, ElementName=voteStack, Mode=OneWay}"
-                Height="{Binding ActualHeight, ElementName=voteStack, Mode=OneWay}"
-                materialDesign:ShadowAssist.ShadowDepth="Depth4">
-                <VirtualizingStackPanel Orientation="Vertical" Name="voteStack"
-                    HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            </materialDesign:Card>
-        </ScrollViewer>
     </Grid>
 </UserControl>

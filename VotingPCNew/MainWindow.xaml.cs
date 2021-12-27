@@ -293,14 +293,16 @@ public partial class MainWindow
 
         await _scanner.StartScan(() =>
         {
-            _dialogs.ShowTextDialog("Đã tìm thấy dấu vân tay! Chuyển trang kế...");
+            // TODO: populate vote UI here
+            slide2.SectorList = _db.SectorInfoList;
+            NextPage();
         });
     }
 
     private void Window_Closing(object sender, CancelEventArgs e)
     {
         _scanner.Dispose();
-        _db.Dispose();
+        _db?.Dispose();
     }
 
     /// <summary>
