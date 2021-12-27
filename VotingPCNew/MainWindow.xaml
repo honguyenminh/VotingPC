@@ -16,9 +16,10 @@
         Closing="Window_Closing"
         Loaded="Window_Loaded"
         Width="1280" Height="720"
-        FocusVisualStyle="{x:Null}">
-    <materialDesign:DialogHost x:Name="dialogHost" IsTabStop="False" FocusVisualStyle="{x:Null}">
-        <materialDesign:Transitioner x:Name="transitionerObj" SelectedIndex="0">
+        FocusVisualStyle="{x:Null}"
+        Focusable="False">
+    <materialDesign:DialogHost x:Name="dialogHost" IsTabStop="False" FocusVisualStyle="{x:Null}" Focusable="False">
+        <materialDesign:Transitioner x:Name="transitionerObj" SelectedIndex="0" Focusable="False">
             <materialDesign:TransitionerSlide>
                 <local:Slide1 x:Name="slide1"/>
             </materialDesign:TransitionerSlide>

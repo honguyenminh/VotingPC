@@ -18,13 +18,11 @@ namespace VoteCounter;
 /// </summary>
 public partial class MainWindow
 {
-    #region Global variables
     private static string[] s_databasePath;
     private readonly AsyncDialogManager _dialogs;
     private static readonly Dictionary<string, List<Candidate>> s_sections = new();
     // List of information about sections (each sector is a list of candidates)
-    private static Dictionary<string, Info> s_infos;
-    #endregion
+    private static Dictionary<string, Sector> s_infos;
 
     public MainWindow()
     {
@@ -192,40 +190,40 @@ public partial class MainWindow
             {
                 // Parse Info table about sections in current file
                 string query = $"SELECT * FROM Info";
-                List<Info> currentFileInfos = await connection.QueryAsync<Info>(query);
+                List<Sector> currentFileInfos = await connection.QueryAsync<Sector>(query);
                 // Validate the parsed file
                 if (ValidateData(currentFileInfos) == false) throw new InvalidDataException();
                 // If infos is not read before, just save the object
                 if (s_infos == null)
-                    s_infos = currentFileInfos.ToDictionary(x => x.Sector, x => x);
+                    s_infos = currentFileInfos.ToDictionary(x => x.Name, x => x);
                 // Merge two infos if infos is read already
                 else
                 {
-                    foreach (Info info in currentFileInfos)
+                    foreach (Sector info in currentFileInfos)
                     {
-                        if (s_infos.ContainsKey(info.Sector)) continue;
-                        s_infos.Add(info.Sector, info);
+                        if (s_infos.ContainsKey(info.Name)) continue;
+                        s_infos.Add(info.Name, info);
                     }
                 }
                     
                 query = "SELECT * FROM \"";
-                foreach (Info sector in currentFileInfos)
+                foreach (Sector sector in currentFileInfos)
                 {
-                    List<Candidate> candidateList = await connection.QueryAsync<Candidate>(query + sector.Sector + "\"");
+                    List<Candidate> candidateList = await connection.QueryAsync<Candidate>(query + sector.Name + "\"");
                     if (ValidateData(candidateList) == false) throw new InvalidDataException();
 
                     FindMaxVote(candidateList);
 
                     // If sector not yet saved, save new sector into sections collection
-                    if (!s_sections.ContainsKey(sector.Sector))
+                    if (!s_sections.ContainsKey(sector.Name))
                     {
-                        s_sections.Add(sector.Sector, candidateList);
+                        s_sections.Add(sector.Name, candidateList);
                         continue;
                     }
 
                     // Else merge with current file's sector
                     Dictionary<string, Candidate> candidateDict = candidateList.ToDictionary(x => x.Name, x => x);
-                    foreach (Candidate candidate in s_sections[sector.Sector])
+                    foreach (Candidate candidate in s_sections[sector.Name])
                     {
                         candidate.Votes += candidateDict[candidate.Name].Votes;
                         candidate.TotalWinningPlaces += candidateDict[candidate.Name].TotalWinningPlaces;
@@ -254,9 +252,9 @@ public partial class MainWindow
     /// Loading section
     ///***********************************************************///
     #region Database validating
-    private static bool ValidateData(List<Info> infoList)
+    private static bool ValidateData(List<Sector> infoList)
     {
-        foreach (Info info in infoList)
+        foreach (Sector info in infoList)
         {
             if (!info.IsValid) return false;
         }
@@ -281,9 +279,9 @@ public partial class MainWindow
         foreach (var (_, value) in s_infos)
         {
             // Sort the candidate list
-            SortByHighestVotes(s_sections[value.Sector]);
+            SortByHighestVotes(s_sections[value.Name]);
 
-            DisplayCard displayCard = new(value, s_sections[value.Sector]);
+            DisplayCard displayCard = new(value, s_sections[value.Name]);
             if (left)
             {
                 displayCard.Margin = new(0, 16, 56, 16);

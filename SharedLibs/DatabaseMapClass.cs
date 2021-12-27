@@ -11,29 +11,12 @@ namespace VotingPC
 
     public class Candidate
     {
-        // Private fields
-        private string _name;
-        private string _gender;
-
-        // Public field
         [Ignore]
         public ulong TotalWinningPlaces { get; set; }
 
         [NotNull, PrimaryKey, Unique]
         [Column("Name")]
-        public string Name
-        {
-            get => _name;
-            // Cut the string if longer than StringMaxLength
-            set
-            {
-                if (value.Length > GlobalVariable.StringMaxLength)
-                {
-                    _name = value[..GlobalVariable.StringMaxLength];
-                }
-                else _name = value;
-            }
-        }
+        public string Name { get; set; }
 
         [NotNull]
         [Column("Votes")]
@@ -41,19 +24,7 @@ namespace VotingPC
 
         [NotNull]
         [Column("Gender")]
-        public string Gender
-        {
-            get => _gender;
-            // Cut the string if longer than SmallStringMaxLength
-            set
-            {
-                if (value.Length > GlobalVariable.SmallStringMaxLength)
-                {
-                    _gender = value[..GlobalVariable.SmallStringMaxLength];
-                }
-                else _gender = value;
-            }
-        }
+        public string Gender { get; set; }
 
         // Return true if required properties are not null, also reset votes to be safe
         [Ignore]
@@ -61,13 +32,11 @@ namespace VotingPC
     }
 
     [Table("Info")]
-    public class Info
+    public class Sector
     {
         // Private fields
         private string _sector;
         private string _color;
-        private string _title;
-        private string _year;
         // Hex color regex
         private static readonly Regex s_hexColorRegex = new("^#([0-9A-F]{8}|[0-9A-F]{6})$", RegexOptions.Compiled);
 
@@ -78,7 +47,7 @@ namespace VotingPC
 
         [NotNull, PrimaryKey, Unique]
         [Column("Sector")]
-        public string Sector
+        public string Name
         {
             get => _sector;
             set
@@ -117,13 +86,13 @@ namespace VotingPC
                     }
                     else
                     {
-                        Error += $"Màu nền RGB không hợp lệ tại Sector {Sector}.\n";
+                        Error += $"Màu nền RGB không hợp lệ tại Sector {Name}.\n";
                         _color = null;
                     }
                 }
                 else
                 {
-                    Error += $"Màu nền không hợp lệ tại Sector {Sector}.\nVui lòng kiểm tra lại độ dài mã màu.\n";
+                    Error += $"Màu nền không hợp lệ tại Sector {Name}.\nVui lòng kiểm tra lại độ dài mã màu.\n";
                     _color = null;
                 }
             }
@@ -131,35 +100,11 @@ namespace VotingPC
 
         [NotNull]
         [Column("Title")]
-        public string Title
-        {
-            get => _title;
-            set
-            {
-                if (value.Length > GlobalVariable.StringMaxLength)
-                {
-                    Warning += $"Tiêu đề Sector {Sector} quá dài (hơn {GlobalVariable.StringMaxLength} ký tự). Đã tự động cắt.\n";
-                    _title = value.Substring(0, GlobalVariable.StringMaxLength);
-                }
-                else _title = value;
-            }
-        }
+        public string Title { get; set; }
 
         [NotNull]
-        [Column("Year")]
-        public string Year
-        {
-            get => _year;
-            set
-            {
-                if (value.Length > GlobalVariable.SmallStringMaxLength)
-                {
-                    Warning += $"Phụ đề niên khóa của Sector {Sector} quá dài (hơn {GlobalVariable.SmallStringMaxLength} ký tự). Đã tự động cắt.\n";
-                    _year = value[..GlobalVariable.SmallStringMaxLength];
-                }
-                else _year = value;
-            }
-        }
+        [Column("Subtitle")]
+        public string Subtitle { get; set; }
 
         [Ignore]
         public int TotalVoted { get; set; }
@@ -172,9 +117,9 @@ namespace VotingPC
 
         [Ignore]
         // Return true if all properties are not null and empty
-        public bool IsValid => !string.IsNullOrWhiteSpace(Sector) &&
+        public bool IsValid => !string.IsNullOrWhiteSpace(Name) &&
             !string.IsNullOrWhiteSpace(Color) &&
             !string.IsNullOrWhiteSpace(Title) &&
-            Year != null && Max != null;
+            Subtitle != null && Max != null;
     }
 }

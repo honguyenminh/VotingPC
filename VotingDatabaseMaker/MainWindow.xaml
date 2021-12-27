@@ -106,12 +106,12 @@
                                 </Binding>
                             </TextBox.Text>
                         </TextBox>
-                        <TextBox materialDesign:HintAssist.Hint="Niên khóa"
+                        <TextBox materialDesign:HintAssist.Hint="Tiêu đề phụ"
                                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                  Margin="0 12 0 6" MaxLength="128" TextWrapping="Wrap"
-                                 TextChanged="SectorYear_TextChanged">
+                                 TextChanged="SectorSubtitle_TextChanged">
                             <TextBox.Text>
-                                <Binding Path="Year" Mode="TwoWay"
+                                <Binding Path="Subtitle" Mode="TwoWay"
                                      UpdateSourceTrigger="PropertyChanged"/>
                             </TextBox.Text>
                         </TextBox>

@@ -10,7 +10,7 @@ namespace VoteCounter;
 public partial class DisplayCard
 {
     // Public properties
-    public Info SectionInfo { get; }
+    public Sector SectionInfo { get; }
     public List<Candidate> Candidates { get; }
 
     // Constructors
@@ -20,7 +20,7 @@ public partial class DisplayCard
         InitializeComponent();
     }
 
-    public DisplayCard(Info info, List<Candidate> candidates)
+    public DisplayCard(Sector info, List<Candidate> candidates)
     {
         SectionInfo = info;
         Candidates = candidates;
@@ -28,7 +28,7 @@ public partial class DisplayCard
         InitializeComponent();
 
         // Set details to parameters
-        sectionTextBlock.Text = info.Title ?? info.Sector;
+        sectionTextBlock.Text = info.Title ?? info.Name;
 
         // Show winning candidate
         nameTextBlock.Text = candidates[0].Name;

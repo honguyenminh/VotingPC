@@ -13,8 +13,8 @@ public class AsyncDatabaseManager : IDisposable
     private bool _multipleFile;
     private SQLiteAsyncConnection _inputConnection;
     private readonly List<SQLiteAsyncConnection> _connections = new();
-    public List<Info> InfoList { get; private set; }
-    public List<List<Candidate>> SectionList { get; } = new();
+    public List<Sector> SectorInfoList { get; private set; }
+    public List<List<Candidate>> SectorCandidateList { get; } = new();
 
     public AsyncDatabaseManager(bool saveToMultipleFile = false)
     {
@@ -54,12 +54,12 @@ public class AsyncDatabaseManager : IDisposable
     public async Task Load()
     {
         if (_disposed) throw new ObjectDisposedException(GetType().ToString());
-        InfoList = await _inputConnection.QueryAsync<Info>("SELECT * FROM Info");
-        SectionList.Clear();
-        foreach (Info info in InfoList)
+        SectorInfoList = await _inputConnection.QueryAsync<Sector>("SELECT * FROM Info");
+        SectorCandidateList.Clear();
+        foreach (Sector info in SectorInfoList)
         {
-            string escaped = info.Sector.Replace("\"", "\"\"");
-            SectionList.Add(await _inputConnection.QueryAsync<Candidate>($"SELECT * FROM \"{escaped}\""));
+            string escaped = info.Name.Replace("\"", "\"\"");
+            SectorCandidateList.Add(await _inputConnection.QueryAsync<Candidate>($"SELECT * FROM \"{escaped}\""));
         }
 
         if (_multipleFile) await _inputConnection.CloseAsync();
@@ -68,11 +68,11 @@ public class AsyncDatabaseManager : IDisposable
     public bool Validate()
     {
         if (_disposed) throw new ObjectDisposedException(GetType().ToString());
-        foreach (Info info in InfoList)
+        foreach (Sector info in SectorInfoList)
         {
             if (!info.IsValid) return false;
         }
-        foreach (List<Candidate> candidateList in SectionList)
+        foreach (List<Candidate> candidateList in SectorCandidateList)
         {
             foreach (Candidate candidate in candidateList)
             {
@@ -87,28 +87,28 @@ public class AsyncDatabaseManager : IDisposable
     {
         if (!_multipleFile) return;
         if (Extensions.FolderIsReadOnly(folderPath)) throw new IOException("Folder is readonly");
-        for (int i = 0; i < InfoList.Count; i++)
+        for (int i = 0; i < SectorInfoList.Count; i++)
         {
-            string path = Path.Join(folderPath, InfoList[i].Sector + ".db");
+            string path = Path.Join(folderPath, SectorInfoList[i].Name + ".db");
             if (File.Exists(path)) File.Delete(path);
 
             SQLiteConnectionString newOptions = new(path, true, password);
             SQLiteAsyncConnection newConnection = new(newOptions);
             
-            await CreateCloneTable(newConnection, InfoList[i], SectionList[i]);
+            await CreateCloneTable(newConnection, SectorInfoList[i], SectorCandidateList[i]);
 
             _connections.Add(newConnection);
         }
     }
 
     private static async Task CreateCloneTable(SQLiteAsyncConnection connection,
-        Info info, List<Candidate> candidateList)
+        Sector info, List<Candidate> candidateList)
     {
         // Create Info table then add info row to table
-        await connection.CreateTableAsync<Info>();
+        await connection.CreateTableAsync<Sector>();
         await connection.InsertOrReplaceAsync(info);
         // Create Sector table then add candidates
-        string escapedTableName = info.Sector.Replace("'", "''");
+        string escapedTableName = info.Name.Replace("'", "''");
         await connection.ExecuteAsync($"CREATE TABLE IF NOT EXISTS '{escapedTableName}' (" +
                                                "'Name' TEXT NOT NULL UNIQUE," +
                                                "'Votes' INTEGER NOT NULL DEFAULT 0," +

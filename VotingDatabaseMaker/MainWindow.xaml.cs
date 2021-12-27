@@ -25,7 +25,7 @@ public partial class MainWindow
     private readonly SectorDialog _sectorDialog = new();
     private readonly PasswordDialog _passwordDialog = new();
     private readonly ObservableDictionary<string, ObservableDictionary<string, Candidate>> _candidates = new();
-    private readonly ObservableDictionary<string, Info> _sectorDict = new();
+    private readonly ObservableDictionary<string, Sector> _sectorDict = new();
 
     // This is utterly stupid, DO NOT attempt to do this to anywhere else, I beg you
     // Determine if changes to SectorColor box is made in code or by user
@@ -91,12 +91,12 @@ public partial class MainWindow
             return;
         }
         // TODO: Add validation for invalid sector names and "Candidate" because im not smart
-        Info info = new()
+        Sector info = new()
         {
             Color = "#FFFFFF",
-            Sector = _sectorDialog.NameInput,
+            Name = _sectorDialog.NameInput,
             //Title = "",
-            Year = "",
+            Subtitle = "",
             Max = 0
         };
         _ = _sectorDict.Add(_sectorDialog.NameInput, info);
@@ -185,11 +185,11 @@ public partial class MainWindow
         _dialogs.ShowLoadingDialog("Kiểm tra thông tin đã nhập");
         // Validate current inputted values
         List<string> invalidSectors = new();
-        foreach (Info info in _sectorDict.Values)
+        foreach (Sector info in _sectorDict.Values)
         {
             if (!info.IsValid)
             {
-                invalidSectors.Add(info.Sector);
+                invalidSectors.Add(info.Name);
             }
         }
 
@@ -256,7 +256,7 @@ public partial class MainWindow
                                           "'Max'   INTEGER NOT NULL,\n" +
                                           "'Color' TEXT NOT NULL DEFAULT '#111111',\n" +
                                           "'Title' TEXT NOT NULL,\n" +
-                                          "'Year'  TEXT NOT NULL,\n" +
+                                          "'Subtitle'  TEXT NOT NULL,\n" +
                                           "PRIMARY KEY('Sector')\n)");
         _ = await connection.InsertAllAsync(_sectorDict.Values);
 
@@ -309,7 +309,7 @@ public partial class MainWindow
             // Show selected sector's property
             Property.Title = _sectorDict[SelectedSector].Title ?? "";
             Property.Max = (_sectorDict[SelectedSector].Max ?? 0).ToString();
-            Property.Year = _sectorDict[SelectedSector].Year ?? "";
+            Property.Subtitle = _sectorDict[SelectedSector].Subtitle ?? "";
             ChangeUiColorValue(_sectorDict[SelectedSector].ColorNoHash ?? "");
             // Change candidate list source to selected sector's list
             candidateList.ItemsSource = _candidates[SelectedSector].Values;
@@ -333,10 +333,10 @@ public partial class MainWindow
         if (string.IsNullOrWhiteSpace(Property.Title)) return;
         _sectorDict[SelectedSector].Title = Property.Title;
     }
-    private void SectorYear_TextChanged(object sender, TextChangedEventArgs e)
+    private void SectorSubtitle_TextChanged(object sender, TextChangedEventArgs e)
     {
-        if (string.IsNullOrEmpty(Property.Year)) Property.Year = "";
-        _sectorDict[SelectedSector].Year = Property.Year;
+        if (string.IsNullOrEmpty(Property.Subtitle)) Property.Subtitle = "";
+        _sectorDict[SelectedSector].Subtitle = Property.Subtitle;
     }
     // Number only regex
     private static readonly Regex s_notNumberOnlyRegex = new("[^0-9]+", RegexOptions.Compiled);

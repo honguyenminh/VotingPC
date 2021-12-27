@@ -13,7 +13,7 @@ public partial class Slide3_Detail
     {
         InitializeComponent();
     }
-    public void ChangeData(Info info, List<Candidate> candidates)
+    public void ChangeData(Sector info, List<Candidate> candidates)
     {
 
         if ((info == null) || (candidates == null) || (candidates.Count == 0))
