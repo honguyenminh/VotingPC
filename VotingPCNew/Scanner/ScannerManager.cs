@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Ports;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace VotingPCNew.Scanner;
@@ -15,7 +12,7 @@ public class ScannerManager : IDisposable
     // Pre-defined characters, used by scanner to communicate 
     private readonly ScannerSignalTable _signalTable;
     private SerialPort _port;
-    private bool _isListening = false;
+    private volatile bool _isListening;
 
     public ScannerManager(ScannerSignalTable signalTable)
     {
@@ -83,6 +80,7 @@ public class ScannerManager : IDisposable
             if (_port.IsOpen && _port.ReadByte() == _signalTable.Receive.FingerFound)
             {
                 _port.Write(_signalTable.Send.AcknowledgedFinger.ToString());
+                _isListening = false;
                 onValidFinger();
                 break;
             }
@@ -95,14 +93,15 @@ public class ScannerManager : IDisposable
     {
         GC.SuppressFinalize(this);
         if (_disposed) return;
-        _port.Write(_signalTable.Send.Close.ToString());
-        _port?.Dispose();
         _disposed = true;
+        if (_port is null) return;
+        _port.Write(_signalTable.Send.Close.ToString());
+        _port.Dispose();
     }
 
     ~ScannerManager()
     {
         if (_disposed) return;
-        _port.Dispose();
+        Dispose();
     }
 }
