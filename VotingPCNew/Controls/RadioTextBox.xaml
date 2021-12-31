@@ -1,0 +1,25 @@
+<UserControl x:Class="VotingPCNew.Controls.RadioTextBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:VotingPCNew.Controls" 
+    mc:Ignorable="d"
+    d:Background="White"
+    DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}">
+    <UserControl.LayoutTransform>
+        <ScaleTransform ScaleX="2" ScaleY="2"/>
+    </UserControl.LayoutTransform>
+    <Grid>
+        <Line X1="0" x:Name="crossLine" x:FieldModifier="private"
+            VerticalAlignment="Center" Y1="3"
+            Y2="{Binding RelativeSource={RelativeSource Self}, Path=Y1}"
+            X2="{Binding ActualWidth, ElementName=checkBox, Mode=OneWay}"
+            StrokeThickness="1.5" Stroke="#e63946" />
+        <CheckBox x:Name="checkBox" x:FieldModifier="private"
+            Checked="checkBox_Checked" Unchecked="checkBox_Unchecked"
+            Content="{Binding Text}" d:Content="Text goes in here"
+            Style="{StaticResource MaterialDesignFilterChipAccentCheckBox}" 
+            TextElement.FontWeight="SemiBold" TextElement.FontSize="14" />
+    </Grid>
+</UserControl>
