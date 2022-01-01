@@ -291,12 +291,8 @@ public partial class MainWindow
         }
         await _dialogs.CloseDialog();
 
-        await _scanner.StartScan(() =>
-        {
-            // TODO: populate vote UI here
-            slide2.SetItemsSource(_db.SectorList);
-            NextPage();
-        });
+        slide2.SetItemsSource(_db.SectorList);
+        await _scanner.StartScan(NextPage);
     }
 
     private void Window_Closing(object sender, CancelEventArgs e)

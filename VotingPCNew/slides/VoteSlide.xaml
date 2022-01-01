@@ -50,15 +50,15 @@
                 HorizontalScrollBarVisibility="Disabled" Focusable="False"
                 VerticalAlignment="Top">
                 <materialDesign:Card x:Name="candidateCard" Margin="32 16 16 32" Focusable="False">
-                    <VirtualizingStackPanel Orientation="Vertical" 
-                        Margin="32" TextBlock.TextAlignment="Center">
+                    <d:VirtualizingStackPanel Orientation="Vertical" 
+                        Margin="32">
                         <localControls:RadioTextBox HorizontalAlignment="Center" Margin="0 12" x:Name="test1" Text="Nguyễn Văn A"/>
                         <localControls:RadioTextBox HorizontalAlignment="Center" Margin="0 12" x:Name="test2" Text="Nguyễn Văn B"/>
                         <localControls:RadioTextBox HorizontalAlignment="Center" Margin="0 12" x:Name="test3" Text="Nguyễn Văn C"/>
                         <localControls:RadioTextBox HorizontalAlignment="Center" Margin="0 12" x:Name="test4" Text="Nguyễn Văn D"/>
                         <localControls:RadioTextBox HorizontalAlignment="Center" Margin="0 12" x:Name="test5" Text="Nguyễn Văn E"/>
                         <localControls:RadioTextBox HorizontalAlignment="Center" Margin="0 12" x:Name="test6" Text="Nguyễn Văn F"/>
-                    </VirtualizingStackPanel>
+                    </d:VirtualizingStackPanel>
                 </materialDesign:Card>
             </ScrollViewer>
 
