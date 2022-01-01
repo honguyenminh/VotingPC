@@ -18,7 +18,7 @@ namespace VotingPC
         private static bool isListening = true;
         private static readonly List<List<Candidate>> sectionList = new();
         // List of information about sections
-        private static List<Info> infoList;
+        private static List<Sector> infoList;
         // Stack panel list which contain the vote UI, to preserve their state while user switch between sections
         private static readonly List<StackPanel> candidateLists = new();
         private static int currentSectionIndex;
@@ -45,7 +45,7 @@ namespace VotingPC
                 return false;
             }
         }
-        private static async Task CreateCloneTable(SQLiteAsyncConnection cloneConnection, Info info, List<Candidate> candidateList)
+        private static async Task CreateCloneTable(SQLiteAsyncConnection cloneConnection, Sector info, List<Candidate> candidateList)
         {
             // Create Info table then add info row to table
             _ = await cloneConnection.ExecuteAsync("CREATE TABLE 'Info' (\n" +
@@ -65,7 +65,7 @@ namespace VotingPC
                 "'Gender' TEXT NOT NULL,\n" +
                 "PRIMARY KEY('Name')\n)");
             _ = await cloneConnection.InsertAllAsync(candidateList);
-            _ = await cloneConnection.ExecuteAsync($"ALTER TABLE Candidate RENAME TO '{info.Sector.Replace("'", "''")}';");
+            _ = await cloneConnection.ExecuteAsync($"ALTER TABLE Candidate RENAME TO '{info.Name.Replace("'", "''")}';");
         }
         private void InvalidDatabase()
         {
@@ -78,7 +78,7 @@ namespace VotingPC
         /// <returns>True if is valid, else false</returns>
         private static bool ValidateDatabase()
         {
-            foreach (Info info in infoList)
+            foreach (Sector info in infoList)
             {
                 if (!info.IsValid) return false;
             }
@@ -100,14 +100,14 @@ namespace VotingPC
             // This hard-coded ui is utterly stupid.
             // TODO: make a user control for the VoteUI
             int index = 0;
-            foreach (Info info in infoList)
+            foreach (Sector info in infoList)
             {
                 // Add a button to Sector chooser card on top left
                 RadioButton sectionButton = new()
                 {
                     Style = (Style)Application.Current.Resources["MaterialDesignTabRadioButton"],
                     Margin = new Thickness(4),
-                    Content = info.Sector,
+                    Content = info.Name,
                     IsChecked = false
                 };
                 sectionButton.Checked += ChangeSlide_Checked;

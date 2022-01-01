@@ -65,11 +65,11 @@ namespace VotingPC
             try
             {
                 string query = $"SELECT * FROM Info";
-                infoList = await connection.QueryAsync<Info>(query);
+                infoList = await connection.QueryAsync<Sector>(query);
                 query = $"SELECT * FROM \"";
-                foreach (Info info in infoList)
+                foreach (Sector info in infoList)
                 {
-                    sectionList.Add(await connection.QueryAsync<Candidate>(query + info.Sector + "\""));
+                    sectionList.Add(await connection.QueryAsync<Candidate>(query + info.Name + "\""));
                 }
             }
             catch (Exception) { InvalidDatabase(); return; }
@@ -88,7 +88,7 @@ namespace VotingPC
                 for (int i = 0; i < infoList.Count; i++)
                 {
                     // TODO: Check if we have write priviledge
-                    string path = $"{folderPath}\\{infoList[i].Sector}.db";
+                    string path = $"{folderPath}\\{infoList[i].Name}.db";
                     try { if (File.Exists(path)) File.Delete(path); }
                     catch
                     {
@@ -168,7 +168,7 @@ namespace VotingPC
                 for (int i = 0; i < infoList.Count; i++)
                 {
                     if (saveToMultipleFile) connection = connectionList[i];
-                    string escapedSector = infoList[i].Sector.Replace("'", "''");
+                    string escapedSector = infoList[i].Name.Replace("'", "''");
                     // For each candidate in sector
                     for (int j = 0; j < sectionList[i].Count; j++)
                     {
@@ -201,7 +201,7 @@ namespace VotingPC
             slide2.voteStack.Children.Clear();
             _ = slide2.voteStack.Children.Add(candidateLists[currentSectionIndex]);
 
-            slide2.title.Text = "Đại biểu " + infoList[currentSectionIndex].Title + " " + infoList[currentSectionIndex].Year;
+            slide2.title.Text = "Đại biểu " + infoList[currentSectionIndex].Title + " " + infoList[currentSectionIndex].Subtitle;
             slide2.caption.Text = "Chọn đúng " + infoList[currentSectionIndex].Max + " người";
             slide2.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(infoList[currentSectionIndex].Color));
             slide2.voteCard.MinWidth = slide2.mainGrid.ColumnDefinitions[1].ActualWidth - 120;
