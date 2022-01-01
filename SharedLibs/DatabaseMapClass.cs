@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿using System.Collections.Generic;
+using SQLite;
 using System.Text.RegularExpressions;
 
 namespace VotingPC
@@ -116,5 +117,11 @@ namespace VotingPC
                 return !isInvalid;
             }
         }
+
+        /// <summary>
+        /// List of candidates for current sector
+        /// </summary>
+        [Ignore]
+        public List<Candidate> Candidates { get; set; }
     }
 }
