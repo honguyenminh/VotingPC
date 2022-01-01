@@ -15,11 +15,14 @@
             VerticalAlignment="Center" Y1="3"
             Y2="{Binding RelativeSource={RelativeSource Self}, Path=Y1}"
             X2="{Binding ActualWidth, ElementName=checkBox, Mode=OneWay}"
-            StrokeThickness="1.5" Stroke="#e63946" />
+            StrokeThickness="1.5" Stroke="#E63946" />
         <CheckBox x:Name="checkBox" x:FieldModifier="private"
             Checked="checkBox_Checked" Unchecked="checkBox_Unchecked"
-            Content="{Binding Text}" d:Content="Text goes in here"
-            Style="{StaticResource MaterialDesignFilterChipAccentCheckBox}" 
-            TextElement.FontWeight="SemiBold" TextElement.FontSize="14" />
+            Style="{StaticResource MaterialDesignFilterChipAccentCheckBox}"
+            d:Content="Text goes in here" MinHeight="{Binding ActualHeight, ElementName=textBlock}"
+            TextElement.FontWeight="SemiBold" TextElement.FontSize="14">
+            <TextBlock x:Name="textBlock" x:FieldModifier="private" Padding="0 6"
+                TextWrapping="Wrap" Text="{Binding Text}" />
+        </CheckBox>
     </Grid>
 </UserControl>
