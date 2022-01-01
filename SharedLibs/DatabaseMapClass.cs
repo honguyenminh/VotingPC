@@ -31,19 +31,16 @@ namespace VotingPC
         public bool IsValid => Name != null && Gender != null;
     }
 
-    [Table("Info")]
+    [Table("master")]
     public class Sector
     {
+        // Hex color regex
+        private static readonly Regex s_hexColorRegex = new("^#([0-9A-F]{8}|[0-9A-F]{6})$", RegexOptions.Compiled);
         // Private fields
         private string _sector;
         private string _color;
-        // Hex color regex
-        private static readonly Regex s_hexColorRegex = new("^#([0-9A-F]{8}|[0-9A-F]{6})$", RegexOptions.Compiled);
-
         [Ignore]
         public string Error { get; private set; } = "";
-        [Ignore]
-        public string Warning { get; private set; } = "";
 
         [NotNull, PrimaryKey, Unique]
         [Column("Sector")]
@@ -78,23 +75,13 @@ namespace VotingPC
                 }
 
                 value = value.Trim().ToUpper();
-                if (value.Length is 7 or 9)
+                if (!s_hexColorRegex.IsMatch(value))
                 {
-                    if (s_hexColorRegex.IsMatch(value))
-                    {
-                        _color = value;
-                    }
-                    else
-                    {
-                        Error += $"Màu nền RGB không hợp lệ tại Sector {Name}.\n";
-                        _color = null;
-                    }
-                }
-                else
-                {
-                    Error += $"Màu nền không hợp lệ tại Sector {Name}.\nVui lòng kiểm tra lại độ dài mã màu.\n";
+                    Error += $"Màu nền RGB không hợp lệ tại Sector {Name}.\n";
                     _color = null;
+                    return;
                 }
+                _color = value;
             }
         }
 
@@ -114,12 +101,20 @@ namespace VotingPC
             get => Color?[1..];
             set => Color = '#' + value;
         }
-
         [Ignore]
-        // Return true if all properties are not null and empty
-        public bool IsValid => !string.IsNullOrWhiteSpace(Name) &&
-            !string.IsNullOrWhiteSpace(Color) &&
-            !string.IsNullOrWhiteSpace(Title) &&
-            Subtitle != null && Max != null;
+        public bool IsValid
+        {
+            get
+            {
+                // Db is valid if all members are not null
+                bool isInvalid = 
+                    string.IsNullOrWhiteSpace(Name) ||
+                    Title == null ||
+                    Color == null ||
+                    Subtitle == null ||
+                    Max == null;
+                return !isInvalid;
+            }
+        }
     }
 }

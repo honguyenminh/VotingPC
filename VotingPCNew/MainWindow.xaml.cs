@@ -294,7 +294,7 @@ public partial class MainWindow
         await _scanner.StartScan(() =>
         {
             // TODO: populate vote UI here
-            slide2.SectorList = _db.SectorInfoList;
+            slide2.SetItemsSource(_db.SectorList);
             NextPage();
         });
     }

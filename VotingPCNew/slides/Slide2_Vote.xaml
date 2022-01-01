@@ -6,9 +6,9 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:controls="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
     xmlns:model="clr-namespace:MaterialDesignExtensions.Model;assembly=MaterialDesignExtensions"
-    xmlns:local="clr-namespace:VotingPCNew"
+    xmlns:localControls="clr-namespace:VotingPCNew.Controls"
     mc:Ignorable="d" FocusVisualStyle="{x:Null}"
-    Focusable="False" Background="White"
+    Focusable="False" Background="#FFFFEF81"
     d:DesignHeight="720" d:DesignWidth="1280"
     DataContext="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}">
     <Grid>
@@ -18,9 +18,9 @@
         </Grid.RowDefinitions>
 
         <Border BorderBrush="{DynamicResource MaterialDesignDarkSeparatorBackground}" BorderThickness="1">
-            <TextBlock Name="topTitle" x:FieldModifier="private"
+            <TextBlock Name="topTitle" x:FieldModifier="private" FontWeight="Bold"
                 FontSize="32" Margin="24" HorizontalAlignment="Center">
-                Lorem Ipsum asdj jkl jonwqej ajsd i asodasodasmd
+                CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM
             </TextBlock>
         </Border>
 
@@ -37,11 +37,11 @@
                 Grid.Column="0" x:Name="view" Margin="0 16 0 0">
                 <StackPanel Orientation="Vertical">
                     <TextBlock Name="listLabel" Text="Các cấp bầu"
-                        Margin="72 0 0 0" FontSize="20" FontWeight="SemiBold"/>
+                        Margin="72 0 0 0" FontSize="24" FontWeight="SemiBold" />
                     <controls:SideNavigation x:Name="sideNav"
-                        NavigationItemSelected="NavigationItemSelected"
+                        NavigationItemSelected="NavigationItem_SelectionChanged"
                         Style="{DynamicResource MaterialSideNavigationDefault}" />
-                    <Button Margin="20 10">Hoàn tất</Button>
+                    <Button Margin="20 10" Click="Button_Click">Hoàn tất</Button>
                 </StackPanel>
             </ScrollViewer>
 
@@ -49,31 +49,22 @@
             <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Column="1"
                 HorizontalScrollBarVisibility="Disabled" Focusable="False"
                 VerticalAlignment="Top">
-                <materialDesign:Card  Margin="32 16 16 32" Focusable="False">
-                    <StackPanel>
-                        <VirtualizingStackPanel Orientation="Vertical" Margin="32" Name="voteStack"
-                        TextBlock.FontSize="32" TextBlock.TextAlignment="Center">
-                            <TextBlock>|||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||</TextBlock>
-                            <TextBlock>asd as lsdas d</TextBlock>
-                            <TextBlock>asd as asdasjda lsdas d</TextBlock>
-                            <TextBlock>asd as jda l asasd asdsdas d</TextBlock>
-                            <TextBlock>asd as jda ls as ddas d</TextBlock>
-                            <TextBlock>asd as jda lsdas dsad</TextBlock>
-                            <TextBlock>asd as 123 1212 21 312  jda lsdas d</TextBlock>
-                            <TextBlock>asd as lsdas d</TextBlock>
-                            <TextBlock>asd as asdasjda lsdas d</TextBlock>
-                            <TextBlock>asd as jda l asasd asdsdas d</TextBlock>
-                            <TextBlock>asd as jda ls as ddas d</TextBlock>
-                            <TextBlock>asd as jda lsdas dsad</TextBlock>
-                        </VirtualizingStackPanel>
-                    </StackPanel>
+                <materialDesign:Card x:Name="candidateCard" Margin="32 16 16 32" Focusable="False">
+                    <VirtualizingStackPanel Orientation="Vertical" 
+                        Margin="32" TextBlock.TextAlignment="Center">
+                        <localControls:RadioTextBox HorizontalAlignment="Center" Margin="0 12" x:Name="test1" Text="Nguyễn Văn A"/>
+                        <localControls:RadioTextBox HorizontalAlignment="Center" Margin="0 12" x:Name="test2" Text="Nguyễn Văn B"/>
+                        <localControls:RadioTextBox HorizontalAlignment="Center" Margin="0 12" x:Name="test3" Text="Nguyễn Văn C"/>
+                        <localControls:RadioTextBox HorizontalAlignment="Center" Margin="0 12" x:Name="test4" Text="Nguyễn Văn D"/>
+                        <localControls:RadioTextBox HorizontalAlignment="Center" Margin="0 12" x:Name="test5" Text="Nguyễn Văn E"/>
+                        <localControls:RadioTextBox HorizontalAlignment="Center" Margin="0 12" x:Name="test6" Text="Nguyễn Văn F"/>
+                    </VirtualizingStackPanel>
                 </materialDesign:Card>
             </ScrollViewer>
 
             <!-- Right column -->
             <StackPanel Grid.Column="2" Margin="16" VerticalAlignment="Center">
-                <TextBlock Name="title" Text="Cấp tiên tri
-                           Vũ trụ Trần Dần"
+                <TextBlock Name="title" Text="Cấp Thử nghiệm"
                     FontSize="42" FontWeight="Bold" TextWrapping="Wrap"
                     TextAlignment="Center" />
                 <TextBlock Name="subtitle" Text="Năm nhiệm kỳ 3000M"
