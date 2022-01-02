@@ -78,19 +78,38 @@ public class AsyncDatabaseManager : IDisposable
         return true;
     }
 
+    public async Task SaveCurrentData()
+    {
+        SQLiteAsyncConnection connection = _inputConnection;
+        for (int i = 0; i < SectorList.Count; i++)
+        {
+            if (_multipleFile) connection = _connections[i];
+            string escapedSectorName = SectorList[i].Name.Replace("'", "''");
+            // For each candidate in sector
+            foreach (var candidate in SectorList[i].Candidates)
+            {
+                // Escape the quotes in strings
+                string name = candidate.Name.Replace("'", "''");
+                // Add details to query command
+                string query = $"UPDATE '{escapedSectorName}' SET Votes = {candidate.Votes} WHERE Name = '{name}'";
+                await connection.ExecuteAsync(query);
+            }
+        }
+    }
+
     public async Task SplitFiles(string folderPath, string password)
     {
         if (!_multipleFile) return;
         if (Extensions.FolderIsReadOnly(folderPath)) throw new IOException("Folder is readonly");
-        for (int i = 0; i < SectorList.Count; i++)
+        foreach (var sector in SectorList)
         {
-            string path = Path.Join(folderPath, SectorList[i].Name + ".db");
+            string path = Path.Join(folderPath, sector.Name + ".db");
             if (File.Exists(path)) File.Delete(path);
 
             SQLiteConnectionString newOptions = new(path, true, password);
             SQLiteAsyncConnection newConnection = new(newOptions);
             
-            await CreateCloneTable(newConnection, SectorList[i]);
+            await CreateCloneTable(newConnection, sector);
 
             _connections.Add(newConnection);
         }

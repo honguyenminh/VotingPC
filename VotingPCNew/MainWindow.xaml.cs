@@ -6,22 +6,11 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using AsyncDialog;
-using MaterialDesignThemes.Wpf.Transitions;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
 using SQLite;
 using SQLitePCL;
 using VotingPCNew.Scanner;
-
-// using System.Collections.Generic;
-// using System.Windows.Controls;
-// using System.Windows.Data;
-// using System.Windows.Documents;
-// using System.Windows.Input;
-// using System.Windows.Media;
-// using System.Windows.Media.Imaging;
-// using System.Windows.Navigation;
-// using System.Windows.Shapes;
 
 namespace VotingPCNew;
 
@@ -42,6 +31,7 @@ public partial class MainWindow
     {
         Batteries_V2.Init();
         InitializeComponent();
+        
         _dialogs = new AsyncDialogManager(dialogHost)
         {
             ScaleFactor = 1.5
@@ -289,10 +279,14 @@ public partial class MainWindow
                 Close(); return;
             }
         }
-        await _dialogs.CloseDialog();
-
+        
+        // Load vote slide, inject deps, add data source and events
+        _dialogs.ShowLoadingDialog("Load giao diện bầu cử");
+        slide2.InjectDependencies(_dialogs, _db, _scanner);
         slide2.SetItemsSource(_db.SectorList);
-        await _scanner.StartScan(NextPage);
+        await _dialogs.CloseDialog();
+        
+        await _scanner.StartScan(slide2.NextSlide);
     }
 
     private void Window_Closing(object sender, CancelEventArgs e)
@@ -322,22 +316,5 @@ public partial class MainWindow
         }
 
         return null;
-    }
-
-    // Transition methods
-    /// <summary>
-    ///     Move to next Slide
-    /// </summary>
-    private void NextPage()
-    {
-        Transitioner.MoveNextCommand.Execute(null, transitionerObj);
-    }
-
-    /// <summary>
-    ///     Move to previous Slide
-    /// </summary>
-    private void PreviousPage()
-    {
-        Transitioner.MovePreviousCommand.Execute(null, transitionerObj);
     }
 }
