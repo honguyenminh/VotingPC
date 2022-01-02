@@ -66,6 +66,13 @@ public class ScannerManager : IDisposable
         throw new DriveNotFoundException("Cannot find Scanner with given signal table");
     }
 
+    /// <summary>
+    /// Start scanning for finger signal.
+    /// DO NOT AWAIT IF THERE'S STILL WORK AFTER THIS GETS CALLED.
+    /// WILL BLOCK UNTIL SIGNAL FOUND
+    /// </summary>
+    /// <param name="onValidFinger">Action to run on valid finger signal found</param>
+    /// <exception cref="InvalidOperationException">Throw if manager is not initialized</exception>
     public async Task StartScan(Action onValidFinger)
     {
         if (_port is null) throw new InvalidOperationException("No port is opened yet");
