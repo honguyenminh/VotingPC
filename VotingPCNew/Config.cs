@@ -1,5 +1,6 @@
-﻿using System.Windows;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
+using System.Windows;
+using VotingPCNew.JsonConverter;
 
 namespace VotingPCNew;
 
@@ -15,12 +16,12 @@ public struct TextConfig
 {
     public string Text { get; set; }
 
-    [JsonConverter(typeof(JsonConverter.FontSizeJsonConverter))]
+    [JsonConverter(typeof(FontSizeJsonConverter))]
     public double Size { get; set; }
 
-    [JsonConverter(typeof(JsonConverter.FontStyleJsonConverter))]
+    [JsonConverter(typeof(FontStyleJsonConverter))]
     public FontStyle Style { get; set; }
 
-    [JsonConverter(typeof(JsonConverter.FontWeightJsonConverter))]
+    [JsonConverter(typeof(FontWeightJsonConverter))]
     public FontWeight Weight { get; set; }
 }

@@ -16,13 +16,16 @@ using VotingPCNew.Scanner;
 namespace VotingPCNew.Slides;
 
 /// <summary>
-/// Interaction logic for VoteSlide
+///     Interaction logic for VoteSlide
 /// </summary>
 public partial class VoteSlide
 {
-    private AsyncDialogManager _dialogs;
+    // TODO: add the title thing on top of this divider to config
+    private static readonly DividerNavigationItem s_divider = new();
     private AsyncDatabaseManager _db;
+    private AsyncDialogManager _dialogs;
     private ScannerManager _scanner;
+    private Dictionary<string, (Sector, VirtualizingStackPanel)> _sectorVotePanels;
 
     public VoteSlide()
     {
@@ -43,12 +46,8 @@ public partial class VoteSlide
         _scanner = scannerManager;
     }
 
-    // TODO: add the title thing on top of this divider to config
-    private static readonly DividerNavigationItem s_divider = new();
-    private Dictionary<string, (Sector, VirtualizingStackPanel)> _sectorVotePanels;
-
     /// <summary>
-    /// Set item source to be used for populating the vote UI
+    ///     Set item source to be used for populating the vote UI
     /// </summary>
     public void SetItemsSource(List<Sector> sectors)
     {
@@ -95,10 +94,10 @@ public partial class VoteSlide
     }
 
     /// <summary>
-    /// Occurs when the item selected in sidenav bar is changed
+    ///     Occurs when the item selected in sidenav bar is changed
     /// </summary>
     /// <remarks>
-    /// Apply selected sector's style and candidate list
+    ///     Apply selected sector's style and candidate list
     /// </remarks>
     private void NavigationItem_SelectionChanged(object sender, NavigationItemSelectedEventArgs args)
     {

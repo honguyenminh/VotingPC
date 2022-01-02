@@ -7,8 +7,6 @@ namespace VotingPCNew.Scanner;
 
 public class ScannerManager : IDisposable
 {
-    public int BaudRate { get; internal set; }
-
     // Pre-defined characters, used by scanner to communicate 
     private readonly ScannerSignalTable _signalTable;
     private SerialPort _port;
@@ -19,8 +17,10 @@ public class ScannerManager : IDisposable
         _signalTable = signalTable;
     }
 
+    public int BaudRate { get; private set; }
+
     /// <summary>
-    /// Get <see cref="SerialPort"/> object linked to the Scanner
+    ///     Get <see cref="SerialPort" /> object linked to the Scanner
     /// </summary>
     /// <param name="baudRate">Baud rate to use to connect</param>
     /// <param name="maxRetry">Times to retry connection before timing out</param>
@@ -67,9 +67,9 @@ public class ScannerManager : IDisposable
     }
 
     /// <summary>
-    /// Start scanning for finger signal.
-    /// DO NOT AWAIT IF THERE'S STILL WORK AFTER THIS GETS CALLED.
-    /// WILL BLOCK UNTIL SIGNAL FOUND
+    ///     Start scanning for finger signal.
+    ///     DO NOT AWAIT IF THERE'S STILL WORK AFTER THIS GETS CALLED.
+    ///     WILL BLOCK UNTIL SIGNAL FOUND
     /// </summary>
     /// <param name="onValidFinger">Action to run on valid finger signal found</param>
     /// <exception cref="InvalidOperationException">Throw if manager is not initialized</exception>
@@ -86,7 +86,7 @@ public class ScannerManager : IDisposable
             }
 
             if (!_port.IsOpen || _port.ReadByte() != _signalTable.Receive.FingerFound) continue;
-            
+
             _port.Write(_signalTable.Send.AcknowledgedFinger.ToString());
             _isListening = false;
             onValidFinger();
@@ -95,7 +95,6 @@ public class ScannerManager : IDisposable
     }
 
     private bool _disposed;
-
     public void Dispose()
     {
         GC.SuppressFinalize(this);

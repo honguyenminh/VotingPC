@@ -9,19 +9,20 @@ namespace VotingPCNew;
 
 public class AsyncDatabaseManager : IDisposable
 {
-    private bool _disposed;
-    private readonly bool _multipleFile;
     private SQLiteAsyncConnection _inputConnection;
     private readonly List<SQLiteAsyncConnection> _connections = new();
-    public List<Sector> SectorList { get; private set; }
+    private readonly bool _multipleFile;
+    private bool _disposed;
 
     public AsyncDatabaseManager(bool saveToMultipleFile = false)
     {
         _multipleFile = saveToMultipleFile;
     }
+    
+    public List<Sector> SectorList { get; private set; }
 
     /// <summary>
-    /// Try to open a connection to SQLite database
+    ///     Try to open a connection to SQLite database
     /// </summary>
     /// <param name="path">Path to SQLite database file</param>
     /// <param name="password">Password used for decryption, use empty string if none was set</param>
@@ -55,7 +56,7 @@ public class AsyncDatabaseManager : IDisposable
     {
         if (_disposed) throw new ObjectDisposedException(GetType().ToString());
         SectorList = await _inputConnection.Table<Sector>().ToListAsync();
-        foreach (Sector sector in SectorList)
+        foreach (var sector in SectorList)
         {
             string escaped = sector.Name.Replace("'", "''");
             sector.Candidates = await _inputConnection.QueryAsync<Candidate>($"SELECT * FROM '{escaped}'");
@@ -67,10 +68,10 @@ public class AsyncDatabaseManager : IDisposable
     public bool Validate()
     {
         if (_disposed) throw new ObjectDisposedException(GetType().ToString());
-        foreach (Sector sector in SectorList)
+        foreach (var sector in SectorList)
         {
             if (!sector.IsValid) return false;
-            foreach (Candidate candidate in sector.Candidates)
+            foreach (var candidate in sector.Candidates)
             {
                 if (!candidate.IsValid) return false;
                 candidate.Votes = 0;
@@ -82,7 +83,7 @@ public class AsyncDatabaseManager : IDisposable
 
     public async Task SaveCurrentData()
     {
-        SQLiteAsyncConnection connection = _inputConnection;
+        var connection = _inputConnection;
         for (int i = 0; i < SectorList.Count; i++)
         {
             if (_multipleFile) connection = _connections[i];
@@ -134,7 +135,7 @@ public class AsyncDatabaseManager : IDisposable
     }
 
     /// <summary>
-    /// Insert all candidates into the provided table name. Because SQLite-net is stupid and doesn't have this.
+    ///     Insert all candidates into the provided table name. Because SQLite-net is stupid and doesn't have this.
     /// </summary>
     /// <param name="connection">SQLite connection to insert into</param>
     /// <param name="escapedTableName">The table name to insert into with ' characters escaped</param>
