@@ -84,16 +84,16 @@ public class ScannerManager : IDisposable
             {
                 await Task.Delay(100);
             }
-            if (_port.IsOpen && _port.ReadByte() == _signalTable.Receive.FingerFound)
-            {
-                _port.Write(_signalTable.Send.AcknowledgedFinger.ToString());
-                _isListening = false;
-                onValidFinger();
-                break;
-            }
+
+            if (!_port.IsOpen || _port.ReadByte() != _signalTable.Receive.FingerFound) continue;
+            
+            _port.Write(_signalTable.Send.AcknowledgedFinger.ToString());
+            _isListening = false;
+            onValidFinger();
+            break;
         }
     }
-    
+
     private bool _disposed;
 
     public void Dispose()

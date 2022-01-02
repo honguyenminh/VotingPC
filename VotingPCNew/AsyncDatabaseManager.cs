@@ -19,7 +19,7 @@ public class AsyncDatabaseManager : IDisposable
     {
         _multipleFile = saveToMultipleFile;
     }
-    
+
     /// <summary>
     /// Try to open a connection to SQLite database
     /// </summary>
@@ -46,6 +46,7 @@ public class AsyncDatabaseManager : IDisposable
             _inputConnection = null;
             return false;
         }
+
         _inputConnection = connection;
         return true;
     }
@@ -75,6 +76,7 @@ public class AsyncDatabaseManager : IDisposable
                 candidate.Votes = 0;
             }
         }
+
         return true;
     }
 
@@ -108,7 +110,7 @@ public class AsyncDatabaseManager : IDisposable
 
             SQLiteConnectionString newOptions = new(path, true, password);
             SQLiteAsyncConnection newConnection = new(newOptions);
-            
+
             await CreateCloneTable(newConnection, sector);
 
             _connections.Add(newConnection);
@@ -124,10 +126,10 @@ public class AsyncDatabaseManager : IDisposable
         // Create Sector table then add candidates
         string escapedTableName = info.Name.Replace("'", "''");
         await connection.ExecuteAsync($"CREATE TABLE IF NOT EXISTS '{escapedTableName}' (" +
-                                               "'Name' TEXT NOT NULL UNIQUE," +
-                                               "'Votes' INTEGER NOT NULL DEFAULT 0," +
-                                               "'Gender' TEXT NOT NULL," +
-                                               "PRIMARY KEY('Name'))");
+                                      "'Name' TEXT NOT NULL UNIQUE," +
+                                      "'Votes' INTEGER NOT NULL DEFAULT 0," +
+                                      "'Gender' TEXT NOT NULL," +
+                                      "PRIMARY KEY('Name'))");
         await InsertAllCandidateAsync(connection, escapedTableName, info.Candidates);
     }
 
@@ -146,16 +148,17 @@ public class AsyncDatabaseManager : IDisposable
             string escapedName = candidate.Name.Replace("'", "''");
             data.Add($"('{escapedName}', {candidate.Votes}, '{candidate.Gender}')");
         }
+
         string dataString = string.Join(',', data);
         string query = $"INSERT INTO '{escapedTableName}' (Name, Votes, Gender) VALUES {dataString}";
         await connection.ExecuteAsync(query);
     }
-    
+
     public void Dispose()
     {
         GC.SuppressFinalize(this);
         if (_disposed) return;
-        
+
         _inputConnection?.CloseAsync().GetAwaiter().GetResult();
         _inputConnection = null;
         if (_connections.Count != 0)
@@ -164,8 +167,10 @@ public class AsyncDatabaseManager : IDisposable
             {
                 connection.CloseAsync().GetAwaiter().GetResult();
             }
+
             _connections.Clear();
         }
+
         _disposed = true;
     }
 }

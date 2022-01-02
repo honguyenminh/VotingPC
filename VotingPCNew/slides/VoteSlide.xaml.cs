@@ -16,15 +16,15 @@ using VotingPCNew.Scanner;
 namespace VotingPCNew.Slides;
 
 /// <summary>
-/// Interaction logic for Slide2_Vote.xaml
+/// Interaction logic for VoteSlide
 /// </summary>
-public partial class Slide2
+public partial class VoteSlide
 {
     private AsyncDialogManager _dialogs;
     private AsyncDatabaseManager _db;
     private ScannerManager _scanner;
-    
-    public Slide2()
+
+    public VoteSlide()
     {
         InitializeComponent();
     }
@@ -35,7 +35,7 @@ public partial class Slide2
         set => topTitle.Text = value;
     }
 
-    public void InjectDependencies(AsyncDialogManager dialogManager, 
+    public void InjectDependencies(AsyncDialogManager dialogManager,
         AsyncDatabaseManager databaseManager, ScannerManager scannerManager)
     {
         _dialogs = dialogManager;
@@ -47,12 +47,14 @@ public partial class Slide2
     private static readonly DividerNavigationItem s_divider = new();
     private Dictionary<string, (Sector, VirtualizingStackPanel)> _sectorVotePanels;
 
-    // TODO: write xmldoc for this
-    public void SetItemsSource(List<Sector> sectorInfos)
+    /// <summary>
+    /// Set item source to be used for populating the vote UI
+    /// </summary>
+    public void SetItemsSource(List<Sector> sectors)
     {
-        _sectorVotePanels = new(sectorInfos.Count);
-        List<BaseNavigationItem> navigationItems = new(sectorInfos.Count + 2) {s_divider};
-        foreach (var sector in sectorInfos)
+        _sectorVotePanels = new(sectors.Count);
+        List<BaseNavigationItem> navigationItems = new(sectors.Count + 2) {s_divider};
+        foreach (var sector in sectors)
         {
             // Add sector to nav list
             FirstLevelNavigationItem navItem = new()
@@ -79,12 +81,14 @@ public partial class Slide2
                 };
                 votePanel.Children.Add(textBox);
             }
+
             // Add the sector to dictionary for easier lookup later
             _sectorVotePanels.Add(sector.Name, (sector, votePanel));
         }
+
         navigationItems.Add(s_divider);
         sideNav.Items = navigationItems;
-        if (sectorInfos.Count != 0)
+        if (sectors.Count != 0)
         {
             sideNav.SelectedItem = navigationItems[1];
         }
@@ -99,18 +103,18 @@ public partial class Slide2
     private void NavigationItem_SelectionChanged(object sender, NavigationItemSelectedEventArgs args)
     {
         // Get selected sector's name
-        string selectedItem = ((NavigationItem)args.NavigationItem)?.Label;
+        string selectedItem = ((NavigationItem) args.NavigationItem)?.Label;
         if (selectedItem is null) return; // In case nav item is reset from code, and nothing is selected
         // Get the selected sector's info and apply styling
         var (sector, panel) = _sectorVotePanels[selectedItem];
         title.Text = sector.Title;
         subtitle.Text = sector.Subtitle;
-        Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString(sector.Color)!);
+        Background = new SolidColorBrush((Color) ColorConverter.ConvertFromString(sector.Color)!);
         // TODO: move text below to config
         maxVote.Text = $"Chọn tối đa {sector.Max} người";
         candidateCard.Content = panel;
     }
-    
+
     private async void SubmitButton_Click(object sender, RoutedEventArgs e)
     {
         // Validate votes
@@ -125,31 +129,34 @@ public partial class Slide2
             {
                 if (textBox.IsChecked) totalVoted++;
             }
+
             if (totalVoted > sector.Max)
             {
                 isInvalid = true;
                 errorsBuilder.Append("\n - " + sector.Name);
             }
         }
+
         if (isInvalid)
         {
             string errors = errorsBuilder.ToString();
             await _dialogs.ShowTextDialog(errors, "Trở lại");
             return;
         }
-        
+
         // Increase vote count for each candidate after validated
         foreach (var (sector, panel) in _sectorVotePanels.Values)
         {
             for (int i = 0; i < sector.Candidates.Count; i++)
             {
-                var textBox = (RadioTextBox)panel.Children[i];
+                var textBox = (RadioTextBox) panel.Children[i];
                 if (textBox.IsChecked)
                 {
                     sector.Candidates[i].Votes++;
                 }
             }
         }
+
         // Save data to database
         _dialogs.ShowLoadingDialog("Đang lưu phiếu bầu");
         await _db.SaveCurrentData();
@@ -157,10 +164,10 @@ public partial class Slide2
 
         await _dialogs.ShowTextDialog(
             title: "Hoàn tất",
-            text: "Đã nộp phiếu bầu. Chúc một ngày tốt lành.", 
+            text: "Đã nộp phiếu bầu. Chúc một ngày tốt lành.",
             buttonLabel: "HOÀN TẤT"
         );
-        
+
         PreviousSlide();
         ResetSlide();
         await Task.Delay(1000);
@@ -171,11 +178,11 @@ public partial class Slide2
     {
         // Set selected slide back to first slide if exists
         if (sideNav.Items.Count != 2)
-            sideNav.SelectedItem = ((List<BaseNavigationItem>)sideNav.Items)[1];
+            sideNav.SelectedItem = ((List<BaseNavigationItem>) sideNav.Items)[1];
         // Reset all checkboxes
         foreach (var (_, panel) in _sectorVotePanels.Values)
-            foreach (RadioTextBox textBox in panel.Children)
-                textBox.IsChecked = true;
+        foreach (RadioTextBox textBox in panel.Children)
+            textBox.IsChecked = true;
     }
 
     // Transitioner commands.
@@ -184,6 +191,7 @@ public partial class Slide2
     {
         Transitioner.MoveNextCommand.Execute(null, this);
     }
+
     public void PreviousSlide()
     {
         Transitioner.MovePreviousCommand.Execute(null, this);

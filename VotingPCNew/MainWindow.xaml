@@ -1,30 +1,25 @@
 ﻿<Window x:Class="VotingPCNew.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:slides="clr-namespace:VotingPCNew.Slides"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        Background="{DynamicResource MaterialDesignPaper}"
-        TextElement.FontWeight="Medium"
-        TextElement.FontSize="14"
-        FontFamily="{materialDesign:MaterialDesignFont}"
-        WindowState="Maximized" WindowStyle="None"
-        Title="If you see this, the app is broken"
-        Closing="Window_Closing"
-        Loaded="Window_Loaded"
-        Width="1280" Height="720"
-        FocusVisualStyle="{x:Null}"
-        Focusable="False">
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:slides="clr-namespace:VotingPCNew.Slides"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    Background="{DynamicResource MaterialDesignPaper}"
+    TextElement.FontWeight="Medium" TextElement.FontSize="14"
+    FontFamily="{materialDesign:MaterialDesignFont}"
+    WindowState="Maximized" WindowStyle="None"
+    Title="If you see this, the app is broken"
+    Closing="Window_Closing" Loaded="Window_Loaded"
+    Width="1280" Height="720" FocusVisualStyle="{x:Null}" Focusable="False">
     <materialDesign:DialogHost x:Name="dialogHost" IsTabStop="False" FocusVisualStyle="{x:Null}" Focusable="False">
-        <materialDesign:Transitioner x:Name="transitionerObj" SelectedIndex="0" Focusable="False">
+        <materialDesign:Transitioner SelectedIndex="0" Focusable="False">
             <materialDesign:TransitionerSlide>
-                <slides:IntroSlide x:Name="slide1"/>
+                <slides:IntroSlide x:Name="slide1" />
             </materialDesign:TransitionerSlide>
             <materialDesign:TransitionerSlide>
-                <slides:Slide2 x:Name="slide2"/>
+                <slides:VoteSlide x:Name="slide2" />
             </materialDesign:TransitionerSlide>
         </materialDesign:Transitioner>
     </materialDesign:DialogHost>

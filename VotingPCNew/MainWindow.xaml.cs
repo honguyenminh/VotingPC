@@ -31,7 +31,7 @@ public partial class MainWindow
     {
         Batteries_V2.Init();
         InitializeComponent();
-        
+
         _dialogs = new AsyncDialogManager(dialogHost)
         {
             ScaleFactor = 1.5
@@ -103,7 +103,7 @@ public partial class MainWindow
         );
 
         _db = new AsyncDatabaseManager(saveToMultipleFile);
-        
+
         _dialogs.ShowLoadingDialog("Kiểm tra file .db và đường dẫn lưu kết quả");
         bool isReadOnly;
         if (!saveToMultipleFile)
@@ -158,8 +158,8 @@ public partial class MainWindow
             await _dialogs.ShowTextDialog(
                 "File/thư mục chỉ đọc",
                 "Thiếu quyền Admin hoặc phân quyền sai.\n"
-                      + "Vui lòng chạy lại chương trình với quyền Admin, sửa quyền truy cập file\n"
-                      + "hoặc chuyển file/thư mục vào nơi có thể ghi được như Desktop.");
+                + "Vui lòng chạy lại chương trình với quyền Admin, sửa quyền truy cập file\n"
+                + "hoặc chuyển file/thư mục vào nơi có thể ghi được như Desktop.");
             Close(); return;
         }
 
@@ -190,7 +190,7 @@ public partial class MainWindow
             }
             else break;
         }
-        
+
         _dialogs.ShowLoadingDialog("Tìm và kết nối với máy quét vân tay");
         try
         {
@@ -216,7 +216,7 @@ public partial class MainWindow
             // TODO: add retry here
             Close(); return;
         }
-        
+
         _dialogs.ShowLoadingDialog("Load và xác thực file cơ sở dữ liệu");
         try
         {
@@ -228,13 +228,13 @@ public partial class MainWindow
         {
             await _dialogs.CloseDialog();
             await _dialogs.ShowTextDialog(
-                title: "Cơ sở dữ liệu không hợp lệ", 
-                text: "Vui lòng kiểm tra lại, hoặc sử dụng DbMaker để tạo file mới", 
+                title: "Cơ sở dữ liệu không hợp lệ",
+                text: "Vui lòng kiểm tra lại, hoặc sử dụng DbMaker để tạo file mới",
                 buttonLabel: "Đóng"
             );
             Close(); return;
         }
-        
+
         if (saveToMultipleFile)
         {
             await _dialogs.CloseDialog();
@@ -265,7 +265,7 @@ public partial class MainWindow
                 await _dialogs.ShowTextDialog(
                     title: "Lỗi truy cập file",
                     text: "Không đủ quyền, hoặc thư mục đã bị sửa đổi trong quá trình chạy.\n" +
-                    "Vui lòng chọn thư mục trống khác"
+                          "Vui lòng chọn thư mục trống khác"
                 );
                 Close(); return;
             }
@@ -279,13 +279,13 @@ public partial class MainWindow
                 Close(); return;
             }
         }
-        
+
         // Load vote slide, inject deps, add data source and events
         _dialogs.ShowLoadingDialog("Load giao diện bầu cử");
         slide2.InjectDependencies(_dialogs, _db, _scanner);
         slide2.SetItemsSource(_db.SectorList);
         await _dialogs.CloseDialog();
-        
+
         await _scanner.StartScan(slide2.NextSlide);
     }
 

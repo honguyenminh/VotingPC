@@ -2,16 +2,16 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 
 namespace VotingPCNew.Controls;
 
-public partial class RadioTextBox : UserControl
+public partial class RadioTextBox
 {
     private static readonly DoubleAnimation s_fadeInAnimation = new(0, 1, new(TimeSpan.FromMilliseconds(250)))
     {
         EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseInOut }
     };
+
     private static readonly DoubleAnimation s_fadeOutAnimation = new(1, 0, new(TimeSpan.FromMilliseconds(200)))
     {
         EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseInOut }
@@ -26,18 +26,19 @@ public partial class RadioTextBox : UserControl
     // We don't need the advanced stuff for now
     public bool IsChecked
     {
-        get => (bool)checkBox.IsChecked;
-        set {
+        get => (bool) checkBox.IsChecked!;
+        set
+        {
             if (checkBox.IsChecked == value) return;
             checkBox.IsChecked = value;
             OnIsCheckedChanged(value);
         }
     }
-    
+
     public string Text
     {
-        get { return (string)GetValue(TextProperty); }
-        set { SetValue(TextProperty, value); }
+        get => (string) GetValue(TextProperty);
+        set => SetValue(TextProperty, value);
     }
 
     private void OnIsCheckedChanged(bool isChecked)

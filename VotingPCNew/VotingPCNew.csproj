@@ -1,34 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <ApplicationIcon>Assets\vpc-icon.ico</ApplicationIcon>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <UseWPF>true</UseWPF>
+        <ApplicationIcon>Assets\vpc-icon.ico</ApplicationIcon>
+    </PropertyGroup>
 
-  <Import Project="..\SharedLibs\SharedLibs.projitems" Label="Shared" />
+    <Import Project="..\SharedLibs\SharedLibs.projitems" Label="Shared" />
 
-  <ItemGroup>
-    <PackageReference Include="MaterialDesignExtensions" Version="3.3.0" />
-    <PackageReference Include="MaterialDesignThemes" Version="4.3.0" />
-    <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
-    <PackageReference Include="ShowMeTheXAML.MSBuild" Version="2.0.0" />
-    <PackageReference Include="sqlite-net-sqlcipher" Version="1.8.116" />
-    <PackageReference Include="System.IO.Ports" Version="6.0.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="MaterialDesignExtensions" Version="3.3.0" />
+        <PackageReference Include="MaterialDesignThemes" Version="4.3.0" />
+        <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
+        <PackageReference Include="ShowMeTheXAML.MSBuild" Version="2.0.0" />
+        <PackageReference Include="sqlite-net-sqlcipher" Version="1.8.116" />
+        <PackageReference Include="System.IO.Ports" Version="6.0.0" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\AsyncDialog\AsyncDialog.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Resource Include="Assets\Emblem_of_Vietnam.png" />
-  </ItemGroup>
-  
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy $(ProjectDir)Assets\config.json $(ProjectDir)$(OutDir)" />
-    <Exec Command="copy $(ProjectDir)Assets\Emblem_of_Vietnam.png $(ProjectDir)$(OutDir)" />
-  </Target>
-  
+    <ItemGroup>
+        <ProjectReference Include="..\AsyncDialog\AsyncDialog.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Resource Include="Assets\Emblem_of_Vietnam.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="MainWindowMethod.cs" />
+    </ItemGroup>
+
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="copy $(ProjectDir)Assets\config.json $(ProjectDir)$(OutDir)" />
+        <Exec Command="copy $(ProjectDir)Assets\Emblem_of_Vietnam.png $(ProjectDir)$(OutDir)" />
+    </Target>
+
 </Project>
