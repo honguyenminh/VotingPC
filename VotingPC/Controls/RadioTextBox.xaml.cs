@@ -2,7 +2,7 @@ using System;
 using System.Windows;
 using System.Windows.Media.Animation;
 
-namespace VotingPCNew.Controls;
+namespace VotingPC.Controls;
 
 public partial class RadioTextBox
 {

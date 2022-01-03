@@ -3,7 +3,7 @@ using System.IO;
 using System.IO.Ports;
 using System.Threading.Tasks;
 
-namespace VotingPCNew.Scanner;
+namespace VotingPC.Scanner;
 
 public class ScannerManager : IDisposable
 {

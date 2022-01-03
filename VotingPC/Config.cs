@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 using System.Windows;
-using VotingPCNew.JsonConverter;
+using VotingPC.JsonConverter;
 
-namespace VotingPCNew;
+namespace VotingPC;
 
 public struct Config
 {

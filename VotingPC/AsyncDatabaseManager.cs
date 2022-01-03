@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using SQLite;
 using VotingPC;
 
-namespace VotingPCNew;
+namespace VotingPC;
 
 public class AsyncDatabaseManager : IDisposable
 {

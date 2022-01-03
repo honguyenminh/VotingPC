@@ -1,4 +1,4 @@
-﻿namespace VotingPCNew;
+﻿namespace VotingPC;
 
 /// <summary>
 ///     Interaction logic for App.xaml

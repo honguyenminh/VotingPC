@@ -9,11 +9,10 @@ using MaterialDesignExtensions.Controls;
 using MaterialDesignExtensions.Model;
 using MaterialDesignThemes.Wpf;
 using MaterialDesignThemes.Wpf.Transitions;
-using VotingPC;
-using VotingPCNew.Controls;
-using VotingPCNew.Scanner;
+using VotingPC.Controls;
+using VotingPC.Scanner;
 
-namespace VotingPCNew.Slides;
+namespace VotingPC.Slides;
 
 /// <summary>
 ///     Interaction logic for VoteSlide
@@ -129,11 +128,9 @@ public partial class VoteSlide
                 if (textBox.IsChecked) totalVoted++;
             }
 
-            if (totalVoted > sector.Max)
-            {
-                isInvalid = true;
-                errorsBuilder.Append("\n - " + sector.Name);
-            }
+            if (totalVoted <= sector.Max) continue;
+            isInvalid = true;
+            errorsBuilder.Append("\n - " + sector.Name);
         }
 
         if (isInvalid)

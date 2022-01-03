@@ -17,7 +17,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VoteCounter", "VoteCounter\
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedLibs", "SharedLibs\SharedLibs.shproj", "{855F6DAD-C7F4-4FCE-8B3D-69143DAEF2F8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingPCNew", "VotingPCNew\VotingPCNew.csproj", "{9B8F4AF9-A3D5-4937-81CC-24B2706638F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingPC", "VotingPC\VotingPC.csproj", "{9B8F4AF9-A3D5-4937-81CC-24B2706638F3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncDialog", "AsyncDialog\AsyncDialog.csproj", "{642FB619-0C95-4D5D-9224-E864721FDE50}"
 EndProject

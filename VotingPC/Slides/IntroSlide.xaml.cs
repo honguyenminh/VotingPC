@@ -1,4 +1,4 @@
-﻿namespace VotingPCNew.Slides;
+﻿namespace VotingPC.Slides;
 
 /// <summary>
 ///     Interaction logic for IntroSlide

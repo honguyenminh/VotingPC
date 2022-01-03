@@ -1,4 +1,4 @@
-﻿namespace VotingPCNew.Scanner;
+﻿namespace VotingPC.Scanner;
 
 public readonly struct ScannerSignalTable
 {

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace VotingPCNew;
+namespace VotingPC;
 
 internal static class Extensions
 {

@@ -10,9 +10,9 @@ using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
 using SQLite;
 using SQLitePCL;
-using VotingPCNew.Scanner;
+using VotingPC.Scanner;
 
-namespace VotingPCNew;
+namespace VotingPC;
 
 /// <summary>
 ///     Interaction logic for MainWindow.xaml

@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows;
 
-namespace VotingPCNew.JsonConverter;
+namespace VotingPC.JsonConverter;
 
 public class FontWeightJsonConverter : JsonConverter<FontWeight>
 {
