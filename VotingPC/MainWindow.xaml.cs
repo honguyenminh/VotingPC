@@ -10,6 +10,7 @@ using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
 using SQLite;
 using SQLitePCL;
+using VotingPC.Domain;
 using VotingPC.Scanner;
 
 namespace VotingPC;
@@ -108,7 +109,7 @@ public partial class MainWindow
         bool isReadOnly;
         if (!saveToMultipleFile)
         {
-            isReadOnly = await Extensions.FileIsReadOnly(databasePath);
+            isReadOnly = await databasePath.FileIsReadOnly();
             outputPath = databasePath;
         }
         else while (true)
@@ -147,7 +148,7 @@ public partial class MainWindow
                 if (result) continue;
                 Close(); return;
             }
-            isReadOnly = Extensions.FolderIsReadOnly(dialog.SelectedPath);
+            isReadOnly = dialog.SelectedPath.FolderIsReadOnly();
             outputPath = dialog.SelectedPath;
             break;
         }

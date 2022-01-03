@@ -1,13 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using SQLite;
 
-namespace VotingPC;
-
-internal static class GlobalVariable
-{
-    public const int SmallStringMaxLength = 64;
-}
+namespace VotingPC.Domain;
 
 public class Candidate
 {
@@ -34,6 +28,8 @@ public class Candidate
 [Table("master")]
 public class Sector
 {
+    public const int SmallStringMaxLength = 64;
+
     // Hex color regex
     private static readonly Regex s_hexColorRegex = new("^#([0-9A-F]{8}|[0-9A-F]{6})$", RegexOptions.Compiled);
     private string _color;
@@ -51,9 +47,9 @@ public class Sector
         get => _sector;
         set
         {
-            if (value.Length > GlobalVariable.SmallStringMaxLength)
+            if (value.Length > SmallStringMaxLength)
             {
-                Error += $"Tên Sector quá dài (hơn {GlobalVariable.SmallStringMaxLength} ký tự).\n";
+                Error += $"Tên Sector quá dài (hơn {SmallStringMaxLength} ký tự).\n";
             }
             else _sector = value;
         }

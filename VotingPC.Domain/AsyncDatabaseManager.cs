@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Threading.Tasks;
 using SQLite;
-using VotingPC;
 
-namespace VotingPC;
+namespace VotingPC.Domain;
 
 public class AsyncDatabaseManager : IDisposable
 {
@@ -103,7 +98,7 @@ public class AsyncDatabaseManager : IDisposable
     public async Task SplitFiles(string folderPath, string password)
     {
         if (!_multipleFile) return;
-        if (Extensions.FolderIsReadOnly(folderPath)) throw new IOException("Folder is readonly");
+        if (folderPath.FolderIsReadOnly()) throw new IOException("Folder is readonly");
         foreach (var sector in SectorList)
         {
             string path = Path.Join(folderPath, sector.Name + ".db");

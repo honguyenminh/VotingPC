@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
-using VotingPC;
+using VotingPC.Domain;
 
 namespace VoteCounter;
 

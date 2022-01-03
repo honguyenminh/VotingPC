@@ -1,4 +1,4 @@
-﻿using VotingPC;
+﻿using VotingPC.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;

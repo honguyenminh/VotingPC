@@ -11,6 +11,7 @@ using MaterialDesignThemes.Wpf;
 using MaterialDesignThemes.Wpf.Transitions;
 using VotingPC.Controls;
 using VotingPC.Scanner;
+using VotingPC.Domain;
 
 namespace VotingPC.Slides;
 

@@ -15,20 +15,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingDatabaseMaker", "Voti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VoteCounter", "VoteCounter\VoteCounter.csproj", "{949F5A59-6E1B-43A0-9ED5-3F468118AB3E}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedLibs", "SharedLibs\SharedLibs.shproj", "{855F6DAD-C7F4-4FCE-8B3D-69143DAEF2F8}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingPC", "VotingPC\VotingPC.csproj", "{9B8F4AF9-A3D5-4937-81CC-24B2706638F3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncDialog", "AsyncDialog\AsyncDialog.csproj", "{642FB619-0C95-4D5D-9224-E864721FDE50}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VotingPC.Domain", "VotingPC.Domain\VotingPC.Domain.csproj", "{A2C9862E-0F41-4E45-B2B9-1D91477412F9}"
+EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		SharedLibs\SharedLibs.projitems*{036f7870-a4d7-4993-aaca-2d29ef893f08}*SharedItemsImports = 5
-		SharedLibs\SharedLibs.projitems*{14a994a1-1e3a-4726-8a12-64232d750681}*SharedItemsImports = 5
-		SharedLibs\SharedLibs.projitems*{855f6dad-c7f4-4fce-8b3d-69143daef2f8}*SharedItemsImports = 13
-		SharedLibs\SharedLibs.projitems*{949f5a59-6e1b-43a0-9ed5-3f468118ab3e}*SharedItemsImports = 5
-		SharedLibs\SharedLibs.projitems*{9b8f4af9-a3d5-4937-81cc-24b2706638f3}*SharedItemsImports = 5
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -54,6 +47,10 @@ Global
 		{642FB619-0C95-4D5D-9224-E864721FDE50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{642FB619-0C95-4D5D-9224-E864721FDE50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{642FB619-0C95-4D5D-9224-E864721FDE50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2C9862E-0F41-4E45-B2B9-1D91477412F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2C9862E-0F41-4E45-B2B9-1D91477412F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2C9862E-0F41-4E45-B2B9-1D91477412F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2C9862E-0F41-4E45-B2B9-1D91477412F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

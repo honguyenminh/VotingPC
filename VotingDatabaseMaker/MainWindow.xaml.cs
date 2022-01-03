@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using SQLite;
-using VotingPC;
+using VotingPC.Domain;
 using System.Collections.ObjectModel;
 using System.Text;
 using Microsoft.Win32;
@@ -250,6 +250,7 @@ public partial class MainWindow
         SQLiteConnectionString option = new(saveFileDialog.FileName, true, _passwordDialog.passwordTextBox.Password);
         SQLiteAsyncConnection connection = new(option);
 
+        // TODO: use the new class
         // Create Info table then add all info row to table
         _ = await connection.ExecuteAsync("CREATE TABLE 'Info' (\n" +
                                           "'Sector' TEXT NOT NULL UNIQUE,\n" +

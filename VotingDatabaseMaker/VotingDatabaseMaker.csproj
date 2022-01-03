@@ -15,8 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\AsyncDialog\AsyncDialog.csproj" />
+    <ProjectReference Include="..\VotingPC.Domain\VotingPC.Domain.csproj" />
   </ItemGroup>
-
-  <Import Project="..\SharedLibs\SharedLibs.projitems" Label="Shared" />
 
 </Project>

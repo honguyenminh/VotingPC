@@ -7,8 +7,6 @@
         <ApplicationIcon>Assets\vpc-icon.ico</ApplicationIcon>
     </PropertyGroup>
 
-    <Import Project="..\SharedLibs\SharedLibs.projitems" Label="Shared" />
-
     <ItemGroup>
         <PackageReference Include="MaterialDesignExtensions" Version="3.3.0" />
         <PackageReference Include="MaterialDesignThemes" Version="4.3.0" />
@@ -20,6 +18,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\AsyncDialog\AsyncDialog.csproj" />
+        <ProjectReference Include="..\VotingPC.Domain\VotingPC.Domain.csproj" />
     </ItemGroup>
 
     <ItemGroup>
