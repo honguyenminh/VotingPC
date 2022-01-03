@@ -165,8 +165,8 @@ public partial class VoteSlide
         );
 
         PreviousSlide();
-        ResetSlide();
         await Task.Delay(1000);
+        ResetSlide();
         await _scanner.StartScan(NextSlide);
     }
 
