@@ -1,6 +1,4 @@
-﻿using System.Windows.Controls;
-
-namespace VotingDatabaseMaker;
+﻿namespace VotingDatabaseMaker;
 
 /// <summary>
 /// Interaction logic for SectorDialog.xaml

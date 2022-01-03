@@ -1,7 +1,5 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.IO.Ports;
-using System.Threading.Tasks;
 
 namespace VotingPC.Scanner;
 

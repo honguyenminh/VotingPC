@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using System.Windows;
 using VotingPC.JsonConverter;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace VotingPC;
 

@@ -1,6 +1,4 @@
 ﻿using MaterialDesignThemes.Wpf;
-using System;
-using System.Threading.Tasks;
 
 namespace AsyncDialog;
 /// <summary>
