@@ -13,7 +13,7 @@
         WindowState="Maximized" WindowStyle="None"
         Title="MainWindow" d:Height="640" d:Width="1200">
     <materialDesign:DialogHost x:Name="dialogHost" IsTabStop="False">
-        <materialDesign:Transitioner x:Name="TransitionerObj" SelectedIndex="0" IsTabStop="False">
+        <materialDesign:Transitioner x:Name="transitionerObj" SelectedIndex="0" IsTabStop="False">
             <local:Slide1_Landing x:Name="slideLanding"/>
             <local:Slide2_Overview x:Name="slideOverview"/>
             <local:Slide3_Detail x:Name="slideDetail"/>

@@ -1,35 +1,34 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-    <ApplicationIcon>Assets\vpc-icon.ico</ApplicationIcon>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows</TargetFramework>
+        <UseWPF>true</UseWPF>
+        <ImplicitUsings>true</ImplicitUsings>
+        <ApplicationIcon>Assets\vpc-icon.ico</ApplicationIcon>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="Assets\vpc-icon.ico" />
-    <Content Include="template.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="MaterialDesignExtensions" Version="3.3.0" />
+        <PackageReference Include="MaterialDesignThemes" Version="4.3.0" />
+        <PackageReference Include="Ookii.Dialogs.Wpf" Version="5.0.1" />
+        <PackageReference Include="ShowMeTheXAML.MSBuild" Version="2.0.0" />
+        <PackageReference Include="sqlite-net-sqlcipher" Version="1.8.116" />
+        <PackageReference Include="System.IO.Ports" Version="6.0.0" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\AsyncDialog\AsyncDialog.csproj" />
+        <ProjectReference Include="..\VotingPC.Domain\VotingPC.Domain.csproj" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="MaterialDesignThemes" Version="4.1.0" />
-    <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
-    <PackageReference Include="ShowMeTheXAML.MSBuild" Version="2.0.0" />
-    <PackageReference Include="sqlite-net-sqlcipher" Version="1.7.335" />
-    <PackageReference Include="System.IO.Ports" Version="5.0.1" />
-  </ItemGroup>
+    <ItemGroup>
+        <Resource Include="Assets\Emblem_of_Vietnam.png" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <Resource Include="Assets\Emblem_of_Vietnam.png" />
-  </ItemGroup>
-
-  <Import Project="..\SharedLibs\SharedLibs.projitems" Label="Shared" />
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+        <Exec Command="copy $(ProjectDir)Assets\config.json $(ProjectDir)$(OutDir)" />
+        <Exec Command="copy $(ProjectDir)Assets\Emblem_of_Vietnam.png $(ProjectDir)$(OutDir)" />
+    </Target>
 
 </Project>

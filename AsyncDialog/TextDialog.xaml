@@ -1,0 +1,57 @@
+﻿<UserControl x:Class="AsyncDialog.TextDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:local="clr-namespace:AsyncDialog"
+    mc:Ignorable="d" d:DesignWidth="560" MinWidth="460" MaxWidth="800"
+    d:Background="White"
+    DataContext="{Binding Mode=OneWay, RelativeSource={RelativeSource Mode=Self}}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <!--Material Design theme-->
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <UserControl.LayoutTransform>
+        <ScaleTransform x:Name="scale" x:FieldModifier="private"/>
+    </UserControl.LayoutTransform>
+    <StackPanel Margin="0 10 0 0">
+        <!-- Title -->
+        <TextBlock FontSize="20" FontFamily="Roboto" FontWeight="Medium" x:Name="titleBox" Margin="24 10"
+            TextWrapping="Wrap" d:Text="Thông báo mẫu: Lorem ipsum" x:FieldModifier="private"/>
+        <!-- Body text -->
+        <TextBlock FontSize="16" FontFamily="Roboto" FontWeight="Normal" x:Name="textBox"
+            TextWrapping="Wrap" x:FieldModifier="private" Margin="24 10 24 24"
+            d:Text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."/>
+        <!-- Button -->
+        <StackPanel Orientation="Horizontal" Margin="8" HorizontalAlignment="Right">
+            <Button Margin="0 0 8 0" FocusVisualStyle="{x:Null}" x:FieldModifier="private"
+                FontFamily="Roboto" FontWeight="Medium" x:Name="leftButton"
+                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                MinWidth="64" FontSize="14" d:Visibility="Visible" Visibility="Collapsed"
+                Content="Optional" Style="{StaticResource MaterialDesignFlatButton}">
+                <Button.CommandParameter>
+                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                        False
+                    </system:Boolean>
+                </Button.CommandParameter>
+            </Button>
+            <Button FocusVisualStyle="{x:Null}" x:FieldModifier="private"
+                FontFamily="Roboto" FontWeight="Medium" x:Name="button"
+                Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}"
+                MinWidth="64" FontSize="14" d:Visibility="Visible" IsDefault="True"
+                Content="OK" Style="{StaticResource MaterialDesignFlatButton}">
+                <Button.CommandParameter>
+                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                        True
+                    </system:Boolean>
+                </Button.CommandParameter>
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

@@ -7,19 +7,19 @@
              mc:Ignorable="d" 
              d:DesignHeight="260" d:DesignWidth="600">
     <materialDesign:Card Height="Auto">
-        <VirtualizingStackPanel x:Name="VirtualizingStackPanel" Margin="24">
+        <VirtualizingStackPanel x:Name="virtualizingStackPanel" Margin="24">
             <!--Name of sector-->
-            <TextBlock x:Name="SectionTextBlock" Margin="16 0 16 12"
+            <TextBlock x:Name="sectionTextBlock" Margin="16 0 16 12"
                        Text="Cấp mẫu 1" FontSize="32"/>
 
             <!--Seperator Line-->
             <Line X1="0" Y1="0" Y2="0"
                   HorizontalAlignment="Right" VerticalAlignment="Center"
                   StrokeThickness="3" Stroke="{DynamicResource MaterialDesignDarkSeparatorBackground}"
-                  X2="{Binding ActualWidth, ElementName=VirtualizingStackPanel, Mode=OneWay}"/>
+                  X2="{Binding ActualWidth, ElementName=virtualizingStackPanel, Mode=OneWay}"/>
 
             <!--Name of the winning candidate-->
-            <TextBlock x:Name="NameTextBlock" Margin="16 10"
+            <TextBlock x:Name="nameTextBlock" Margin="16 10"
                        Text="Nguyễn Văn A" FontSize="42" FontWeight="SemiBold"/>
 
             <!--Additional infos-->
@@ -28,14 +28,14 @@
                                          Width="{Binding Height, RelativeSource={RelativeSource Self}}"/>
                 <TextBlock FontSize="24" Text="Tổng phiếu bầu:"
                            Margin="4 0 12 0" VerticalAlignment="Center"/>
-                <TextBlock x:Name="TotalVoteTextBlock" Text="260" FontSize="28" VerticalAlignment="Center"/>
+                <TextBlock x:Name="totalVoteTextBlock" Text="260" FontSize="28" VerticalAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="16 3 0 0">
                 <materialDesign:PackIcon Kind="ArchiveMarkerOutline" Height="36" VerticalAlignment="Center"
                                          Width="{Binding Height, RelativeSource={RelativeSource Self}}"/>
                 <TextBlock FontSize="24" Text="Số nơi đắc cử:"
                            Margin="4 0 12 0" VerticalAlignment="Center"/>
-                <TextBlock x:Name="TotalWinningPlacesTextBlock" Text="16" FontSize="28" VerticalAlignment="Center"/>
+                <TextBlock x:Name="totalWinningPlacesTextBlock" Text="16" FontSize="28" VerticalAlignment="Center"/>
             </StackPanel>
         </VirtualizingStackPanel>
     </materialDesign:Card>

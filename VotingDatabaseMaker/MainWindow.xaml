@@ -17,7 +17,7 @@
         <local:MinusValueConverter x:Key="MinusValueConverter"/>
         <local:HexToBrushValueConverter x:Key="HexToBrush"/>
     </Window.Resources>
-    <materialDesign:DialogHost x:Name="DialogHost">
+    <materialDesign:DialogHost x:Name="dialogHost">
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -37,37 +37,37 @@
 
                 <!--Sector Block-->
                 <TextBlock Text="Sector" FontSize="24" Margin="24 8"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Sửa" Margin="8" FontSize="14" x:Name="SectorEditButton"
+                <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Sửa" Margin="8" FontSize="14" x:Name="sectorEditButton"
                         VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
                         IsEnabled="False" d:IsEnabled="True" Click="SectorEditButton_Click"/>
-                    <Button x:Name="AddSectorButton" Content="Thêm" Margin="4 8 24 8" FontSize="14"
+                    <Button x:Name="addSectorButton" Content="Thêm" Margin="4 8 24 8" FontSize="14"
                         VerticalAlignment="Center" Click="AddSectorButton_Click"/>
                 </StackPanel>
-                <ListBox x:Name="SectorList" Grid.Row="1" Margin="24" ItemsSource="{Binding SectorStringList}"
+                <ListBox x:Name="sectorList" Grid.Row="1" Grid.Column="0" Margin="24" ItemsSource="{Binding SectorStringList}"
                          SelectedItem="{Binding SelectedSector, Mode=TwoWay}" SelectionMode="Single"
                          SelectionChanged="SectorList_SelectionChanged"
                          ScrollViewer.VerticalScrollBarVisibility="Auto"
                          ScrollViewer.HorizontalScrollBarVisibility="Auto"/>
 
                 <!--Seperator Line-->
-                <Line Grid.RowSpan="2" X1="0" X2="0" Y1="0" 
+                <Line Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" X1="0" X2="0" Y1="0" 
                       Y2="{Binding ActualHeight, Converter={StaticResource MinusValueConverter}, ConverterParameter=60, ElementName=grid, Mode=OneWay}"
                       HorizontalAlignment="Right" VerticalAlignment="Center"
                       StrokeThickness="1" Stroke="{DynamicResource MaterialDesignDarkSeparatorBackground}"/>
 
                 <!--Candidate Block-->
-                <TextBlock Grid.Column="1" Margin="24 8" Text="Ứng cử viên" FontSize="24"/>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="Sửa" Margin="8" FontSize="14" x:Name="CandidateEditButton"
+                <TextBlock Grid.Row="0" Grid.Column="1" Margin="24 8" Text="Ứng cử viên" FontSize="24"/>
+                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Sửa" Margin="8" FontSize="14" x:Name="candidateEditButton"
                         VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
                         IsEnabled="False" d:IsEnabled="True" Click="CandidateEditButton_Click"/>
-                    <Button x:Name="AddCandidateButton" Content="Thêm" Margin="8 8 24 8" FontSize="14"
+                    <Button x:Name="addCandidateButton" Content="Thêm" Margin="8 8 24 8" FontSize="14"
                         IsEnabled="False" d:IsEnabled="True" Click="AddCandidateButton_Click"
                         VerticalAlignment="Center" HorizontalAlignment="Right" />
                 </StackPanel>
 
-                <ListView Grid.Column="1" Grid.Row="1" x:Name="CandidateList" Margin="24"
+                <ListView Grid.Column="1" Grid.Row="1" x:Name="candidateList" Margin="24"
                           SelectionChanged="CandidateList_SelectionChanged"
                           SelectedItem="{Binding SelectedCandidate, Mode=TwoWay}"
                           ScrollViewer.VerticalScrollBarVisibility="Auto" SelectionMode="Single">
@@ -82,16 +82,16 @@
                 </ListView>
 
                 <!--Seperator Line-->
-                <Line Grid.RowSpan="2" X1="0" X2="0" Y1="0" Grid.Column="1"
+                <Line Grid.Row="0" Grid.RowSpan="2" X1="0" X2="0" Y1="0" Grid.Column="1"
                       Y2="{Binding ActualHeight, Converter={StaticResource MinusValueConverter}, ConverterParameter=60, ElementName=grid, Mode=OneWay}"
                       HorizontalAlignment="Right" VerticalAlignment="Center"
                       StrokeThickness="1" Stroke="{DynamicResource MaterialDesignDarkSeparatorBackground}"/>
                 
                 <!--Sector properties-->
-                <TextBlock x:Name="PropertyTitle" Grid.Column="2" Text="Thuộc tính Sector" Margin="24 8" FontSize="24"/>
+                <TextBlock x:Name="propertyTitle" Grid.Row="0" Grid.Column="2" Text="Thuộc tính Sector" Margin="24 8" FontSize="24"/>
                 <ScrollViewer Grid.Row="1" Grid.Column="2" VerticalScrollBarVisibility="Auto"
                               HorizontalScrollBarVisibility="Disabled">
-                    <StackPanel x:Name="PropertyPanel" Orientation="Vertical" DataContext="{Binding Property}"
+                    <StackPanel x:Name="propertyPanel" Orientation="Vertical" DataContext="{Binding Property}"
                                 IsEnabled="False" d:IsEnabled="True" Margin="24">
                         <TextBox materialDesign:HintAssist.Hint="Tiêu đề sector"
                                  TextChanged="SectorTitle_TextChanged"
@@ -106,16 +106,16 @@
                                 </Binding>
                             </TextBox.Text>
                         </TextBox>
-                        <TextBox materialDesign:HintAssist.Hint="Niên khóa"
+                        <TextBox materialDesign:HintAssist.Hint="Tiêu đề phụ"
                                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                  Margin="0 12 0 6" MaxLength="128" TextWrapping="Wrap"
-                                 TextChanged="SectorYear_TextChanged">
+                                 TextChanged="SectorSubtitle_TextChanged">
                             <TextBox.Text>
-                                <Binding Path="Year" Mode="TwoWay"
+                                <Binding Path="Subtitle" Mode="TwoWay"
                                      UpdateSourceTrigger="PropertyChanged"/>
                             </TextBox.Text>
                         </TextBox>
-                        <TextBox materialDesign:HintAssist.Hint="Số ứng cử viên cần bầu" x:Name="SectorMaxTextBox"
+                        <TextBox materialDesign:HintAssist.Hint="Số ứng cử viên cần bầu" x:Name="sectorMaxTextBox"
                                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                  Margin="0 12 0 6" MaxLength="5" TextWrapping="Wrap"
                                  PreviewTextInput="SectorMax_PreviewTextInput" PreviewKeyDown="DisableSpaces">
@@ -128,7 +128,7 @@
                             </TextBox.Text>
                         </TextBox>
                         <Line X1="0" Y1="0" Y2="0" Margin="0 24 0 16" StrokeThickness="1"
-                          X2="{Binding ActualWidth, ElementName=PropertyPanel}" HorizontalAlignment="Center"
+                          X2="{Binding ActualWidth, ElementName=propertyPanel}" HorizontalAlignment="Center"
                           Stroke="{DynamicResource MaterialDesignDarkSeparatorBackground}"/>
                         <TextBlock Margin="0" Text="Màu nền"/>
                         <TextBox materialDesign:HintAssist.Hint="Mã hex màu nền"
@@ -148,7 +148,7 @@
                                 Background="{Binding Color, Converter={StaticResource HexToBrush}, Mode=OneWay}"
                                 BorderBrush="{DynamicResource MaterialDesignBody}">
                             <TextBlock Text="Chữ mẫu trên nền" TextAlignment="Center" VerticalAlignment="Center"
-                                       Width="{Binding ActualWidth, ElementName=PropertyPanel}" FontSize="20" Foreground="Black"/>
+                                       Width="{Binding ActualWidth, ElementName=propertyPanel}" FontSize="20" Foreground="Black"/>
                         </Border>
                     </StackPanel>
                 </ScrollViewer>
@@ -159,18 +159,18 @@
                 <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
                         Margin="0" Click="ThemeButton_Click" ToolTip="Theme màu tối"
                         VerticalAlignment="Center">
-                    <materialDesign:PackIcon x:Name="ThemeIcon" Kind="WeatherNight"/>
+                    <materialDesign:PackIcon x:Name="themeIcon" Kind="WeatherNight"/>
                 </Button>
                 <Button Content="Xuất file" Margin="24" FontSize="14"
                         VerticalAlignment="Center" Click="ExportButton_Click"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Row="1">
                 <!--Delete buttons-->
-                <Button Content="Xóa Sector" Margin="24" FontSize="14" x:Name="SectorRemoveButton"
+                <Button Content="Xóa Sector" Margin="24" FontSize="14" x:Name="sectorRemoveButton"
                         VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
                         IsEnabled="False" d:IsEnabled="True" Click="RemoveSectorButton_Click"
                         Foreground="Red" BorderBrush="Red"/>
-                <Button Content="Xóa Ứng cử viên" Margin="12 24" FontSize="14" x:Name="CandidateRemoveButton"
+                <Button Content="Xóa Ứng cử viên" Margin="12 24" FontSize="14" x:Name="candidateRemoveButton"
                         VerticalAlignment="Center" Style="{StaticResource MaterialDesignOutlinedButton}"
                         IsEnabled="False" d:IsEnabled="True" Click="RemoveCandidateButton_Click"
                         Foreground="Red" BorderBrush="Red"/>

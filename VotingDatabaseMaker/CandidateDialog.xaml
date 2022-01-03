@@ -8,8 +8,8 @@
              mc:Ignorable="d" d:Background="White"
              d:DesignHeight="270" Width="460">
     <StackPanel Margin="32">
-        <TextBlock Text="Thêm ứng cử viên" FontSize="20" Margin="6 0 6 12" x:Name="Title"/>
-        <TextBox x:Name="NameTextBox" materialDesign:HintAssist.Hint="Tên ứng cử viên"
+        <TextBlock Text="Thêm ứng cử viên" FontSize="20" Margin="6 0 6 12" x:Name="title"/>
+        <TextBox x:Name="nameTextBox" materialDesign:HintAssist.Hint="Tên ứng cử viên"
                  Margin="6" MaxLength="128" TextWrapping="Wrap">
             <TextBox.Text>
                 <Binding Path="NameInput" ElementName="userControl" Mode="TwoWay"
@@ -22,7 +22,7 @@
         </TextBox>
 
         <ComboBox MinWidth="72" IsEditable="True" Margin="6 12"
-                  materialDesign:HintAssist.Hint="Giới tính" x:Name="GenderBox"
+                  materialDesign:HintAssist.Hint="Giới tính" x:Name="genderBox"
                   Style="{StaticResource MaterialDesignFloatingHintComboBox}">
             <!--Items-->
             <ComboBoxItem IsSelected="True">Ông</ComboBoxItem>
@@ -57,10 +57,10 @@
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Text.Length, ElementName=NameTextBox, UpdateSourceTrigger=PropertyChanged}" Value="0">
+                            <DataTrigger Binding="{Binding Text.Length, ElementName=nameTextBox, UpdateSourceTrigger=PropertyChanged}" Value="0">
                                 <Setter Property="IsEnabled" Value="False"/>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding Text.Length, ElementName=GenderBox, UpdateSourceTrigger=PropertyChanged}" Value="0">
+                            <DataTrigger Binding="{Binding Text.Length, ElementName=genderBox, UpdateSourceTrigger=PropertyChanged}" Value="0">
                                 <Setter Property="IsEnabled" Value="False"/>
                             </DataTrigger>
                         </Style.Triggers>

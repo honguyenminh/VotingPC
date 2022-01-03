@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Windows.Media;
 
 namespace VotingDatabaseMaker
 {
@@ -14,22 +8,20 @@ namespace VotingDatabaseMaker
         public event PropertyChangedEventHandler PropertyChanged;
 
         // Fields
-        private string title = "";
-        private string year = "";
-        private string max = "";
-        private string color = "FFFFFF";
+        private string _title = "";
+        private string _subtitle = "";
+        private string _max = "";
+        private string _color = "FFFFFF";
         // Public properties to bind to
-        public string Title { get => title; set { title = value; OnPropertyChanged(); } }
-        public string Year { get => year; set { year = value; OnPropertyChanged(); } }
-        public string Max { get => max; set { max = value; OnPropertyChanged(); } }
+        public string Title { get => _title; set { _title = value; OnPropertyChanged(); } }
+        public string Subtitle { get => _subtitle; set { _subtitle = value; OnPropertyChanged(); } }
+        public string Max { get => _max; set { _max = value; OnPropertyChanged(); } }
         /// <summary>
         /// NEVER SET ANYTHING TO THIS. USE ChangeUIColorProperty() instead. I beg you.
         /// </summary>
-        public string Color { get => color; set { color = value; OnPropertyChanged(); } }
+        public string Color { get => _color; set { _color = value; OnPropertyChanged(); } }
 
-        public PropertyBinding() { }
-
-        protected void OnPropertyChanged([CallerMemberName] string name = null)
+        private void OnPropertyChanged([CallerMemberName] string name = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }

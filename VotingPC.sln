@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingPC", "VotingPC\VotingPC.csproj", "{14A994A1-1E3A-4726-8A12-64232D750681}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{9EC6BB37-0552-4190-A00B-EF99C7C9E80E}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -15,26 +13,20 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FingerGet", "FingerGet\Fing
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingDatabaseMaker", "VotingDatabaseMaker\VotingDatabaseMaker.csproj", "{036F7870-A4D7-4993-AACA-2D29EF893F08}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VoteCounter", "VoteCounter\VoteCounter.csproj", "{949F5A59-6E1B-43A0-9ED5-3F468118AB3E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VoteCounter", "VoteCounter\VoteCounter.csproj", "{949F5A59-6E1B-43A0-9ED5-3F468118AB3E}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SharedLibs", "SharedLibs\SharedLibs.shproj", "{855F6DAD-C7F4-4FCE-8B3D-69143DAEF2F8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "VotingPC", "VotingPC\VotingPC.csproj", "{9B8F4AF9-A3D5-4937-81CC-24B2706638F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AsyncDialog", "AsyncDialog\AsyncDialog.csproj", "{642FB619-0C95-4D5D-9224-E864721FDE50}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VotingPC.Domain", "VotingPC.Domain\VotingPC.Domain.csproj", "{A2C9862E-0F41-4E45-B2B9-1D91477412F9}"
 EndProject
 Global
-	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		SharedLibs\SharedLibs.projitems*{036f7870-a4d7-4993-aaca-2d29ef893f08}*SharedItemsImports = 5
-		SharedLibs\SharedLibs.projitems*{14a994a1-1e3a-4726-8a12-64232d750681}*SharedItemsImports = 5
-		SharedLibs\SharedLibs.projitems*{855f6dad-c7f4-4fce-8b3d-69143daef2f8}*SharedItemsImports = 13
-		SharedLibs\SharedLibs.projitems*{949f5a59-6e1b-43a0-9ed5-3f468118ab3e}*SharedItemsImports = 5
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{14A994A1-1E3A-4726-8A12-64232D750681}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{14A994A1-1E3A-4726-8A12-64232D750681}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{14A994A1-1E3A-4726-8A12-64232D750681}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{14A994A1-1E3A-4726-8A12-64232D750681}.Release|Any CPU.Build.0 = Release|Any CPU
 		{05E2B153-A099-4625-B98A-066959658C7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{05E2B153-A099-4625-B98A-066959658C7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05E2B153-A099-4625-B98A-066959658C7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -47,6 +39,18 @@ Global
 		{949F5A59-6E1B-43A0-9ED5-3F468118AB3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{949F5A59-6E1B-43A0-9ED5-3F468118AB3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{949F5A59-6E1B-43A0-9ED5-3F468118AB3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B8F4AF9-A3D5-4937-81CC-24B2706638F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B8F4AF9-A3D5-4937-81CC-24B2706638F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B8F4AF9-A3D5-4937-81CC-24B2706638F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B8F4AF9-A3D5-4937-81CC-24B2706638F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{642FB619-0C95-4D5D-9224-E864721FDE50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{642FB619-0C95-4D5D-9224-E864721FDE50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{642FB619-0C95-4D5D-9224-E864721FDE50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{642FB619-0C95-4D5D-9224-E864721FDE50}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2C9862E-0F41-4E45-B2B9-1D91477412F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2C9862E-0F41-4E45-B2B9-1D91477412F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2C9862E-0F41-4E45-B2B9-1D91477412F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2C9862E-0F41-4E45-B2B9-1D91477412F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

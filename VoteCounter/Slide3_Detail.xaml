@@ -20,7 +20,7 @@
                        Margin="0 8 0 0" Grid.Row="0" x:Name="titleTextBox" HorizontalAlignment="Center"/>
         </StackPanel>
 
-        <!--TODO: Add "Back" button here-->
+        <!--TODO: Change style of "Back" button, this looks bad-->
         <Button ToolTip="Back" Style="{StaticResource MaterialDesignIconForegroundButton}" Margin="24 12 0 12" Grid.Row="0"
 		        x:Name="backButton" HorizontalAlignment="Left" VerticalAlignment="Center">
             <Button.LayoutTransform>
@@ -29,7 +29,7 @@
             <materialDesign:PackIcon Kind="ArrowLeft"/>
         </Button>
 
-        <Line X1="0" Y1="0" Y2="0" Margin="36 0"
+        <Line Grid.Row="0" X1="0" Y1="0" Y2="0" Margin="36 0"
               HorizontalAlignment="Right" VerticalAlignment="Bottom"
               StrokeThickness="3" Stroke="{DynamicResource MaterialDesignDarkSeparatorBackground}"
               X2="{Binding ActualWidth, ElementName=userControl, Mode=OneWay}"/>

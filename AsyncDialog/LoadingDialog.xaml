@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="AsyncDialog.LoadingDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:local="clr-namespace:AsyncDialog" mc:Ignorable="d" d:Background="White"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <!--Material Design theme-->
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <UserControl.LayoutTransform>
+        <ScaleTransform x:Name="scale" x:FieldModifier="private" />
+    </UserControl.LayoutTransform>
+    <StackPanel Orientation="Horizontal" Margin="32">
+        <ProgressBar VerticalAlignment="Top" IsIndeterminate="True" IsTabStop="False"
+        Style="{StaticResource MaterialDesignCircularProgressBar}" FocusVisualStyle="{x:Null}">
+            <ProgressBar.LayoutTransform>
+                <ScaleTransform ScaleX="1.5" ScaleY="1.5"/>
+            </ProgressBar.LayoutTransform>
+        </ProgressBar>
+        <TextBlock Name="title" TextWrapping="Wrap" MaxWidth="360px" x:FieldModifier="private"
+            FontFamily="Roboto" FontSize="16px" VerticalAlignment="Center"
+            d:Margin="32 0 0 0" d:Text="Test title lorem ipsum">
+        </TextBlock>
+    </StackPanel>
+</UserControl>

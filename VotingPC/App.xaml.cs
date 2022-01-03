@@ -1,11 +1,8 @@
-﻿using System.Windows;
+﻿namespace VotingPC;
 
-namespace VotingPC
+/// <summary>
+///     Interaction logic for App.xaml
+/// </summary>
+public partial class App
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
-    {
-    }
 }
