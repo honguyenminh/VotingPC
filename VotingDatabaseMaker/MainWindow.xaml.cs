@@ -6,10 +6,10 @@ using System.Windows.Input;
 using SQLite;
 using VotingPC.Domain;
 using System.Collections.ObjectModel;
-using System.Text;
 using Microsoft.Win32;
 using System.IO;
 using AsyncDialog;
+using VotingPC.Domain.Extensions;
 
 namespace VotingDatabaseMaker;
 
@@ -88,12 +88,18 @@ public partial class MainWindow
             await _dialogs.ShowTextDialog("Sector đã tồn tại, vui lòng kiểm tra lại");
             return;
         }
-        // TODO: Add validation for invalid sector names and "Candidate" because im not smart
+
+        if (_sectorDialog.NameInput.StartsWith("sqlite_"))
+        {
+            await _dialogs.ShowTextDialog("Tên sector không hợp lệ, chứa từ khóa cấm 'sqlite_'");
+            return;
+        }
+
         Sector info = new()
         {
             Color = "#FFFFFF",
             Name = _sectorDialog.NameInput,
-            //Title = "",
+            Title = "",
             Subtitle = "",
             Max = 0
         };
@@ -140,6 +146,12 @@ public partial class MainWindow
         if (_sectorDict.Keys.Contains(_sectorDialog.NameInput))
         {
             await _dialogs.ShowTextDialog("Sector cùng tên đã tồn tại.");
+            return;
+        }
+
+        if (_sectorDialog.NameInput.StartsWith("sqlite_"))
+        {
+            await _dialogs.ShowTextDialog("Tên sector không hợp lệ, chứa từ khóa cấm 'sqlite_'");
             return;
         }
 
@@ -193,15 +205,9 @@ public partial class MainWindow
 
         if (invalidSectors.Count != 0)
         {
-            StringBuilder stringBuilder = new();
-            int lastIndex = invalidSectors.Count - 1;
-            for (int i = 0; i < lastIndex; i++)
-            {
-                _ = stringBuilder.Append(invalidSectors[i]).Append(", ");
-            }
-            _ = stringBuilder.Append(invalidSectors[lastIndex]);
+            string errorMessage = string.Join(", ", invalidSectors);
             await _dialogs.CloseDialog();
-            await _dialogs.ShowTextDialog(stringBuilder.ToString(), "Thiếu thông tin trong các sector");
+            await _dialogs.ShowTextDialog(errorMessage, "Thiếu thông tin trong các sector");
             return;
         }
 
@@ -226,13 +232,12 @@ public partial class MainWindow
             _passwordDialog.passwordTextBox.Password = "";
             return;
         }
-        
+
         _dialogs.ShowLoadingDialog("Lưu dữ liệu đã nhập vào tệp");
 
         string path = saveFileDialog.FileName;
 
         // TODO: Check if we have write priviledge
-        // TODO: ask for confirm before deleting
         // Delete file if already exists
         try { if (File.Exists(path)) File.Delete(path); }
         // In case file is write-locked
@@ -245,34 +250,19 @@ public partial class MainWindow
         }
 
         // Create new SQLite connection, with given password and file path
-        SQLiteConnectionString option = new(saveFileDialog.FileName, true, _passwordDialog.passwordTextBox.Password);
+        SQLiteConnectionString option = new(saveFileDialog.FileName, 
+            true, _passwordDialog.passwordTextBox.Password);
         SQLiteAsyncConnection connection = new(option);
 
-        // TODO: use the new class
         // Create Info table then add all info row to table
-        _ = await connection.ExecuteAsync("CREATE TABLE 'Info' (\n" +
-                                          "'Sector' TEXT NOT NULL UNIQUE,\n" +
-                                          "'Max'   INTEGER NOT NULL,\n" +
-                                          "'Color' TEXT NOT NULL DEFAULT '#111111',\n" +
-                                          "'Title' TEXT NOT NULL,\n" +
-                                          "'Subtitle'  TEXT NOT NULL,\n" +
-                                          "PRIMARY KEY('Sector')\n)");
+        _ = await connection.CreateTableAsync<Sector>();
         _ = await connection.InsertAllAsync(_sectorDict.Values);
 
         // Create Sector tables then add candidates for each sectors
-        // Create a table named Candidate, hopefully no one use this name
-        // TODO: fix this
         foreach (string sector in _candidates.Keys)
         {
-            _ = await connection.ExecuteAsync($"CREATE TABLE 'Candidate' (\n" +
-                                              "'Name' TEXT NOT NULL UNIQUE,\n" +
-                                              "'Votes'   INTEGER NOT NULL DEFAULT 0,\n" +
-                                              "'Gender' TEXT NOT NULL,\n" +
-                                              "PRIMARY KEY('Name')\n)");
-            _ = await connection.InsertAllAsync(_candidates[sector].Values);
-            // Escape sector name
-            string escaped = sector.Replace("'", "''");
-            _ = await connection.ExecuteAsync($"ALTER TABLE Candidate RENAME TO '{escaped}';");
+            await connection.CreateCandidateTableAsync(sector);
+            await connection.InsertAllCandidateAsync(sector, _candidates[sector].Values);
         }
 
         await connection.CloseAsync();

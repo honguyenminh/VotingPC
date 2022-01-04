@@ -8,6 +8,7 @@ using Ookii.Dialogs.Wpf;
 using SQLite;
 using SQLitePCL;
 using VotingPC.Domain;
+using VotingPC.Domain.Extensions;
 using VotingPC.Scanner;
 
 namespace VotingPC;
