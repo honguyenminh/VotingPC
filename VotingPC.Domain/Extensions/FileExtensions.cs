@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 
-namespace VotingPC.Domain;
+namespace VotingPC.Domain.Extensions;
 
-public static class Extensions
+public static class StringExtensions
 {
     public static string ToTitleCase(this string str)
     {

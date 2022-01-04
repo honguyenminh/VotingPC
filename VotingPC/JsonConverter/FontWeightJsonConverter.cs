@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Windows;
-using VotingPC.Domain;
+using VotingPC.Domain.Extensions;
 
 namespace VotingPC.JsonConverter;
 

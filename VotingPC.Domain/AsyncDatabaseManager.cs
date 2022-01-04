@@ -1,4 +1,5 @@
 using SQLite;
+using VotingPC.Domain.Extensions;
 
 namespace VotingPC.Domain;
 
@@ -13,7 +14,7 @@ public class AsyncDatabaseManager : IDisposable
     {
         _multipleFile = saveToMultipleFile;
     }
-    
+
     public List<Sector> SectorList { get; private set; }
 
     /// <summary>
@@ -107,47 +108,10 @@ public class AsyncDatabaseManager : IDisposable
             SQLiteConnectionString newOptions = new(path, true, password);
             SQLiteAsyncConnection newConnection = new(newOptions);
 
-            await CreateCloneTable(newConnection, sector);
+            await newConnection.CreateCloneTableAsync(sector);
 
             _connections.Add(newConnection);
         }
-    }
-
-    private static async Task CreateCloneTable(SQLiteAsyncConnection connection,
-        Sector info)
-    {
-        // Create Info table then add info row to table
-        await connection.CreateTableAsync<Sector>();
-        await connection.InsertOrReplaceAsync(info);
-        // Create Sector table then add candidates
-        string escapedTableName = info.Name.Replace("'", "''");
-        await connection.ExecuteAsync($"CREATE TABLE IF NOT EXISTS '{escapedTableName}' (" +
-                                      "'Name' TEXT NOT NULL UNIQUE," +
-                                      "'Votes' INTEGER NOT NULL DEFAULT 0," +
-                                      "'Gender' TEXT NOT NULL," +
-                                      "PRIMARY KEY('Name'))");
-        await InsertAllCandidateAsync(connection, escapedTableName, info.Candidates);
-    }
-
-    /// <summary>
-    ///     Insert all candidates into the provided table name. Because SQLite-net is stupid and doesn't have this.
-    /// </summary>
-    /// <param name="connection">SQLite connection to insert into</param>
-    /// <param name="escapedTableName">The table name to insert into with ' characters escaped</param>
-    /// <param name="candidates">Candidates to insert into table</param>
-    private static async Task InsertAllCandidateAsync(SQLiteAsyncConnection connection,
-        string escapedTableName, IEnumerable<Candidate> candidates)
-    {
-        List<string> data = new();
-        foreach (var candidate in candidates)
-        {
-            string escapedName = candidate.Name.Replace("'", "''");
-            data.Add($"('{escapedName}', {candidate.Votes}, '{candidate.Gender}')");
-        }
-
-        string dataString = string.Join(',', data);
-        string query = $"INSERT INTO '{escapedTableName}' (Name, Votes, Gender) VALUES {dataString}";
-        await connection.ExecuteAsync(query);
     }
 
     public void Dispose()
