@@ -60,4 +60,18 @@ public static class SqliteConnectionExtensions
                                       "'Gender' TEXT NOT NULL," +
                                       "PRIMARY KEY('Name'))");
     }
+    
+    /// <summary>
+    ///     Query list of rows from a table with the given table name
+    /// </summary>
+    /// <param name="connection">The connection to create on</param>
+    /// <param name="tableName">Table's unescaped name</param>
+    /// <returns>List of rows from the table</returns>
+    public static async Task<List<T>> QueryTableAsync<T>(this SQLiteAsyncConnection connection,
+        string tableName) where T : new()
+    {
+        string escapedTableName = tableName.Replace("'", "''");
+        string query = $"SELECT * FROM '{escapedTableName}'";
+        return await connection.QueryAsync<T>(query);
+    }
 }

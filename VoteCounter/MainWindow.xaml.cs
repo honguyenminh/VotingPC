@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
 using MaterialDesignThemes.Wpf.Transitions;
 using AsyncDialog;
+using VotingPC.Domain.Extensions;
 
 namespace VoteCounter;
 
@@ -184,9 +185,8 @@ public partial class MainWindow
             // Parse data from database
             try
             {
-                // Parse Info table about sections in current file
-                string query = $"SELECT * FROM Info";
-                List<Sector> currentFileInfos = await connection.QueryAsync<Sector>(query);
+                // Parse master table
+                List<Sector> currentFileInfos = await connection.Table<Sector>().ToListAsync();
                 // Validate the parsed file
                 if (ValidateData(currentFileInfos) == false) throw new InvalidDataException();
                 // If infos is not read before, just save the object
@@ -204,9 +204,7 @@ public partial class MainWindow
                     
                 foreach (Sector sector in currentFileInfos)
                 {
-                    string escapedSector = sector.Name.Replace("'", "''");
-                    query = $"SELECT * FROM '{escapedSector}'";
-                    List<Candidate> candidateList = await connection.QueryAsync<Candidate>(query);
+                    List<Candidate> candidateList = await connection.QueryTableAsync<Candidate>(sector.Name);
                     if (ValidateData(candidateList) == false) throw new InvalidDataException();
 
                     FindMaxVote(candidateList);
