@@ -1,11 +1,7 @@
 ﻿using VotingPC.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using SQLite;
 using System.IO;
-using System.Threading.Tasks;
 using Microsoft.Win32;
 using Ookii.Dialogs.Wpf;
 using MaterialDesignThemes.Wpf.Transitions;
@@ -206,10 +202,11 @@ public partial class MainWindow
                     }
                 }
                     
-                query = "SELECT * FROM \"";
                 foreach (Sector sector in currentFileInfos)
                 {
-                    List<Candidate> candidateList = await connection.QueryAsync<Candidate>(query + sector.Name + "\"");
+                    string escapedSector = sector.Name.Replace("'", "''");
+                    query = $"SELECT * FROM '{escapedSector}'";
+                    List<Candidate> candidateList = await connection.QueryAsync<Candidate>(query);
                     if (ValidateData(candidateList) == false) throw new InvalidDataException();
 
                     FindMaxVote(candidateList);
