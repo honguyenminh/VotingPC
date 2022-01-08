@@ -166,7 +166,12 @@ public partial class VoteSlide
         PreviousSlide();
         await Task.Delay(1000);
         ResetSlide();
-        await _scanner.StartScan(NextSlide);
+        await _scanner.StartScan(NextSlide, OnInvalidFinger, false, true);
+    }
+
+    public async Task OnInvalidFinger()
+    {
+        await _dialogs.ShowTextDialog("Dấu vân tay không hợp lệ, vui lòng thử lại", "Lỗi");
     }
 
     private void ResetSlide()

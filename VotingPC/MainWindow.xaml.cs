@@ -285,7 +285,7 @@ public partial class MainWindow
         slide2.SetItemsSource(_db.SectorList);
         await _dialogs.CloseDialog();
 
-        await _scanner.StartScan(slide2.NextSlide);
+        await _scanner.StartScan(slide2.NextSlide, slide2.OnInvalidFinger, false, true);
     }
 
     private void Window_Closing(object sender, CancelEventArgs e)
