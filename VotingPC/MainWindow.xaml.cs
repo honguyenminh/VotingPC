@@ -42,13 +42,13 @@ public partial class MainWindow
             Acknowledgement = 'V',
             Receive = new ReceiveSignalTable
             {
-                FingerFound = 'F',
+                FingerFound = 'G',
                 InvalidFinger = 'I'
             },
             Send = new SendSignalTable
             {
                 StartScan = 'S',
-                AcknowledgedFinger = 'K',
+                DeleteFinger = 'K',
                 Close = 'C'
             }
         };

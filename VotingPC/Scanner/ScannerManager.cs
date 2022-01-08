@@ -85,7 +85,7 @@ public class ScannerManager : IDisposable
 
             if (!_port.IsOpen || _port.ReadByte() != _signalTable.Receive.FingerFound) continue;
 
-            _port.Write(_signalTable.Send.AcknowledgedFinger.ToString());
+            _port.Write(_signalTable.Send.DeleteFinger.ToString());
             _isListening = false;
             onValidFinger();
             break;
