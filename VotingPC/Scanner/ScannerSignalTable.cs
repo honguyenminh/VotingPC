@@ -16,6 +16,6 @@ public readonly struct ReceiveSignalTable
 public readonly struct SendSignalTable
 {
     public char StartScan { get; init; }
-    public char AcknowledgedFinger { get; init; }
+    public char DeleteFinger { get; init; }
     public char Close { get; init; }
 }

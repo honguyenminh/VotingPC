@@ -70,8 +70,12 @@ public class ScannerManager : IDisposable
     ///     WILL BLOCK UNTIL SIGNAL FOUND
     /// </summary>
     /// <param name="onValidFinger">Action to run on valid finger signal found</param>
+    /// <param name="onInvalidFinger">ASYNC Action to run on invalid finger signal</param>
+    /// <param name="stopScanAfterInvalid">Stop scanning after invalid signal is found.</param>
+    /// <param name="deleteAfterFound">Delete fingerprint after valid finger is found</param>
     /// <exception cref="InvalidOperationException">Throw if manager is not initialized</exception>
-    public async Task StartScan(Action onValidFinger)
+    public async Task StartScan(Action onValidFinger, Func<Task> onInvalidFinger = null, 
+        bool stopScanAfterInvalid = true, bool deleteAfterFound = false)
     {
         if (_port is null) throw new InvalidOperationException("No port is opened yet");
         _port.Write(_signalTable.Send.StartScan.ToString());
@@ -83,12 +87,28 @@ public class ScannerManager : IDisposable
                 await Task.Delay(100);
             }
 
-            if (!_port.IsOpen || _port.ReadByte() != _signalTable.Receive.FingerFound) continue;
+            if (!_port.IsOpen) return;
+            int incomingSignal = _port.ReadByte();
+            if (incomingSignal == _signalTable.Receive.FingerFound)
+            {
+                onValidFinger?.Invoke();
+                if (deleteAfterFound)
+                {
+                    _port.Write(_signalTable.Send.DeleteFinger.ToString());
+                }
+                _isListening = false;
+                return;
+            }
 
-            _port.Write(_signalTable.Send.AcknowledgedFinger.ToString());
-            _isListening = false;
-            onValidFinger();
-            break;
+            if (incomingSignal != _signalTable.Receive.InvalidFinger) continue;
+            if (onInvalidFinger != null) await onInvalidFinger();
+            if (stopScanAfterInvalid)
+            {
+                _isListening = false;
+                return;
+            }
+            
+            _port.Write(_signalTable.Send.StartScan.ToString());
         }
     }
 
