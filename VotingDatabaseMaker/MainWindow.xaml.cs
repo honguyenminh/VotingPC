@@ -157,6 +157,7 @@ public partial class MainWindow
 
         _ = _candidates.Rename(SelectedSector, _sectorDialog.NameInput);
         _ = _sectorDict.Rename(SelectedSector, _sectorDialog.NameInput);
+        _sectorDict[_sectorDialog.NameInput].Name = _sectorDialog.NameInput;
         // Change selected sector to reflect renamed item
         sectorList.SelectedItem = _sectorDialog.NameInput;
         // Change candidate list item source to renamed item
@@ -262,7 +263,8 @@ public partial class MainWindow
         foreach (string sector in _candidates.Keys)
         {
             await connection.CreateCandidateTableAsync(sector);
-            await connection.InsertAllCandidateAsync(sector, _candidates[sector].Values);
+            if (_candidates[sector].Values.Count > 0)
+                await connection.InsertAllCandidateAsync(sector, _candidates[sector].Values);
         }
 
         await connection.CloseAsync();
