@@ -118,7 +118,7 @@ public partial class VoteSlide
         bool isInvalid = false;
         // TODO: move this to config file
         // TODO TODO: better yet, make this auto validate
-        StringBuilder errorsBuilder = new("Phiếu bầu không hợp lệ tại:");
+        StringBuilder errorsBuilder = new();
         foreach (var (sector, panel) in _sectorVotePanels.Values)
         {
             int totalVoted = 0;
@@ -127,15 +127,17 @@ public partial class VoteSlide
                 if (textBox.IsChecked) totalVoted++;
             }
 
-            if (totalVoted <= sector.Max) continue;
+            if (totalVoted <= sector.Max && totalVoted != 0) continue;
+            
+            if (isInvalid) errorsBuilder.Append('\n');
             isInvalid = true;
-            errorsBuilder.Append("\n - " + sector.Name);
+            errorsBuilder.Append(" - " + sector.Name);
         }
 
         if (isInvalid)
         {
             string errors = errorsBuilder.ToString();
-            await _dialogs.ShowTextDialog(errors, "Trở lại");
+            await _dialogs.ShowTextDialog(errors, "Phiếu bầu không hợp lệ tại:", "Trở lại");
             return;
         }
 
@@ -163,6 +165,7 @@ public partial class VoteSlide
             buttonLabel: "HOÀN TẤT"
         );
 
+        // Go back to welcome page, and here we go again
         PreviousSlide();
         await Task.Delay(1000);
         ResetSlide();
